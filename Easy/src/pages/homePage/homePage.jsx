@@ -31,7 +31,7 @@ function SkeletonCard() {
 
 export default function Home() {
   const navigate = useNavigate();
-  const { listings, wishlist, toggleWishlist, searchQuery, filters, setFilters } = useApp();
+  const { listings, wishlist, toggleWishlist, searchQuery, setSearchQuery, filters, setFilters } = useApp();
   const [activeTab, setActiveTab] = useState("nearby");
   const [showMap,   setShowMap]   = useState(true);
   const [loading]                 = useState(false);
@@ -97,6 +97,25 @@ export default function Home() {
             </button>
           );
         })}
+      </div>
+
+      {/* Mobile Search Bar — below categories */}
+      <div className="lg:hidden px-3 py-2 border-b border-[var(--gray-200)]" style={{background: "var(--white)"}}>
+        <div style={{position: "relative", width: "100%"}}>
+          <span style={{position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--gray-400)", display: "flex", alignItems: "center"}}>
+            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
+            </svg>
+          </span>
+          <input
+            type="text"
+            placeholder="Search items, categories..."
+            value={searchQuery}
+            onChange={e => { setSearchQuery(e.target.value); }}
+            className="navbar-search"
+            style={{width: "100%", paddingLeft: 32}}
+          />
+        </div>
       </div>
 
       <div className="flex relative" style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>

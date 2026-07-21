@@ -226,7 +226,7 @@ export default function Listing() {
           <div className="flex-1 min-w-0">
 
             {/* Main image */}
-            <div className="rounded-xl overflow-hidden mb-2.5 relative" style={{height:360, background:"#111"}}>
+            <div className="rounded-xl overflow-hidden mb-2.5 relative w-full aspect-[4/3] sm:aspect-auto sm:h-[360px] lg:h-[420px]" style={{background:"#111"}}>
               {p.sold && (
                 <div style={{
                   position: "absolute",
@@ -264,7 +264,7 @@ export default function Listing() {
                 alt={p.title}
                 onClick={openImageModal}
                 style={{
-                  position:"relative", width:"100%", height:"100%",
+                  position:"absolute", inset:0, width:"100%", height:"100%",
                   objectFit:"contain", display:"block", zIndex:1, cursor:"pointer"
                 }}
               />
@@ -445,9 +445,9 @@ export default function Listing() {
                 <p className="text-sm font-bold text-gray-900 mb-3">More in {p.category}</p>
                 <div className="flex flex-col gap-3">
                   {related.map(item => (
-                    <div key={item.id} className="listing-card" onClick={() => navigate(`/listing?id=${item.id}`)}>
+                    <div key={item.id} className="related-card" onClick={() => navigate(`/listing?id=${item.id}`)}>
                       <div className="flex gap-3 p-2.5 items-center">
-                        <div className="w-[72px] h-[56px] bg-gray-100 rounded-lg overflow-hidden shrink-0">
+                        <div className="w-[72px] h-[72px] bg-gray-100 rounded-lg overflow-hidden shrink-0">
                           <img src={item.img} alt="" className="w-full h-full object-cover" loading="lazy"/>
                         </div>
                         <div className="min-w-0">
