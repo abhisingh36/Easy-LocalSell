@@ -62,7 +62,7 @@ export default function Home() {
       <Navbar />
 
       {/* Mobile Categories Bar */}
-      <div className="lg:hidden bg-white border-b border-[var(--gray-200)] overflow-x-auto whitespace-nowrap scrollbar-hide px-3 py-0 flex gap-6 items-center shadow-sm">
+      <div className="lg:hidden bg-white border-b border-[var(--gray-200)] overflow-x-auto whitespace-nowrap scrollbar-hide px-3 py-0 flex gap-2 items-center shadow-sm">
         {/* Hamburger -> Opens Filters */}
         <button 
           onClick={() => setShowFilters(true)}
@@ -125,7 +125,7 @@ export default function Home() {
           </div>
         </div>
 
-        <main className="flex-1 px-6 py-5 min-w-0" style={{ overflowY: "auto", height: "100%" }}>
+        <main className="flex-1 px-3 md:px-6 py-5 min-w-0" style={{ overflowY: "auto", height: "100%" }}>
 
           {/* Tabs */}
           <div className="flex items-center border-b border-gray-200 mb-4">
@@ -145,7 +145,7 @@ export default function Home() {
           </div>
 
           {/* Map section */}
-          <div className="mb-5">
+          <div className="mb-5 map-section-wrapper">
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm font-semibold text-gray-700">Nearby on Map</p>
               <div className="flex gap-2">

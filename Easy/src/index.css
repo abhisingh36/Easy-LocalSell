@@ -1218,13 +1218,13 @@ html.dark .profile-verified-badge {
 
 .profile-stats-grid-premium {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
 
 @media (min-width: 640px) {
   .profile-stats-grid-premium {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -1237,6 +1237,31 @@ html.dark .profile-verified-badge {
   border-radius: 12px;
   border: 1px solid var(--gray-200);
   transition: border-color 0.2s ease;
+  min-width: 0;
+}
+
+@media (max-width: 480px) {
+  .profile-stats-grid-premium {
+    gap: 8px;
+  }
+  .profile-stat-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 12px 8px;
+    gap: 8px;
+  }
+  .profile-stat-card > div {
+    width: 100%;
+    min-width: 0;
+  }
+  .profile-stat-card .text-xs {
+    font-size: 9px !important;
+    white-space: normal;
+    line-height: 1.3;
+  }
+  .profile-stat-card .text-2xl {
+    font-size: 1.25rem !important;
+  }
 }
 
 .profile-stat-card:hover {
@@ -3050,10 +3075,97 @@ html.dark .edit-avatar-remove:hover {
   .listing-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px;
+    padding: 4px;
   }
 
-  .listing-card .p-3\.5 {
-    padding: 10px;
+  .listing-card {
+    aspect-ratio: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+    background: var(--white);
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+  }
+  
+  html.dark .listing-card {
+    background: var(--gray-100);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--gray-300);
+  }
+
+  .listing-card:active {
+    transform: scale(0.96);
+  }
+
+  .listing-card > div[class*="aspect-"] {
+    aspect-ratio: auto !important;
+    flex: 1;
+    min-height: 0;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+  }
+
+  .listing-card > div:nth-child(2) {
+    flex-shrink: 0;
+    padding: 6px 8px 6px 8px !important;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    row-gap: 2px;
+    column-gap: 6px;
+    align-items: center;
+  }
+
+  .listing-card > div:nth-child(2) > div.flex {
+    display: contents !important;
+  }
+
+  .listing-card .text-lg {
+    font-size: 13px !important;
+    font-weight: 800;
+    color: var(--blue-600) !important;
+    margin: 0 !important;
+    line-height: 1.2;
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+  }
+  
+  html.dark .listing-card .text-lg {
+    color: var(--blue-400) !important;
+  }
+
+  .listing-card .badge {
+    padding: 1px 4px;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    justify-self: end;
+    margin: 0 !important;
+  }
+
+  .listing-card .text-sm {
+    font-size: 11px !important;
+    margin: 0 !important;
+    color: var(--gray-700) !important;
+    font-weight: 500;
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    min-width: 0; /* Ensures truncation works */
+  }
+  
+  html.dark .listing-card .text-sm {
+    color: var(--gray-300) !important;
+  }
+
+  .listing-card .text-xs {
+    font-size: 9px !important;
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    justify-self: end;
+    margin: 0 !important;
   }
 
   .navbar-location-btn {
@@ -3065,6 +3177,32 @@ html.dark .edit-avatar-remove:hover {
     width: 16px;
     margin: 0 6px;
   }
+
+  /* Map Square & Size Tweaks */
+  .map-section-wrapper > .card {
+    aspect-ratio: 1 / 1;
+    width: 85%;
+    margin: 0 auto;
+    border-radius: 20px; 
+  }
+  
+  .map-section-wrapper .leaflet-container {
+    height: 100% !important;
+    width: 100% !important;
+  }
+
+  /* Chat padding tweaks for mobile */
+  .chat-header,
+  .chat-input-bar,
+  .chat-item-banner {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  .chat-messages {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
 }
 
 /* Utilities */
@@ -3075,4 +3213,25 @@ html.dark .edit-avatar-remove:hover {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+@media(max-width: 360px) {
+  /* Extra thin screens scaling (e.g., Galaxy Fold) */
+  .listing-card > div:nth-child(2) {
+    padding: 4px 6px 4px 6px !important;
+    column-gap: 4px;
+  }
+  .listing-card .text-lg {
+    font-size: 11px !important;
+  }
+  .listing-card .text-sm {
+    font-size: 10px !important;
+  }
+  .listing-card .badge {
+    font-size: 7px !important;
+    padding: 1px 3px;
+  }
+  .listing-card .text-xs {
+    font-size: 8px !important;
+  }
 }

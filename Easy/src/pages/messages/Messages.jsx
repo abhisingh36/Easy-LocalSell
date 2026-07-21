@@ -48,6 +48,8 @@ export default function Messages() {
   const [inputText, setInputText] = useState("");
   const [search, setSearch] = useState("");
   const [locationShared, setLocationShared] = useState({});
+  const [showActionsMenu, setShowActionsMenu] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState(null);
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -77,17 +79,35 @@ export default function Messages() {
 
 
   useEffect(() => {
-    const handleCloseContextMenu = () => setContextMenu(null);
-    window.addEventListener("click", handleCloseContextMenu);
-    return () => window.removeEventListener("click", handleCloseContextMenu);
+    const handleOutsideClick = () => {
+      setContextMenu(null);
+      setShowActionsMenu(false);
+    };
+    window.addEventListener("click", handleOutsideClick);
+    return () => window.removeEventListener("click", handleOutsideClick);
   }, []);
 
   function handleContextMenu(e, msg, isMe) {
     if (!isMe || msg.isDeleted || String(msg._id).startsWith("temp-")) return;
     e.preventDefault();
+    
+    // Calculate safe coordinates to prevent popup from going off-screen
+    const menuWidth = 140; // approx width for w-32 + padding
+    const menuHeight = 100;
+    
+    let x = e.clientX - 2;
+    let y = e.clientY - 4;
+    
+    if (x + menuWidth > window.innerWidth) {
+      x = window.innerWidth - menuWidth - 10;
+    }
+    if (y + menuHeight > window.innerHeight) {
+      y = window.innerHeight - menuHeight - 10;
+    }
+
     setContextMenu({
-      mouseX: e.clientX - 2,
-      mouseY: e.clientY - 4,
+      mouseX: x,
+      mouseY: y,
       msgId: msg._id,
       text: msg.text,
       isLocation: msg.text.startsWith("[LOCATION]")
@@ -247,29 +267,30 @@ export default function Messages() {
           {conv ? (
             <>
               {/* Combined Chat Header */}
-              <div className="chat-header flex-wrap gap-4 relative" style={{ paddingBottom: "12px", paddingTop: "12px" }}>
-                {/* Mobile Back Button */}
-                <button className="md:hidden mr-2 btn btn-ghost btn-icon p-1 h-8 w-8" onClick={() => selectConv(null)}>
-                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                {/* Left: User Info */}
-                <div className="flex items-center gap-3 shrink-0">
-                  <div className="chat-avatar-sm" style={{ width: 42, height: 42, borderRadius: '50%', overflow: 'hidden' }}>
+              {/* Combined Chat Header */}
+              <div className="chat-header flex items-center justify-between gap-1 sm:gap-2 p-2 sm:p-3 border-b border-gray-100 min-h-[60px]">
+                {/* Left: Back btn + User Info */}
+                <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 min-w-0">
+                  {/* Mobile Back Button */}
+                  <button className="md:hidden text-gray-500 hover:text-gray-900 p-1 shrink-0 -ml-1 transition-colors" onClick={() => selectConv(null)}>
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <div className="chat-avatar-sm shrink-0 shadow-sm" style={{ width: 38, height: 38, borderRadius: '50%', overflow: 'hidden' }}>
                     <img src={conv.img} alt="" className="w-full h-full object-cover" />
                   </div>
-                  <div>
-                    <p className="text-base font-semibold text-gray-900 leading-snug">{conv.name}</p>
-                    <p className={`text-xs flex items-center gap-1 mt-0.5 ${conv.online ? "text-green-600" : "text-gray-400"}`}>
+                  <div className="min-w-0">
+                    <p className="text-sm sm:text-base font-bold text-gray-900 leading-tight truncate">{conv.name}</p>
+                    <p className={`text-[11px] sm:text-xs flex items-center gap-1 mt-0.5 ${conv.online ? "text-green-600 font-medium" : "text-gray-400"}`}>
                       <span className={`online-dot ${conv.online ? "online-dot-on" : "online-dot-off"}`} />
-                      {conv.online ? "Online now" : "Offline"}
+                      {conv.online ? "Online" : "Offline"}
                     </p>
                   </div>
                 </div>
 
-                {/* Middle: Item Info */}
-                <div className="flex items-center gap-3 shrink-0 px-4 border-l border-gray-200 hidden md:flex min-w-0">
+                {/* Middle: Item Info (Desktop only) */}
+                <div className="hidden md:flex items-center gap-3 shrink-0 px-4 border-l border-gray-200 min-w-0">
                   <div className="w-10 h-10 rounded-md overflow-hidden shrink-0 border border-gray-200 bg-gray-50">
                     <img src={conv.img} alt="" className="w-full h-full object-cover" />
                   </div>
@@ -282,31 +303,65 @@ export default function Messages() {
                   </div>
                 </div>
 
-                {/* Right: Actions */}
-                <div className="flex items-center gap-2 shrink-0 ml-auto">
-                  <button className="btn btn-secondary btn-sm" onClick={() => navigate(`/listing?id=${conv.listingId}`)}>
-                    View listing
+                {/* Right: Actions Dropdown */}
+                <div className="relative shrink-0 ml-auto">
+                  <button 
+                    className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-900 rounded-full hover:bg-gray-100 transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowActionsMenu(!showActionsMenu);
+                      setContextMenu(null);
+                    }}
+                  >
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                    </svg>
                   </button>
-                  {isSeller && (
-                    <>
-                      <button
-                        id="mark-sold-btn"
-                        className={`btn btn-sm ${conv.sold ? "btn-secondary mark-sold-active" : "btn-primary"}`}
+                  
+                  {/* Dropdown Menu */}
+                  {showActionsMenu && (
+                    <div 
+                      className="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-100 py-1.5 z-50 overflow-hidden"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button 
+                        className="w-full text-left px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2.5"
                         onClick={() => {
-                          toggleSold(activeConv);
-                          showToast(conv.sold ? "Listing marked as active" : "Listing marked as sold!", conv.sold ? "info" : "success");
+                          navigate(`/listing?id=${conv.listingId}`);
+                          setShowActionsMenu(false);
                         }}
                       >
-                        {conv.sold ? "Sold" : "Mark sold"}
+                        <svg className="text-gray-400" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        View Listing
                       </button>
-                      <button
-                        id="share-location-btn"
-                        className={`btn btn-secondary btn-sm${locationShared[activeConv] ? " location-sent" : ""}`}
-                        onClick={handleShareLocation}
-                      >
-                        {locationShared[activeConv] ? "Sent" : "Share location"}
-                      </button>
-                    </>
+                      
+                      {isSeller && (
+                        <>
+                          <button 
+                            className={`w-full text-left px-4 py-2.5 text-sm font-bold transition-colors flex items-center gap-2.5 ${conv.sold ? 'text-amber-600 hover:bg-amber-50' : 'text-blue-600 hover:bg-blue-50'}`}
+                            onClick={() => {
+                              toggleSold(activeConv);
+                              showToast(conv.sold ? "Listing marked as active" : "Listing marked as sold!", conv.sold ? "info" : "success");
+                              setShowActionsMenu(false);
+                            }}
+                          >
+                            <svg className={conv.sold ? 'text-amber-500' : 'text-blue-500'} width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            {conv.sold ? "Mark as Active" : "Mark as Sold"}
+                          </button>
+                          
+                          <button 
+                            className={`w-full text-left px-4 py-2.5 text-sm font-bold transition-colors flex items-center gap-2.5 ${locationShared[activeConv] ? 'text-gray-400 bg-gray-50' : 'text-green-600 hover:bg-green-50'}`}
+                            onClick={() => {
+                              handleShareLocation();
+                              setShowActionsMenu(false);
+                            }}
+                          >
+                            <svg className={locationShared[activeConv] ? 'text-gray-400' : 'text-green-500'} width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            {locationShared[activeConv] ? "Location Sent" : "Share Location"}
+                          </button>
+                        </>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
@@ -337,7 +392,7 @@ export default function Messages() {
                         <div onContextMenu={(e) => handleContextMenu(e, msg, isMe)} className={isMe ? "cursor-context-menu" : ""}>
                           <div className={isMe ? "bubble-me" : "bubble-other"} style={msg.text?.startsWith("[LOCATION]") ? { padding: 0, overflow: "hidden", border: "none", background: "none" } : {}}>
                             {msg.isDeleted ? (
-                              <span className="italic opacity-70">ðŸš« This message was deleted</span>
+                              <span className="italic opacity-70">🚫 This message was deleted</span>
                             ) : (
                               renderMessageContent(msg.text)
                             )}
@@ -433,15 +488,45 @@ export default function Messages() {
           <div 
             className="px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 cursor-pointer font-medium border-t border-gray-100"
             onClick={() => {
+              setMessageToDelete(contextMenu.msgId);
               setContextMenu(null); // BUG-18 FIX: Explicitly close menu on action click
-              if (window.confirm("Delete this message?")) {
-                deleteMessage(contextMenu.msgId, activeConv);
-              }
             }}
           >
             Delete
           </div>
         </div>
+      )}
+      {/* Custom Delete Confirmation Modal */}
+      {messageToDelete && (
+        <>
+          <div className="modal-overlay" onClick={() => setMessageToDelete(null)} />
+          <div className="modal-wrap">
+            <div className="modal-card" style={{ maxWidth: "400px" }}>
+              <div className="modal-body p-6 text-center">
+                <div className="w-14 h-14 bg-red-50 dark:bg-red-950/20 rounded-full flex items-center justify-center text-red-500 dark:text-red-400 mx-auto mb-4 border border-red-100 dark:border-red-900/40">
+                  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Delete Message</h3>
+                <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+                  Are you sure you want to delete this message? This action cannot be undone.
+                </p>
+                <div className="flex gap-3">
+                  <button className="btn btn-secondary flex-1 rounded-xl justify-center font-bold" onClick={() => setMessageToDelete(null)}>
+                    Cancel
+                  </button>
+                  <button className="btn btn-danger flex-1 rounded-xl justify-center font-bold" onClick={() => {
+                    deleteMessage(messageToDelete, activeConv);
+                    setMessageToDelete(null);
+                  }}>
+                    Yes, Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

@@ -119,7 +119,7 @@ export function AppProvider({ children }) {
             ? {
                 ...c,
                 lastMessage: message,
-                preview: message.isDeleted ? "ðŸš« This message was deleted" : message.text,
+                preview: message.isDeleted ? "🚫 This message was deleted" : message.text,
                 unread: senderId === myId ? 0 : (c.unread || 0) + 1,
                 time: "now"
               }
@@ -153,7 +153,7 @@ export function AppProvider({ children }) {
         // BUG-04 FIX: Use String() for safe comparison
         setConversations(prev => prev.map(c => {
           if (String(c.id) === String(deletedMessage.conversationId) && c.lastMessage?._id === deletedMessage._id) {
-            return { ...c, lastMessage: deletedMessage, preview: "ðŸš« This message was deleted" };
+            return { ...c, lastMessage: deletedMessage, preview: "🚫 This message was deleted" };
           }
           return c;
         }));

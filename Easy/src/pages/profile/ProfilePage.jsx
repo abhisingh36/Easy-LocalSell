@@ -449,7 +449,7 @@ export default function ProfilePage() {
                 </div>
               </div>
             ))}
-            <div className="listing-card border-dashed border-2 border-gray-300 flex items-center justify-center h-full min-h-[220px] sm:min-h-[260px]"
+            <div className="listing-card border-dashed border-2 border-gray-300 flex items-center justify-center h-full sm:min-h-[260px]"
               onClick={() => navigate("/post")}>
               <div className="text-center group p-4">
                 <span className="text-5xl text-gray-400 group-hover:text-blue-600 transition-colors mb-2.5 block font-semibold">+</span>
