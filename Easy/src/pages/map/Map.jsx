@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+﻿import { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -33,11 +33,11 @@ function FitToRadius({ center, radiusM }) {
     const R         = 6378137; // Earth radius in metres
     const mapHeight = map.getSize().y;           // actual pixel height
     const targetPx  = (mapHeight / 2) - 4;       // circle radius in px (4px edge gap)
-    // Web Mercator: metersPerPixel = (2π·R·cos(lat)) / (256 · 2^zoom)
+    // Web Mercator: metersPerPixel = (2Ï€·R·cos(lat)) / (256 · 2^zoom)
     const zoom = Math.log2(
       (2 * Math.PI * R * Math.cos(lat_rad)) / (256 * (radiusM / targetPx))
     );
-    map.setView(center, zoom, { animate: true });
+    map.flyTo(center, zoom, { animate: true, duration: 0.4 });
   }, [center?.[0], center?.[1], radiusM]);
   return null;
 }
@@ -48,7 +48,7 @@ const Map = () => {
   const radiusM = RADIUS_MAP[filters.radius] || 5000;
 
   return (
-    <div style={{ borderRadius: 12, overflow: "hidden", border: "1px solid #e5e7eb" }}>
+    <div className="card overflow-hidden">
       <MapContainer
         center={center}
         zoom={14}

@@ -1,4 +1,4 @@
-import { useApp } from "../../context/AppContext";
+﻿import { useApp } from "../../context/AppContext";
 
 const TOAST_COLORS = {
   success: { bg: "#f0fdf4", border: "#86efac", color: "#15803d" },

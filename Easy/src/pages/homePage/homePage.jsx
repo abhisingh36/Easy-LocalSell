@@ -31,10 +31,11 @@ function SkeletonCard() {
 
 export default function Home() {
   const navigate = useNavigate();
-  const { listings, wishlist, toggleWishlist, searchQuery, filters } = useApp();
+  const { listings, wishlist, toggleWishlist, searchQuery, filters, setFilters } = useApp();
   const [activeTab, setActiveTab] = useState("nearby");
   const [showMap,   setShowMap]   = useState(true);
   const [loading]                 = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   const filtered = useMemo(() => {
     let result = [...listings];
@@ -50,18 +51,81 @@ export default function Home() {
     result = result.filter(l => filters.conditions.includes(l.condition));
     result = result.filter(l => l.price <= filters.priceMax);
     if (activeTab === "nearby") result.sort((a, b) => a.distance - b.distance);
-    else result.sort((a, b) => a.id - b.id).reverse();
+    // BUG-11 FIX: Old code did `a.id - b.id` which gives NaN on MongoDB ObjectId strings.
+    // Now properly sorts by createdAt date descending (newest first).
+    else result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     return result;
   }, [listings, searchQuery, filters, activeTab]);
 
   return (
-    <div className="page-enter min-h-screen" style={{ background: "var(--bg)" }}>
+    <div className="page-enter flex flex-col" style={{ background: "var(--bg)", height: "100dvh", overflow: "hidden" }}>
       <Navbar />
 
-      <div className="flex">
-        <Sidebar />
+      {/* Mobile Categories Bar */}
+      <div className="lg:hidden bg-white border-b border-[var(--gray-200)] overflow-x-auto whitespace-nowrap scrollbar-hide px-3 py-0 flex gap-6 items-center shadow-sm">
+        {/* Hamburger -> Opens Filters */}
+        <button 
+          onClick={() => setShowFilters(true)}
+          className="flex items-center gap-1.5 text-[14px] font-bold text-gray-800 shrink-0 py-3"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          All
+        </button>
 
-        <main className="flex-1 px-6 py-5 min-w-0">
+        {/* Categories */}
+        {["All listings", "Electronics", "Furniture", "Clothing", "Books", "Vehicles", "Sports", "Kitchen"].map((catName) => {
+          const isActive = filters.category === catName;
+          return (
+            <button
+              key={catName}
+              onClick={(e) => {
+                setFilters((prev) => ({ ...prev, category: catName }));
+                const container = e.currentTarget.parentElement;
+                const button = e.currentTarget;
+                const scrollLeft = button.offsetLeft - (container.clientWidth / 2) + (button.clientWidth / 2);
+                container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+              }}
+              className={`shrink-0 text-[14px] px-3 py-1.5 rounded-md transition-all ${
+                isActive 
+                  ? "font-bold text-blue-700 bg-blue-50" 
+                  : "font-semibold text-gray-600 hover:text-gray-900"
+              }`}
+            >
+              {catName}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex relative" style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
+        {/* Mobile Backdrop */}
+        {showFilters && (
+          <div 
+            className="fixed inset-0 bg-black/50 md:hidden" 
+            style={{ zIndex: 40 }}
+            onClick={() => setShowFilters(false)}
+          />
+        )}
+        
+        {/* Sidebar */}
+        <div 
+          className={`lg:block ${showFilters ? "fixed left-0 top-0 bottom-0 w-[280px] pt-[110px] flex flex-col shadow-2xl bg-white lg:relative lg:w-auto lg:pt-0 lg:h-auto lg:shadow-none lg:flex-none" : "hidden"}`}
+          style={{ zIndex: 45 }}
+        >
+          <div className="flex-1 overflow-y-auto">
+            <Sidebar mobileOpen={showFilters} />
+          </div>
+          {/* Close button inside sidebar on mobile */}
+          <div className="p-4 border-t border-[var(--gray-200)] lg:hidden bg-white shrink-0">
+            <button className="btn btn-primary btn-w-full" onClick={() => setShowFilters(false)}>
+              Apply Filters
+            </button>
+          </div>
+        </div>
+
+        <main className="flex-1 px-6 py-5 min-w-0" style={{ overflowY: "auto", height: "100%" }}>
 
           {/* Tabs */}
           <div className="flex items-center border-b border-gray-200 mb-4">
@@ -84,9 +148,11 @@ export default function Home() {
           <div className="mb-5">
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm font-semibold text-gray-700">Nearby on Map</p>
-              <button className="btn btn-ghost btn-sm" onClick={() => setShowMap(v => !v)}>
-                {showMap ? "Hide map" : "Show map"}
-              </button>
+              <div className="flex gap-2">
+                <button className="btn btn-ghost btn-sm border border-[var(--gray-200)] md:border-none" onClick={() => setShowMap(v => !v)}>
+                  {showMap ? "Hide map" : "Show map"}
+                </button>
+              </div>
             </div>
             {showMap && <Map />}
           </div>
@@ -125,13 +191,18 @@ export default function Home() {
                     onClick={() => navigate(`/listing?id=${item.id}`)}
                   >
                     {/* Image */}
-                    <div className="h-44 relative overflow-hidden bg-gray-100">
+                    <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
                       <img
                         src={item.img}
                         alt={item.title}
                         className="w-full h-full object-cover block"
                         loading="lazy"
                       />
+                      {item.sold && (
+                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-extrabold text-lg uppercase tracking-wider z-[5]">
+                          Sold
+                        </div>
+                      )}
                       <button
                         id={`wishlist-${item.id}`}
                         className="wishlist-btn-overlay"

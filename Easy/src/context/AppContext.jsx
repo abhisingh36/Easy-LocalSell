@@ -1,90 +1,208 @@
-import { createContext, useContext, useState, useCallback, useRef } from "react";
+import { createContext, useContext, useState, useCallback, useRef, useEffect } from "react";
+import {
+  fetchAllListings,
+  createListing as apiCreateListing,
+  updateListingAPI,
+  deleteListingAPI,
+  fetchUserProfile,
+  fetchConversations,
+  fetchMessages,
+  startConversation
+} from "../services/api";
+import { io } from "socket.io-client";
 
-// ─── All Listings (single source of truth) ─────────────────
-export const ALL_LISTINGS = [
-  { id: 1, title: "Sony WH-1000XM4 Wireless Headphones", price: 5500, priceLabel: "₹5,500", distance: 2.1, distLabel: "2.1 km", condition: "Like new", category: "Electronics", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=85", listedAgo: "2 days ago", location: "Hazratganj" },
-  { id: 2, title: "iPhone 12 Pro (128GB)", price: 42000, priceLabel: "₹42,000", distance: 0.8, distLabel: "0.8 km", condition: "Good", category: "Electronics", img: "https://citizenside.com/wp-content/uploads/2024/03/iphone-12-pro-max-unlock-unlocking-iphone-12-pro-max-1709543027.jpg", listedAgo: "1 day ago", location: "Gomti Nagar" },
-  { id: 3, title: 'Dell Inspiron 15" Laptop', price: 28000, priceLabel: "₹28,000", distance: 1.5, distLabel: "1.5 km", condition: "Good", category: "Electronics", img: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=800&q=85", listedAgo: "3 days ago", location: "Aliganj" },
-  { id: 4, title: "Wooden Study Chair", price: 3200, priceLabel: "₹3,200", distance: 0.5, distLabel: "0.5 km", condition: "Like new", category: "Furniture", img: "https://images.unsplash.com/photo-1503602642458-232111445657?w=800&q=85", listedAgo: "5 days ago", location: "Indira Nagar" },
-  { id: 5, title: "IKEA Coffee Table", price: 4500, priceLabel: "₹4,500", distance: 1.3, distLabel: "1.3 km", condition: "Good", category: "Furniture", img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=85", listedAgo: "1 week ago", location: "Vikas Nagar" },
-  { id: 6, title: "Nike Air Jordan Shoes (Size 42)", price: 6000, priceLabel: "₹6,000", distance: 1.1, distLabel: "1.1 km", condition: "Like new", category: "Clothing", img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=85", listedAgo: "4 days ago", location: "Hazratganj" },
-  { id: 7, title: "Levi's 511 Slim Jeans (32x32)", price: 1800, priceLabel: "₹1,800", distance: 2.4, distLabel: "2.4 km", condition: "Good", category: "Clothing", img: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=800&q=85", listedAgo: "2 days ago", location: "Rajajipuram" },
-  { id: 8, title: "NCERT Class 12 Complete Set", price: 800, priceLabel: "₹800", distance: 0.4, distLabel: "0.4 km", condition: "Good", category: "Books", img: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&q=85", listedAgo: "6 days ago", location: "Hazratganj" },
-  { id: 9, title: "Atomic Habits — James Clear", price: 220, priceLabel: "₹220", distance: 0.9, distLabel: "0.9 km", condition: "Like new", category: "Books", img: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&q=85", listedAgo: "3 days ago", location: "Gomti Nagar" },
-  { id: 10, title: 'Trek MTB 21-speed 26"', price: 12000, priceLabel: "₹12,000", distance: 1.2, distLabel: "1.2 km", condition: "Good", category: "Vehicles", img: "https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=800&q=85", listedAgo: "5 days ago", location: "Aliganj" },
-  { id: 11, title: "Cosco Football Size 5", price: 650, priceLabel: "₹650", distance: 0.6, distLabel: "0.6 km", condition: "Like new", category: "Sports", img: "https://images.unsplash.com/photo-1575361204480-aadea25e6e68?w=800&q=85", listedAgo: "1 day ago", location: "Hazratganj" },
-  { id: 12, title: "Instant Pot 6 Qt Pressure Cooker", price: 4200, priceLabel: "₹4,200", distance: 1.8, distLabel: "1.8 km", condition: "Like new", category: "Kitchen", img: "https://cb.scene7.com/is/image/Crate/InstantPt6qDPSPrsCkAV2SHS22_VND?$web_pdp_main_carousel_med$", listedAgo: "2 days ago", location: "Indira Nagar" },
-];
-
-// ─── Detailed product data ──────────────────────────────────
-export const PRODUCTS_DETAIL = {
-  1: { originalPrice: "₹29,990", brand: "Sony", model: "WH-1000XM4", age: "6 months", colour: "Black", warranty: "No", phone: "+91 98765 43210", seller: "Rahul Kumar", sellerInitials: "RK", thumb2: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=800&q=85", thumb3: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800&q=85", description: "Bought 6 months ago, barely used at home. Comes with original box, USB-C cable, 3.5mm cable, and carry case. Battery life is still excellent (28+ hrs per charge). Industry-leading noise cancellation works perfectly. Selling because I upgraded to the XM5." },
-  2: { originalPrice: "₹1,19,900", brand: "Apple", model: "iPhone 12 Pro", age: "1.5 years", colour: "Pacific Blue", warranty: "No", phone: "+91 91234 56789", seller: "Priya Verma", sellerInitials: "PV", thumb2: "https://images.unsplash.com/photo-1574755393849-623942496936?w=800&q=85", thumb3: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=800&q=85", description: "Used iPhone 12 Pro in excellent condition. Minor micro-scratches on back, screen is perfect. Comes with original charger and box. Battery health is at 87%." },
-  3: { originalPrice: "₹52,000", brand: "Dell", model: "Inspiron 15", age: "2 years", colour: "Silver", warranty: "3 months remaining", phone: "+91 99887 76655", seller: "Amit Sharma", sellerInitials: "AS", thumb2: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800&q=85", thumb3: "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=800&q=85", description: "Dell Inspiron laptop with Core i5 processor, 8GB RAM and 512GB SSD. Works perfectly for office work, coding, and everyday tasks. Comes with original charger." },
-  4: { originalPrice: "₹7,500", brand: "Featherlite", model: "Study Pro", age: "8 months", colour: "Walnut Brown", warranty: "No", phone: "+91 98000 11223", seller: "Sneha Gupta", sellerInitials: "SG", thumb2: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&q=85", thumb3: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=85", description: "Comfortable ergonomic wooden study chair in near-mint condition. Height adjustable and has lumbar support cushion. Perfect for long study or work sessions." },
-  5: { originalPrice: "₹8,999", brand: "IKEA", model: "LACK", age: "1 year", colour: "White", warranty: "No", phone: "+91 97777 88888", seller: "Rohan Das", sellerInitials: "RD", thumb2: "https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=800&q=85", thumb3: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&q=85", description: "IKEA LACK coffee table with lower shelf for extra storage. Minor scuff on one leg, otherwise in good condition. Dismantled and ready to pickup." },
-  6: { originalPrice: "₹11,495", brand: "Nike", model: "Air Jordan 1", age: "4 months", colour: "White/Black/Red", warranty: "No", phone: "+91 93456 78901", seller: "Aman Khanna", sellerInitials: "AK", thumb2: "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=800&q=85", thumb3: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=800&q=85", description: "Barely worn Air Jordan 1 Retro. Wore only twice to indoor events. Still looks and smells brand new. Original box included." },
-  7: { originalPrice: "₹3,999", brand: "Levi's", model: "511 Slim", age: "1 year", colour: "Dark Indigo", warranty: "No", phone: "+91 91111 22222", seller: "Pooja Singh", sellerInitials: "PS", thumb2: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=800&q=85", thumb3: "https://images.unsplash.com/photo-1555689502-c4b22d76c56f?w=800&q=85", description: "Classic Levi's 511 slim fit jeans in dark wash. Only slight fading, no tears or holes. Washed and ready. Great everyday jeans." },
-  8: { originalPrice: "₹1,800", brand: "NCERT", model: "Class 12", age: "1 year", colour: "Various", warranty: "N/A", phone: "+91 98000 11223", seller: "Sneha Gupta", sellerInitials: "SG", thumb2: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&q=85", thumb3: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&q=85", description: "Complete set of NCERT textbooks for Class 12 (Physics, Chemistry, Maths, Bio, English). Some books have light pencil notes. Great for JEE/NEET prep." },
-  9: { originalPrice: "₹499", brand: "Penguin", model: "Hardcover", age: "5 months", colour: "—", warranty: "N/A", phone: "+91 95555 66666", seller: "Karan Mehta", sellerInitials: "KM", thumb2: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800&q=85", thumb3: "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800&q=85", description: "Atomic Habits hardcover, read once. No dog-ears, no highlighting. One of the best books on habits and self-improvement. Selling because I have a digital copy." },
-  10: { originalPrice: "₹22,000", brand: "Trek", model: "Marlin 5", age: "2 years", colour: "Matte Black", warranty: "No", phone: "+91 90000 12345", seller: "Priya Sharma", sellerInitials: "PS", thumb2: "https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=800&q=85", thumb3: "https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=800&q=85", description: "Trek Marlin 5 mountain bike with 21-speed Shimano gears. Recently serviced — new brake pads, tires in good shape. Great for city riding and light trails." },
-  11: { originalPrice: "₹1,200", brand: "Cosco", model: "Tornado", age: "3 months", colour: "Black & White", warranty: "No", phone: "+91 98765 43210", seller: "Rahul Kumar", sellerInitials: "RK", thumb2: "https://facts.net/wp-content/uploads/2023/07/16-facts-about-football-1689928910.jpg", thumb3: "https://static.vecteezy.com/system/resources/thumbnails/002/977/419/original/soccer-ball-on-the-football-field-background-free-video.jpg", description: "Cosco match quality football, used only a handful of times at indoor turf. No visible wear. Pumped and ready to play. Great price." },
-  12: { originalPrice: "₹8,995", brand: "Instant Pot", model: "Duo 6 Qt", age: "9 months", colour: "Stainless Steel", warranty: "1 year remaining", phone: "+91 99999 00000", seller: "Meera Joshi", sellerInitials: "MJ", thumb2: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=85", thumb3: "https://images.unsplash.com/photo-1547592180-85f173990554?w=800&q=85", description: "Instant Pot 7-in-1 multi-cooker. Used occasionally, always cleaned thoroughly. Comes with original lid, inner pot and all accessories. Works perfectly." },
-};
-
-// ─── Conversations ──────────────────────────────────────────
-// TODO(backend): Replace INIT_CONVERSATIONS with an API call, e.g.:
-//   const { data } = await fetch("/api/conversations");
-//   setConversations(data);
-// Each conversation object shape:
-//   { id, name, initials, item, price, preview, time, unread, img, online, sold, listingId }
-const INIT_CONVERSATIONS = [];
-
-// TODO(backend): Replace INIT_MESSAGES with an API call, e.g.:
-//   const { data } = await fetch(`/api/conversations/${convId}/messages`);
-//   setMessages(prev => ({ ...prev, [convId]: data }));
-// Each message object shape:
-//   { id, sender ("me" | "other"), text, time, read }
-const INIT_MESSAGES = {};
-
-// ─── Auto-reply pool ────────────────────────────────────────
-const AUTO_REPLIES = [
-  "Sure, that works for me!",
-  "Can we meet at Hazratganj metro station?",
-  "The item is exactly as described, you'll love it.",
-  "I'm available tomorrow morning if that works?",
-  "Is there any flexibility on the price?",
-  "Can you share more photos?",
-  "I can do cash on delivery.",
-  "Let me check and get back to you.",
-];
-
-// ─── Context ────────────────────────────────────────────────
+// ─── Context ────────────────────────────────────────────
 const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
-  const [currentUser] = useState({
-    name: "Rahul Kumar", initials: "RK", email: "rahul.kumar@gmail.com",
-    phone: "+91 98765 43210", location: "Hazratganj, Lucknow",
-    avatar: null, joinedYear: "2024", sold: 18, active: 5, response: "98%",
-  });
+  const getInitialUser = () => {
+    try {
+      const saved = localStorage.getItem("currentUser");
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  };
 
-  const [wishlist, setWishlist] = useState([1, 6]);
+  // BUG-21 FIX: Socket stored as ref inside component, not module-level variable.
+  // Module-level let causes duplicate socket connections in React Strict Mode.
+  const socketRef = useRef(null);
+
+  const [currentUser, setCurrentUser] = useState(getInitialUser());
+  const [listings, setListings] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("currentUser"));
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginReason, setLoginReason] = useState("");
+
+  const triggerLoginModal = useCallback((reason = "") => {
+    setLoginReason(reason);
+    setShowLoginModal(true);
+  }, []);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [userLocation, setUserLocation] = useState({ name: "Hazratganj", radius: "5 km", coords: [26.8467, 80.9462] });
   const [filters, setFilters] = useState({
     category: "All listings", radius: "5 km",
-    conditions: ["Like new", "Good", "Fair"], priceMax: 250000,
+    conditions: ["New", "Like new", "Good", "Fair", "For parts"], priceMax: 250000,
   });
 
-  const [conversations, setConversations] = useState(INIT_CONVERSATIONS);
-  const [messages, setMessages] = useState(INIT_MESSAGES);
+  // ── Theme ───────────────────────────────────────────
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem("theme");
+    if (saved) return saved;
+    if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
+    }
+    return "light";
+  });
+
+  useEffect(() => {
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+    localStorage.setItem("theme", theme);
+  }, [theme]);
+
+  const toggleTheme = useCallback(() => {
+    setTheme(prev => prev === "light" ? "dark" : "light");
+  }, []);
+
+  // ── Messaging state ─────────────────────────────────
+  const [conversations, setConversations] = useState([]);
+  const [messages, setMessages] = useState({}); // mapped by conversationId
   const [typing, setTyping] = useState({});
 
-  // ── Toast system ────────────────────────────────────────
+  // Socket and Messages Effect
+  useEffect(() => {
+    if (currentUser) {
+      // BUG-21 FIX: Use socketRef.current instead of module-level `socket` variable
+      socketRef.current = io(import.meta.env.VITE_API_BASE?.replace('/api', '') || "http://localhost:5000");
+      const socket = socketRef.current;
+
+      socket.on("connect", () => {
+        console.log("Connected to socket server");
+      });
+
+      socket.on("receive_message", (message) => {
+        const myId = currentUser._id || currentUser.id;
+        const senderId = message.sender._id || message.sender;
+
+        setMessages((prev) => {
+          const msgs = prev[message.conversationId] || [];
+
+          // Check if this is our own message that we optimistically added
+          if (senderId === myId) {
+            // Find a temp message with the same text
+            const tempIndex = msgs.findIndex(m => String(m._id).startsWith("temp-") && m.text === message.text);
+            if (tempIndex !== -1) {
+              const newMsgs = [...msgs];
+              newMsgs[tempIndex] = message; // Replace temp message with real one
+              return { ...prev, [message.conversationId]: newMsgs };
+            }
+          }
+
+          // Otherwise, just append it (avoid exact duplicates)
+          if (msgs.some(m => m._id === message._id)) return prev;
+
+          return {
+            ...prev,
+            [message.conversationId]: [...msgs, message]
+          };
+        });
+
+        // BUG-04 FIX: Use String() for safe comparison to avoid ObjectId type mismatches
+        setConversations(prev => prev.map(c =>
+          String(c.id) === String(message.conversationId)
+            ? {
+                ...c,
+                lastMessage: message,
+                preview: message.isDeleted ? "ðŸš« This message was deleted" : message.text,
+                unread: senderId === myId ? 0 : (c.unread || 0) + 1,
+                time: "now"
+              }
+            : c
+        ));
+      });
+
+      socket.on("message_edited", (updatedMessage) => {
+        setMessages((prev) => {
+          const msgs = prev[updatedMessage.conversationId] || [];
+          const newMsgs = msgs.map(m => m._id === updatedMessage._id ? updatedMessage : m);
+          return { ...prev, [updatedMessage.conversationId]: newMsgs };
+        });
+
+        // BUG-04 FIX: Use String() for safe comparison
+        setConversations(prev => prev.map(c => {
+          if (String(c.id) === String(updatedMessage.conversationId) && c.lastMessage?._id === updatedMessage._id) {
+            return { ...c, lastMessage: updatedMessage, preview: updatedMessage.text };
+          }
+          return c;
+        }));
+      });
+
+      socket.on("message_deleted", (deletedMessage) => {
+        setMessages((prev) => {
+          const msgs = prev[deletedMessage.conversationId] || [];
+          const newMsgs = msgs.map(m => m._id === deletedMessage._id ? deletedMessage : m);
+          return { ...prev, [deletedMessage.conversationId]: newMsgs };
+        });
+
+        // BUG-04 FIX: Use String() for safe comparison
+        setConversations(prev => prev.map(c => {
+          if (String(c.id) === String(deletedMessage.conversationId) && c.lastMessage?._id === deletedMessage._id) {
+            return { ...c, lastMessage: deletedMessage, preview: "ðŸš« This message was deleted" };
+          }
+          return c;
+        }));
+      });
+
+      // Load initial conversations
+      fetchConversations(currentUser._id || currentUser.id).then(data => {
+        // Map to expected format
+        const mappedConvs = data.map(conv => ({
+          ...conv,
+          id: conv._id,
+          name: conv.participants.find(p => p._id !== (currentUser._id || currentUser.id))?.name || "User",
+          initials: conv.participants.find(p => p._id !== (currentUser._id || currentUser.id))?.name?.substring(0, 2).toUpperCase() || "U",
+          item: conv.listingId?.title || "Item",
+          price: conv.listingId ? `₹${Number(conv.listingId.price).toLocaleString("en-IN")}` : "",
+          preview: conv.lastMessage?.text || "New conversation",
+          time: conv.lastMessage ? new Date(conv.lastMessage.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "now",
+          unread: 0,
+          img: conv.listingId?.images?.[0] || "",
+          listingId: conv.listingId?._id
+        }));
+        setConversations(mappedConvs);
+
+        // BUG-14 FIX: Join rooms only after socket is confirmed connected
+        // socket.io will queue emits, but using the connect event is safer
+        const joinRooms = () => data.forEach(conv => socket.emit("join_conversation", conv._id));
+        if (socket.connected) {
+          joinRooms();
+        } else {
+          socket.once("connect", joinRooms);
+        }
+      }).catch(err => console.error("Failed to fetch conversations", err));
+
+      return () => {
+        socket.disconnect();
+      };
+    }
+  }, [currentUser]);
+
+  const loadMessages = useCallback(async (conversationId) => {
+    try {
+      const msgs = await fetchMessages(conversationId);
+      setMessages(prev => ({ ...prev, [conversationId]: msgs }));
+    } catch (err) {
+      console.error("Failed to load messages", err);
+    }
+  }, []);
+
+  // ── Toast system ────────────────────────────────────
   const [toasts, setToasts] = useState([]);
   const toastIdRef = useRef(0);
 
@@ -97,89 +215,339 @@ export function AppProvider({ children }) {
     }, duration);
   }, []);
 
-  // ── Wishlist toggle ─────────────────────────────────────
+  // ── Wishlist toggle ─────────────────────────────────
   const wishlistRef = useRef(wishlist);
   wishlistRef.current = wishlist;
 
   const toggleWishlist = useCallback((id) => {
+    if (!isLoggedIn) {
+      triggerLoginModal("Please log in to save items to your wishlist.");
+      return;
+    }
     const isAdding = !wishlistRef.current.includes(id);
     setWishlist(prev => isAdding ? [...prev, id] : prev.filter(x => x !== id));
     showToast(
       isAdding ? "Added to wishlist" : "Removed from wishlist",
       isAdding ? "success" : "info"
     );
-  }, [showToast]);
+  }, [isLoggedIn, triggerLoginModal, showToast]);
 
-  // ── Send message ────────────────────────────────────────
+  // ── Send message ────────────────────────────────────
   const sendMessage = useCallback((convId, text) => {
-    if (!text.trim()) return;
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    const newMsg = { id: Date.now(), sender: "me", text: text.trim(), time: timeStr, read: false };
+    if (!text.trim() || !currentUser) return;
+
+    // BUG-21 FIX: Use socketRef.current
+    if (socketRef.current) {
+      socketRef.current.emit("send_message", {
+        conversationId: convId,
+        senderId: currentUser._id || currentUser.id,
+        text: text.trim()
+      });
+    }
+
+    // Optimistic update locally
+    const tempId = "temp-" + Date.now();
+    const newMsg = {
+      _id: tempId,
+      conversationId: convId,
+      sender: { _id: currentUser._id || currentUser.id, name: currentUser.name },
+      text: text.trim(),
+      createdAt: new Date().toISOString()
+    };
 
     setMessages(prev => ({ ...prev, [convId]: [...(prev[convId] || []), newMsg] }));
     setConversations(prev =>
-      prev.map(c => c.id === convId ? { ...c, preview: text.trim(), time: "now", unread: 0 } : c)
+      prev.map(c => c.id === convId ? { ...c, preview: text.trim(), time: "now", unread: 0, lastMessage: newMsg } : c)
     );
+  }, [currentUser]);
 
-    // Simulate "other is typing" after 800ms, then auto-reply after 2s
-    setTimeout(() => setTyping(prev => ({ ...prev, [convId]: true })), 800);
-    setTimeout(() => {
-      setTyping(prev => ({ ...prev, [convId]: false }));
-      const reply = AUTO_REPLIES[Math.floor(Math.random() * AUTO_REPLIES.length)];
-      const replyTime = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-      const replyMsg = { id: Date.now() + 1, sender: "other", text: reply, time: replyTime, read: true };
-      setMessages(prev => ({ ...prev, [convId]: [...(prev[convId] || []), replyMsg] }));
-      setConversations(prev =>
-        prev.map(c => c.id === convId ? { ...c, preview: reply, time: replyTime } : c)
-      );
-    }, 2500);
-  }, []);
+  // ── Edit message ────────────────────────────────────
+  const editMessage = useCallback((msgId, convId, newText) => {
+    // BUG-21 FIX: Use socketRef.current
+    if (!newText.trim() || !currentUser || !socketRef.current) return;
 
-  // ── Mark conv as read ────────────────────────────────────
+    socketRef.current.emit("edit_message", {
+      messageId: msgId,
+      conversationId: convId,
+      text: newText.trim()
+    });
+
+    // Optimistic update
+    setMessages(prev => {
+      const msgs = prev[convId] || [];
+      const newMsgs = msgs.map(m => m._id === msgId ? { ...m, text: newText.trim(), isEdited: true } : m);
+      return { ...prev, [convId]: newMsgs };
+    });
+  }, [currentUser]);
+
+  // ── Delete message ──────────────────────────────────
+  const deleteMessage = useCallback((msgId, convId) => {
+    // BUG-21 FIX: Use socketRef.current
+    if (!currentUser || !socketRef.current) return;
+
+    socketRef.current.emit("delete_message", {
+      messageId: msgId,
+      conversationId: convId
+    });
+
+    // Optimistic update
+    setMessages(prev => {
+      const msgs = prev[convId] || [];
+      const newMsgs = msgs.map(m => m._id === msgId ? { ...m, text: "", isDeleted: true } : m);
+      return { ...prev, [convId]: newMsgs };
+    });
+  }, [currentUser]);
+
+  // ── Mark conv as read ───────────────────────────────
   const markRead = useCallback((convId) => {
     setConversations(prev =>
       prev.map(c => c.id === convId ? { ...c, unread: 0 } : c)
     );
   }, []);
 
-  // ── Mark sold ────────────────────────────────────────────
+  // ── Mark sold ───────────────────────────────────────
   const toggleSold = useCallback((convId) => {
     setConversations(prev =>
       prev.map(c => c.id === convId ? { ...c, sold: !c.sold } : c)
     );
   }, []);
 
-  // ── Start new chat from listing ──────────────────────────
-  const startChat = useCallback((listing) => {
-    const exists = conversations.find(c => c.listingId === listing.id);
-    if (exists) return exists.id;
-    const detail = PRODUCTS_DETAIL[listing.id];
-    const newConv = {
-      id: Date.now(), name: detail?.seller || "Seller",
-      initials: detail?.sellerInitials || "S",
-      item: listing.title, price: listing.priceLabel,
-      preview: "New conversation", time: "now", unread: 0,
-      img: listing.img, online: false, sold: false, listingId: listing.id,
+  // ── Start new chat from listing ─────────────────────
+  const startChat = useCallback(async (listing) => {
+    if (!currentUser) {
+      triggerLoginModal("Please log in to contact the seller.");
+      return null;
+    }
+
+    // BUG-03 FIX: Use String() for consistent ID comparison.
+    // listingId in conversations can be an ObjectId string from API or a plain id from local state.
+    const existsLocally = conversations.find(c => String(c.listingId) === String(listing.id));
+    if (existsLocally) return existsLocally.id;
+
+    try {
+      const conv = await startConversation(
+        currentUser._id || currentUser.id,
+        listing.sellerId,
+        listing.id
+      );
+
+      // Map to UI format
+      const newConv = {
+        ...conv,
+        id: conv._id,
+        name: conv.participants.find(p => p._id !== (currentUser._id || currentUser.id))?.name || "Seller",
+        initials: conv.participants.find(p => p._id !== (currentUser._id || currentUser.id))?.name?.substring(0, 2).toUpperCase() || "S",
+        item: listing.title,
+        price: listing.priceLabel,
+        preview: "New conversation",
+        time: "now",
+        unread: 0,
+        img: listing.img,
+        listingId: listing.id,
+      };
+
+      setConversations(prev => [newConv, ...prev]);
+      setMessages(prev => ({ ...prev, [newConv.id]: [] }));
+
+      // BUG-21 FIX: Use socketRef.current
+      if (socketRef.current) {
+        socketRef.current.emit("join_conversation", conv._id);
+      }
+      return newConv.id;
+    } catch (err) {
+      console.error("Error starting chat:", err);
+      showToast(err.message || "Error starting chat", "danger");
+      return null;
+    }
+  }, [currentUser, triggerLoginModal, conversations]);
+
+  // ── Listings: Fetch from API ────────────────────────
+  const fetchListings = useCallback(async () => {
+    try {
+      const mapped = await fetchAllListings();
+      setListings(mapped);
+    } catch (err) {
+      console.error("Error loading listings from API:", err);
+      // Keep whatever we had before; don't crash the UI
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchListings();
+  }, [fetchListings]);
+
+  // ── Listings: Create ────────────────────────────────
+  const addListing = useCallback(async (listingData) => {
+    try {
+      const mapped = await apiCreateListing(listingData);
+      setListings(prev => [mapped, ...prev]);
+      fetchListings(); // sync with backend
+      return true;
+    } catch (err) {
+      console.error("Error adding listing:", err);
+      showToast("Error publishing listing to backend", "danger");
+      return false;
+    }
+  }, [fetchListings, showToast]);
+
+  // ── Listings: Update ────────────────────────────────
+  const updateListing = useCallback(async (id, fields) => {
+    try {
+      // Optimistic update
+      setListings(prev => prev.map(item =>
+        item.id === id
+          ? { ...item, ...fields, priceLabel: fields.price ? `₹${Number(fields.price).toLocaleString("en-IN")}` : item.priceLabel }
+          : item
+      ));
+
+      await updateListingAPI(id, fields);
+      fetchListings(); // sync with backend
+      return true;
+    } catch (err) {
+      console.error("Error updating listing:", err);
+      showToast("Error updating listing on backend", "danger");
+      fetchListings(); // revert optimistic update
+      return false;
+    }
+  }, [fetchListings, showToast]);
+
+  // ── Listings: Delete ────────────────────────────────
+  const deleteListing = useCallback(async (id) => {
+    try {
+      // Optimistic removal
+      setListings(prev => prev.filter(item => item.id !== id));
+
+      await deleteListingAPI(id);
+      fetchListings(); // sync with backend
+      return true;
+    } catch (err) {
+      console.error("Error deleting listing:", err);
+      showToast("Error deleting listing on backend", "danger");
+      fetchListings(); // revert optimistic removal
+      return false;
+    }
+  }, [fetchListings, showToast]);
+
+  // ── Auth ────────────────────────────────────────────
+  const login = useCallback(async (userData) => {
+    // userData comes directly from the backend (has _id, name, email, phone, token)
+    const base = {
+      ...userData,
+      initials: userData?.name
+        ? userData.name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2)
+        : "U",
+      location: "Lucknow, India",
+      avatar: null,
+      joinedYear: new Date().getFullYear().toString(),
+      // Stats start at 0; they'll be refreshed from the backend
+      sold: 0,
+      active: 0,
+      response: "98%",
     };
-    setConversations(prev => [newConv, ...prev]);
-    setMessages(prev => ({ ...prev, [newConv.id]: [] }));
-    return newConv.id;
-  }, [conversations]);
 
-  const login = useCallback(() => setIsLoggedIn(true), []);
-  const logout = useCallback(() => setIsLoggedIn(false), []);
+    localStorage.setItem("currentUser", JSON.stringify(base));
+    setCurrentUser(base);
+    setIsLoggedIn(true);
 
+    // Immediately fetch live stats from backend and update stored user
+    if (userData._id) {
+      try {
+        const profile = await fetchUserProfile(userData._id);
+        const withStats = {
+          ...base,
+          sold: profile.stats?.sold ?? 0,
+          active: profile.stats?.active ?? 0,
+          response: profile.stats?.response ?? "98%",
+          phone: profile.phone || base.phone || "",
+          joinedYear: profile.createdAt
+            ? new Date(profile.createdAt).getFullYear().toString()
+            : base.joinedYear,
+        };
+        localStorage.setItem("currentUser", JSON.stringify(withStats));
+        setCurrentUser(withStats);
+      } catch (e) {
+        // Non-fatal — we already have base info
+        console.warn("Could not fetch user profile stats:", e.message);
+      }
+    }
+  }, []);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem("currentUser");
+    setCurrentUser(null);
+    setIsLoggedIn(false);
+  }, []);
+
+  // ── Update current user profile ─────────────────────
+  const updateUser = useCallback(async (payload) => {
+    const userId = currentUser?._id || currentUser?.id;
+    if (!userId) return false;
+    try {
+      // BUG-10 FIX: Use VITE_API_BASE (same as api.js) instead of VITE_API_URL.
+      // Using a different env variable caused production profile updates to silently fail.
+      const API_BASE = import.meta.env.VITE_API_BASE || "/api";
+      const response = await fetch(`${API_BASE}/users/${userId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) throw new Error("Update failed");
+      const updatedUser = await response.json();
+
+      setCurrentUser(prev => {
+        const next = { ...prev, ...updatedUser };
+        localStorage.setItem("currentUser", JSON.stringify(next));
+        return next;
+      });
+      return true;
+    } catch (e) {
+      console.error("updateUser error:", e.message);
+      return false;
+    }
+  }, [currentUser]);
+
+  // ── Refresh current user stats from backend ──────────
+  const refreshCurrentUserStats = useCallback(async () => {
+    const userId = currentUser?._id || currentUser?.id;
+    if (!userId) return;
+    try {
+      const profile = await fetchUserProfile(userId);
+      setCurrentUser(prev => {
+        if (!prev) return prev;
+        const updated = {
+          ...prev,
+          sold:     profile.stats?.sold     ?? prev.sold,
+          active:   profile.stats?.active   ?? prev.active,
+          response: profile.stats?.response ?? prev.response,
+          phone:    profile.phone           || prev.phone || "",
+          location: profile.location        || prev.location || "",
+          profileImage: profile.profileImage || prev.profileImage || "",
+          joinedYear: profile.createdAt
+            ? new Date(profile.createdAt).getFullYear().toString()
+            : prev.joinedYear,
+        };
+        localStorage.setItem("currentUser", JSON.stringify(updated));
+        return updated;
+      });
+    } catch (e) {
+      console.warn("refreshCurrentUserStats error:", e.message);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser?._id, currentUser?.id]);
+
+  // ── Context value ───────────────────────────────────
   const value = {
     currentUser, wishlist, toggleWishlist,
-    listings: ALL_LISTINGS, searchQuery, setSearchQuery,
+    listings, searchQuery, setSearchQuery, addListing, updateListing, deleteListing, fetchListings,
     filters, setFilters,
-    isLoggedIn, login, logout,
+    isLoggedIn, login, logout, refreshCurrentUserStats, updateUser,
+    theme, toggleTheme,
     showLoginModal, setShowLoginModal,
+    loginReason, setLoginReason, triggerLoginModal,
     showLocationModal, setShowLocationModal,
-    userLocation, setUserLocation,
-    conversations, messages, typing,
-    sendMessage, markRead, toggleSold, startChat,
+    userLocation, setUserLocation,  // BUG-01 FIX: Removed duplicate userLocation, setUserLocation entry
+    conversations, messages, typing, loadMessages,
+    sendMessage, editMessage, deleteMessage, markRead, toggleSold, startChat,
     toasts, showToast,
   };
 

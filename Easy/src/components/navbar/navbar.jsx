@@ -2,40 +2,28 @@ import { useState, useRef, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
 
-const NOTIFICATIONS = [
-  { text: "Rahul Kumar sent you a message",      time: "5 min ago",  unread: true  },
-  { text: "Your listing got 12 new views today", time: "1 hr ago",   unread: true  },
-  { text: "New listing nearby: iPhone 14 Pro",   time: "2 hr ago",   unread: false },
-  { text: "Priya Sharma left you a 5-star review", time: "Yesterday", unread: false },
-];
-
 export default function Navbar() {
-  const navigate  = useNavigate();
-  const location  = useLocation();
-  const { currentUser, searchQuery, setSearchQuery, isLoggedIn, logout, setShowLoginModal, setShowLocationModal, userLocation, filters } = useApp();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const {
+    currentUser, searchQuery, setSearchQuery, isLoggedIn,
+    triggerLoginModal, setShowLocationModal, userLocation,
+    filters, theme, toggleTheme, conversations
+  } = useApp();
 
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [notifOpen,    setNotifOpen]    = useState(false);
-  const [notifRead,    setNotifRead]    = useState(false);
-  const dropdownRef = useRef(null);
-  const notifRef    = useRef(null);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [notifRead, setNotifRead] = useState(false);
+  const notifRef = useRef(null);
 
-  const notifUnread = notifRead ? 0 : NOTIFICATIONS.filter(n => n.unread).length;
+  const notifUnread = notifRead ? 0 : conversations.filter(c => c.unread > 0).length;
 
   useEffect(() => {
     function handle(e) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setDropdownOpen(false);
-      if (notifRef.current    && !notifRef.current.contains(e.target))    setNotifOpen(false);
+      if (notifRef.current && !notifRef.current.contains(e.target)) setNotifOpen(false);
     }
     document.addEventListener("mousedown", handle);
     return () => document.removeEventListener("mousedown", handle);
   }, []);
-
-  function handleLogout() {
-    setDropdownOpen(false);
-    logout();
-    navigate("/home");
-  }
 
   function handleSearch(e) {
     setSearchQuery(e.target.value);
@@ -66,121 +54,120 @@ export default function Navbar() {
           />
         </div>
 
-        <div className="navbar-spacer" />
-
-        {/* Location */}
+        {/* Location — icon-only on mobile, text+icon on desktop (via CSS) */}
         <button
           id="location-btn"
-          className="btn btn-secondary btn-sm navbar-location-btn"
+          className="navbar-loc-btn"
           onClick={() => setShowLocationModal(true)}
         >
-          <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{flexShrink:0}}>
+          <svg className="navbar-loc-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
           </svg>
-          {userLocation.name} · {filters.radius}
+          <span className="navbar-loc-text">
+            <span className="navbar-loc-name">{userLocation.name}</span>
+            <span className="navbar-loc-radius">{' · '}{filters.radius}</span>
+          </span>
         </button>
 
-        {/* Notification bell */}
-        <div className="relative" ref={notifRef}>
-          <button
-            id="notif-btn"
-            className="btn-icon relative"
-            onClick={() => { setNotifOpen(v => !v); setNotifRead(true); }}
-            title="Notifications"
-          >
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        <div className="navbar-spacer" />
+
+        {/* Theme Toggle */}
+        <button className="navbar-icon-btn" onClick={toggleTheme} title="Toggle Theme">
+          {theme === "dark" ? (
+            <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
-            {notifUnread > 0 && <span className="notif-dot" />}
-          </button>
-
-          {/* Notification dropdown */}
-          {notifOpen && (
-            <div className="dropdown" style={{width:300}}>
-              <div className="notif-header">
-                <p className="text-sm font-bold text-gray-900">Notifications</p>
-                <span className="text-xs text-sky-600 cursor-pointer font-medium">Mark all read</span>
-              </div>
-              {NOTIFICATIONS.map((n, i) => (
-                <div key={i} className={`notif-item ${n.unread && !notifRead ? "notif-item-unread" : "notif-item-read"}`}>
-                  <p className="text-sm text-gray-700 leading-snug">{n.text}</p>
-                  <p className="text-xs text-gray-400 mt-0.5">{n.time}</p>
-                </div>
-              ))}
-              <div className="p-2.5 text-center">
-                <span className="text-sm text-sky-600 cursor-pointer font-medium">View all</span>
-              </div>
-            </div>
+          ) : (
+            <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
           )}
-        </div>
+        </button>
 
-        {/* Login / Avatar */}
-        {!isLoggedIn ? (
-          <button
-            id="login-btn"
-            className="btn btn-secondary shrink-0"
-            onClick={() => setShowLoginModal(true)}
-          >
-            Login
-          </button>
-        ) : (
-          <div className="relative" ref={dropdownRef}>
-            <div id="avatar-btn" className="avatar" onClick={() => setDropdownOpen(v => !v)}>
-              {currentUser.initials}
-            </div>
+        {/* Notification Bell */}
+        {isLoggedIn && (
+          <div style={{ position: "relative" }} ref={notifRef}>
+            <button
+              id="notif-btn"
+              className="navbar-icon-btn"
+              onClick={() => { setNotifOpen(v => !v); setNotifRead(true); }}
+              title="Notifications"
+            >
+              <svg width="17" height="17" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+              </svg>
+              {notifUnread > 0 && <span className="notif-dot" />}
+            </button>
 
-            {dropdownOpen && (
-              <div className="dropdown" style={{width:220}}>
-                {/* User info */}
-                <div className="user-dd-header">
-                  <div className="flex items-center gap-2.5 mb-2">
-                    <div className="user-dd-avatar">{currentUser.initials}</div>
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">{currentUser.name}</p>
-                      <p className="text-xs text-gray-400">{currentUser.email}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-1.5">
-                    <span className="badge badge-blue">{currentUser.active} active</span>
-                    <span className="badge badge-green">{currentUser.sold} sold</span>
-                  </div>
+            {notifOpen && (
+              <div className="dropdown" style={{ width: 300 }}>
+                <div className="notif-header">
+                  <p className="text-sm font-bold text-gray-900">Notifications</p>
+                  <span className="text-xs text-blue-600 cursor-pointer font-medium" onClick={() => setNotifRead(true)}>Mark all read</span>
                 </div>
-
-                {/* Menu items */}
-                {[
-                  { label: "My Profile",  action: "/profile"  },
-                  { label: "My Listings", action: "/home"     },
-                  { label: "Messages",    action: "/messages" },
-                  { label: "Settings",    action: null        },
-                ].map(({ label, action }) => (
-                  <button
-                    key={label}
-                    className="dropdown-item"
-                    onClick={() => { setDropdownOpen(false); if (action) navigate(action); }}
+                {conversations.length === 0 ? (
+                  <div style={{ padding: "16px", textAlign: "center", fontSize: 12, color: "var(--gray-400)" }}>
+                    No new notifications
+                  </div>
+                ) : (
+                  conversations.slice(0, 4).map((c) => (
+                    <div
+                      key={c.id}
+                      className={`notif-item cursor-pointer ${c.unread && !notifRead ? "notif-item-unread" : "notif-item-read"}`}
+                      onClick={() => { setNotifOpen(false); navigate(`/messages?conv=${c.id}`); }}
+                    >
+                      <p className="text-sm text-gray-700 leading-snug">
+                        {c.unread > 0 ? `${c.name} sent you a message: "${c.preview}"` : `Chat with ${c.name} about ${c.item}`}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5">{c.time}</p>
+                    </div>
+                  ))
+                )}
+                <div style={{ padding: "10px", textAlign: "center", borderTop: "1px solid var(--gray-100)" }}>
+                  <span
+                    className="text-sm text-blue-600 cursor-pointer font-medium"
+                    onClick={() => { setNotifOpen(false); navigate("/messages"); }}
                   >
-                    {label}
-                  </button>
-                ))}
-
-                <div className="border-t border-gray-100">
-                  <button id="logout-btn" className="dropdown-item dropdown-item-danger" onClick={handleLogout}>
-                    Log out
-                  </button>
+                    View all
+                  </span>
                 </div>
               </div>
             )}
           </div>
         )}
 
-        {/* Sell button */}
+        {/* Avatar / Login */}
+        {!isLoggedIn ? (
+          <button id="login-btn" className="navbar-login-btn" onClick={() => triggerLoginModal()}>
+            Login
+          </button>
+        ) : (
+          <div id="avatar-btn" className="navbar-avatar" onClick={() => navigate("/profile")}>
+            {currentUser.profileImage ? (
+              <img src={currentUser.profileImage} alt={currentUser.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+            ) : (
+              currentUser.initials
+            )}
+          </div>
+        )}
+
+        {/* Sell Button */}
         <button
           id="sell-btn"
-          className="btn btn-primary shrink-0"
-          onClick={() => navigate("/post")}
+          className="navbar-sell-btn"
+          onClick={() => {
+            if (isLoggedIn) navigate("/post");
+            else triggerLoginModal("Please log in to sell items.");
+          }}
         >
-          Sell something
+          {/* Desktop: text */}
+          <span className="navbar-sell-text">Sell something</span>
+          {/* Mobile: + icon */}
+          <svg className="navbar-sell-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 5v14M5 12h14" />
+          </svg>
         </button>
 
       </div>
