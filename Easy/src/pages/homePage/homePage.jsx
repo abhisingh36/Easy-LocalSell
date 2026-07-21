@@ -200,7 +200,7 @@ export default function Home() {
                       />
                       {item.sold && (
                         <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-extrabold text-lg uppercase tracking-wider z-[5]">
-                          Sold
+                          SOLD
                         </div>
                       )}
                       <button
