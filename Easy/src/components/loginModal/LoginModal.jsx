@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useApp } from "../../context/AppContext";
 import {
   loginUser,
@@ -383,7 +383,7 @@ export default function LoginModal() {
 
                 {/* Step 1: Details */}
                 {signupStep === 1 && (
-                  <form onSubmit={handleSendOtp} className="flex flex-col gap-3" noValidate>
+                  <form onSubmit={handleSendOtp} className="flex flex-col gap-2 md:gap-3" noValidate>
                     <div className="field-row-2">
                       <ModalField id="m-name" label="Full name" type="text" placeholder="Your full name"
                         value={name} onChange={e => { setName(e.target.value); clearErr("name"); }}
@@ -403,7 +403,7 @@ export default function LoginModal() {
 
                 {/* Step 2: Email OTP */}
                 {signupStep === 2 && (
-                  <form onSubmit={handleVerifyOtp} className="flex flex-col gap-3" noValidate>
+                  <form onSubmit={handleVerifyOtp} className="flex flex-col gap-2 md:gap-3" noValidate>
                     <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-800 leading-relaxed">
                       ðŸ“§ A 6-digit code was sent to <strong>{email}</strong>.<br />
                       Check your inbox — and spam folder if you don't see it.
@@ -451,7 +451,7 @@ export default function LoginModal() {
 
                 {/* Step 3: Location + Password */}
                 {signupStep === 3 && (
-                  <form onSubmit={handleFinalSignup} className="flex flex-col gap-3" noValidate>
+                  <form onSubmit={handleFinalSignup} className="flex flex-col gap-2 md:gap-3" noValidate>
                     <div className="p-2.5 bg-green-50 border border-green-200 rounded-xl text-xs text-green-700 font-semibold flex items-center gap-2">
                       <span>✅</span> Email verified! Set your location and password below.
                     </div>
@@ -485,9 +485,9 @@ export default function LoginModal() {
               </div>
             )}
 
-            {/* â•â•â•â•â•â•â•â•â•â•â•â• FORGOT PASSWORD â•â•â•â•â•â•â•â•â•â•â•â• */}
+            {/* ════════════ FORGOT PASSWORD ════════════ */}
             {mode === "forgot" && (
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2 md:gap-3">
                 {/* Progress bar */}
                 <div className="flex gap-1.5 mb-1">
                   {[1, 2, 3].map(s => (
@@ -497,7 +497,7 @@ export default function LoginModal() {
 
                 {/* Step 1: Enter email */}
                 {forgotStep === 1 && (
-                  <form onSubmit={handleForgotSend} className="flex flex-col gap-3" noValidate>
+                  <form onSubmit={handleForgotSend} className="flex flex-col gap-2 md:gap-3" noValidate>
                     <ModalField id="m-forgot-email" label="Your registered email" type="email"
                       placeholder="your@email.com"
                       value={forgotEmail} onChange={e => { setForgotEmail(e.target.value); clearErr("forgotEmail"); }}
@@ -514,7 +514,7 @@ export default function LoginModal() {
 
                 {/* Step 2: Enter OTP */}
                 {forgotStep === 2 && (
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-2 md:gap-3">
                     <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-800 leading-relaxed">
                       ðŸ“§ Reset code sent to <strong>{forgotEmail}</strong>.<br />
                       Check your inbox — and spam folder if you don't see it.
@@ -564,7 +564,7 @@ export default function LoginModal() {
 
                 {/* Step 3: New password */}
                 {forgotStep === 3 && (
-                  <form onSubmit={handleResetPassword} className="flex flex-col gap-3" noValidate>
+                  <form onSubmit={handleResetPassword} className="flex flex-col gap-2 md:gap-3" noValidate>
                     <PasswordField id="m-new-pass" label="New password" placeholder="Min. 6 characters"
                       value={newPassword} onChange={e => { setNewPassword(e.target.value); clearErr("newPassword"); }}
                       error={errors.newPassword} showPass={showNewPass} onToggle={() => setShowNewPass(v => !v)} />
@@ -584,7 +584,7 @@ export default function LoginModal() {
             {/* Google / OR — only on step 1 of login/signup */}
             {!isForgot && (!isSignup || signupStep === 1) && (
               <>
-                <div className="flex items-center gap-3 my-5">
+                <div className="flex items-center gap-3 my-3 md:my-5">
                   <div className="h-px bg-gray-200 flex-1" />
                   <span className="text-xs text-gray-400 uppercase tracking-widest font-semibold">or</span>
                   <div className="h-px bg-gray-200 flex-1" />

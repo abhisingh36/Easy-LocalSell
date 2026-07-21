@@ -144,10 +144,10 @@ export default function Home() {
           </div>
         </div>
 
-        <main className="flex-1 px-3 md:px-6 py-5 min-w-0" style={{ overflowY: "auto", height: "100%" }}>
+        <main className="flex-1 px-3 md:px-6 pt-2 pb-5 md:py-5 min-w-0" style={{ overflowY: "auto", height: "100%" }}>
 
           {/* Tabs */}
-          <div className="flex items-center border-b border-gray-200 mb-4">
+          <div className="flex items-center border-b border-gray-200 mb-2 md:mb-4">
             {["nearby", "newest"].map(tab => (
               <button
                 key={tab}

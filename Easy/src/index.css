@@ -1732,6 +1732,12 @@ html.dark .emoji-btn:hover {
   padding: 16px 24px 24px;
 }
 
+@media(max-width: 768px) {
+  .modal-body {
+    padding: 16px 16px 16px;
+  }
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -2966,7 +2972,21 @@ html.dark .pwd-error-box {
   border-color: rgba(239, 68, 68, 0.4);
 }
 
+.leaflet-map-container {
+  height: 280px;
+}
+
+.loc-modal-map {
+  height: 360px;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
 @media(max-width: 768px) {
+
+  .loc-modal-map {
+    height: 220px !important;
+  }
 
   /* ── Navbar Mobile ── */
   .navbar {
@@ -3106,6 +3126,10 @@ html.dark .pwd-error-box {
 }
 
 @media(max-width: 480px) {
+  .leaflet-map-container {
+    height: auto !important;
+    aspect-ratio: 4 / 3 !important;
+  }
   .listing-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 12px;
@@ -3212,9 +3236,9 @@ html.dark .pwd-error-box {
     margin: 0 6px;
   }
 
-  /* Map Square & Size Tweaks */
+  /* Map Size Tweaks */
   .map-section-wrapper > .card {
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 4 / 3;
     width: 85%;
     margin: 0 auto;
     border-radius: 20px; 

@@ -1,4 +1,4 @@
-﻿import { useEffect } from "react";
+import { useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -32,7 +32,7 @@ function FitToRadius({ center, radiusM }) {
     const lat_rad   = center[0] * Math.PI / 180;
     const R         = 6378137; // Earth radius in metres
     const mapHeight = map.getSize().y;           // actual pixel height
-    const targetPx  = (mapHeight / 2) - 4;       // circle radius in px (4px edge gap)
+    const targetPx  = (mapHeight / 2) - 20;      // circle radius in px (20px edge gap)
     // Web Mercator: metersPerPixel = (2Ï€·R·cos(lat)) / (256 · 2^zoom)
     const zoom = Math.log2(
       (2 * Math.PI * R * Math.cos(lat_rad)) / (256 * (radiusM / targetPx))
@@ -55,7 +55,8 @@ const Map = () => {
         zoomSnap={0}
         zoomDelta={0.5}
         scrollWheelZoom={false}
-        style={{ height: "280px", width: "100%" }}
+        className="leaflet-map-container"
+        style={{ width: "100%" }}
         attributionControl={false}
         zoomControl={false}
       >

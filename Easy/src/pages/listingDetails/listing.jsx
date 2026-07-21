@@ -211,12 +211,12 @@ export default function Listing() {
       <div className="max-w-[1440px] mx-auto px-4 py-5">
 
         {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-sm text-gray-500 mb-4">
-          <span onClick={() => navigate("/home")} className="cursor-pointer text-blue-600 font-medium">Browse</span>
+        <div className="flex items-center flex-wrap gap-1.5 text-sm text-gray-500 mb-4 font-medium">
+          <span onClick={() => navigate("/home")} className="cursor-pointer text-gray-500 hover:text-blue-600">Browse</span>
           <span className="text-gray-300">›</span>
-          <span onClick={() => navigate("/home")} className="cursor-pointer">{p.category}</span>
+          <span onClick={() => navigate("/home")} className="cursor-pointer text-gray-500 hover:text-blue-600">{p.category}</span>
           <span className="text-gray-300">›</span>
-          <span className="text-gray-900 font-semibold">{p.title.split("—")[0].trim()}</span>
+          <span className="text-gray-500">{p.title.split("—")[0].trim()}</span>
         </div>
 
         {/* Main two-column layout */}

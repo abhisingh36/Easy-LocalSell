@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -283,7 +283,7 @@ export default function LocationModal() {
               center={userLocation.coords || DEFAULT_POS}
               zoom={14}
               scrollWheelZoom={true}
-              style={{ height: 360, width: "100%", borderRadius: "8px", overflow: "hidden" }}
+              className="loc-modal-map"
               attributionControl={false}
             >
               <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />

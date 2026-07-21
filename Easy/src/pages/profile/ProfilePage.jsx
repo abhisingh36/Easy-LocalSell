@@ -148,6 +148,7 @@ export default function ProfilePage() {
 
   const [activeTab,       setActiveTab]       = useState("listings");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [reviews,         setReviews]         = useState([]);
   const [reviewsLoading,  setReviewsLoading]  = useState(false);
   const [reviewsFetched,  setReviewsFetched]  = useState(false); // true after first fetch
@@ -221,6 +222,7 @@ export default function ProfilePage() {
 
   // ── Handlers ─────────────────────────────────────────────────
   const handleLogout = () => {
+    setShowLogoutConfirm(false);
     logout();
     showToast("Logged out successfully", "info");
     navigate("/home");
@@ -320,7 +322,7 @@ export default function ProfilePage() {
                   </svg>
                   Edit Profile
                 </button>
-                <button className="btn btn-danger btn-sm rounded-lg" onClick={handleLogout}>
+                <button className="btn btn-danger btn-sm rounded-lg" onClick={() => setShowLogoutConfirm(true)}>
                   <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                   </svg>
@@ -604,6 +606,36 @@ export default function ProfilePage() {
           onClose={() => setShowReviewModal(false)}
           onSubmit={handleSubmitReview}
         />
+      )}
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <>
+          <div className="modal-overlay" onClick={() => setShowLogoutConfirm(false)} />
+          <div className="modal-wrap">
+            <div className="modal-card" style={{ maxWidth: "400px" }}>
+              <div className="modal-body p-6 text-center">
+                <div className="w-14 h-14 bg-red-50 dark:bg-red-950/20 rounded-full flex items-center justify-center text-red-500 dark:text-red-400 mx-auto mb-4 border border-red-100 dark:border-red-900/40">
+                  <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">Log out</h3>
+                <p className="text-sm text-gray-500 mb-6 leading-relaxed">
+                  Are you sure you want to log out of your account? You will need to sign in again to manage your listings.
+                </p>
+                <div className="flex gap-3">
+                  <button className="btn btn-secondary flex-1 rounded-xl justify-center font-bold" onClick={() => setShowLogoutConfirm(false)}>
+                    Cancel
+                  </button>
+                  <button className="btn btn-danger flex-1 rounded-xl justify-center font-bold" onClick={handleLogout}>
+                    Yes, Log out
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

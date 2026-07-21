@@ -35,7 +35,10 @@ export default function Navbar() {
       <div className="navbar-inner">
 
         {/* Logo */}
-        <Link to="/home" className="navbar-logo">EASY</Link>
+        <Link to="/home" className="navbar-logo">
+          <span className="hidden md:inline">EASY</span>
+          <span className="md:hidden">ES</span>
+        </Link>
 
         {/* Search */}
         <div className="navbar-search-wrap">
