@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/navbar/navbar";
 import { useApp } from "../../context/AppContext";
 
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
+
 export default function ReelsPage() {
   const navigate = useNavigate();
   const { listings, currentUser, isLoggedIn, triggerLoginModal, showToast } = useApp();
@@ -33,7 +35,7 @@ export default function ReelsPage() {
   // Fetch reels from backend
   const fetchReels = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/reels");
+      const res = await fetch(`${API_BASE}/reels`);
       const data = await res.json();
       setReels(data);
       setIsLoading(false);
@@ -64,7 +66,7 @@ export default function ReelsPage() {
   const handleDeleteReel = async () => {
     if (!reelToDelete) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/reels/${reelToDelete}`, {
+      const res = await fetch(`${API_BASE}/reels/${reelToDelete}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${currentUser.token}` }
       });
@@ -102,7 +104,7 @@ export default function ReelsPage() {
     );
 
     try {
-      const res = await fetch(`http://localhost:5000/api/reels/${reelId}/like`, {
+      const res = await fetch(`${API_BASE}/reels/${reelId}/like`, {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${currentUser.token}`
@@ -154,7 +156,7 @@ export default function ReelsPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/reels", {
+      const res = await fetch(`${API_BASE}/reels`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${currentUser.token}`
