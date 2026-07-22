@@ -128,9 +128,8 @@ export default function Home() {
           />
         )}
         
-        {/* Sidebar */}
         <div 
-          className={`lg:block ${showFilters ? "fixed left-0 top-0 bottom-0 w-[280px] pt-[110px] flex flex-col shadow-2xl bg-white lg:relative lg:w-auto lg:pt-0 lg:h-auto lg:shadow-none lg:flex-none" : "hidden"}`}
+          className={`lg:block ${showFilters ? "fixed left-0 top-0 bottom-0 w-[280px] pt-[60px] flex flex-col shadow-2xl bg-white lg:relative lg:w-auto lg:pt-0 lg:h-auto lg:shadow-none lg:flex-none" : "hidden"}`}
           style={{ zIndex: 45 }}
         >
           <div className="flex-1 overflow-y-auto">

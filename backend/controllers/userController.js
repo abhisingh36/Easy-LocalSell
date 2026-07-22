@@ -90,6 +90,7 @@ exports.getUserById = async (req, res) => {
       email:     user.email,
       phone:     user.phone || '',
       location:  user.location || '',
+      profileImage: user.profileImage || '',
       createdAt: user.createdAt,
       stats: {
         sold:         soldCount,
@@ -155,7 +156,7 @@ exports.updateUserProfile = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    if (name) user.name = name;
+    if (name && typeof name === 'string' && name.trim()) user.name = name.trim();
     // Phone cannot be updated directly as it's a primary identifier
     if (location !== undefined) user.location = location;
     if (profileImage !== undefined) user.profileImage = profileImage;

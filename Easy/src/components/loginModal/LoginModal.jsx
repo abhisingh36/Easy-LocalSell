@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useApp } from "../../context/AppContext";
 import {
   loginUser,
+  googleLoginAPI,
   signupUser,
   sendOtpAPI,
   verifyOtpAPI,
@@ -213,6 +214,10 @@ export default function LoginModal() {
       setLoading(false);
     }
   }
+
+  const handleGoogleSubmit = () => {
+    // Google login disabled as requested - button click does nothing
+  };
 
   // ─────────────────────────────────────────────────────────────────
   // Forgot Password Handlers
@@ -591,7 +596,7 @@ export default function LoginModal() {
                 </div>
                 <button type="button"
                   className="btn btn-secondary btn-w-full justify-center py-2.5 text-sm"
-                  onClick={() => { setLoading(true); setTimeout(() => { setLoading(false); login(); setShowLoginModal(false); }, 600); }}
+                  onClick={() => handleGoogleSubmit()}
                   disabled={loading}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" className="mr-2 shrink-0">
                     <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>

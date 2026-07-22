@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
-
-const API_BASE = import.meta.env.VITE_API_BASE || "/api";
+import { changePasswordAPI } from "../../services/api";
 
 const EyeIcon = ({ open }) =>
   open ? (
@@ -85,6 +84,7 @@ export default function EditProfileModal({ isOpen, onClose, currentUser, onSave 
     const reader = new FileReader();
     reader.onloadend = () => setProfileImage(reader.result);
     reader.readAsDataURL(file);
+    e.target.value = "";
   };
 
   const handleSaveProfile = async (e) => {
@@ -110,24 +110,12 @@ export default function EditProfileModal({ isOpen, onClose, currentUser, onSave 
     setIsChangingPwd(true);
     try {
       const userId = currentUser?._id || currentUser?.id;
-      const res = await fetch(`${API_BASE}/users/${userId}/change-password`, {
-        method: "PUT",
-        headers: { 
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${currentUser?.token}`
-        },
-        body: JSON.stringify({ currentPassword: currentPwd, newPassword: newPwd }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setPwdError(data.message || "Failed to change password");
-      } else {
-        showToast("Password changed successfully!", "success");
-        setCurrentPwd(""); setNewPwd(""); setConfirmPwd("");
-        onClose();
-      }
+      await changePasswordAPI(userId, currentPwd, newPwd);
+      showToast("Password changed successfully!", "success");
+      setCurrentPwd(""); setNewPwd(""); setConfirmPwd("");
+      onClose();
     } catch (err) {
-      setPwdError("Something went wrong. Try again.");
+      setPwdError(err.data?.message || err.message || "Something went wrong. Try again.");
     } finally {
       setIsChangingPwd(false);
     }

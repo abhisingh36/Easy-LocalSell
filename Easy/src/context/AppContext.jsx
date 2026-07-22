@@ -5,6 +5,7 @@ import {
   updateListingAPI,
   deleteListingAPI,
   fetchUserProfile,
+  updateUserProfileAPI,
   fetchConversations,
   fetchMessages,
   startConversation
@@ -483,19 +484,19 @@ export function AppProvider({ children }) {
     const userId = currentUser?._id || currentUser?.id;
     if (!userId) return false;
     try {
-      // BUG-10 FIX: Use VITE_API_BASE (same as api.js) instead of VITE_API_URL.
-      // Using a different env variable caused production profile updates to silently fail.
-      const API_BASE = import.meta.env.VITE_API_BASE || "/api";
-      const response = await fetch(`${API_BASE}/users/${userId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!response.ok) throw new Error("Update failed");
-      const updatedUser = await response.json();
+      const updatedUser = await updateUserProfileAPI(userId, payload);
 
       setCurrentUser(prev => {
-        const next = { ...prev, ...updatedUser };
+        const nextName = updatedUser.name || prev?.name;
+        const newInitials = nextName
+          ? nextName.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2)
+          : prev?.initials || "U";
+
+        const next = {
+          ...prev,
+          ...updatedUser,
+          initials: newInitials,
+        };
         localStorage.setItem("currentUser", JSON.stringify(next));
         return next;
       });
@@ -514,14 +515,21 @@ export function AppProvider({ children }) {
       const profile = await fetchUserProfile(userId);
       setCurrentUser(prev => {
         if (!prev) return prev;
+        const nextName = profile.name || prev.name;
+        const newInitials = nextName
+          ? nextName.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2)
+          : prev.initials;
+
         const updated = {
           ...prev,
-          sold:     profile.stats?.sold     ?? prev.sold,
-          active:   profile.stats?.active   ?? prev.active,
-          response: profile.stats?.response ?? prev.response,
-          phone:    profile.phone           || prev.phone || "",
-          location: profile.location        || prev.location || "",
-          profileImage: profile.profileImage || prev.profileImage || "",
+          name:         nextName,
+          initials:     newInitials,
+          sold:         profile.stats?.sold     ?? prev.sold,
+          active:       profile.stats?.active   ?? prev.active,
+          response:     profile.stats?.response ?? prev.response,
+          phone:        profile.phone           || prev.phone || "",
+          location:     profile.location        || prev.location || "",
+          profileImage: profile.profileImage !== undefined ? profile.profileImage : prev.profileImage,
           joinedYear: profile.createdAt
             ? new Date(profile.createdAt).getFullYear().toString()
             : prev.joinedYear,

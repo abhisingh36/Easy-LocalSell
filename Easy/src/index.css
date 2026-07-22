@@ -65,10 +65,10 @@
   --red-50: #fef2f2;
   --red-400: #f87171;
   --red-500: #ef4444;
-  --gray-50: #f8fafc;
-  --gray-100: #f1f5f9;
-  --gray-200: #cbd5e1;
-  --gray-300: #94a3b8;
+  --gray-50: #f4f7fb;
+  --gray-100: #eef2f6;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
   --gray-400: #94a3b8;
   --gray-500: #64748b;
   --gray-600: #475569;
@@ -76,11 +76,11 @@
   --gray-800: #1e293b;
   --gray-900: #0f172a;
   --white: #ffffff;
-  --bg: #f8fafc;
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
-  --shadow-blue: 0 4px 14px 0 rgba(37, 99, 235, 0.25);
+  --bg: linear-gradient(180deg, #f0f7ff 0%, #f8fafc 100%);
+  --shadow-sm: 0 2px 8px -2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 8px 24px -4px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 12px 32px -6px rgba(15, 23, 42, 0.08);
+  --shadow-blue: 0 8px 24px -4px rgba(37, 99, 235, 0.15);
 }
 
 html.dark {
@@ -132,7 +132,6 @@ html {
 }
 
 body {
-  padding-top: 8px;
   background-color: var(--bg);
   color: var(--gray-900);
   font-family: 'Inter', -apple-system, sans-serif;
@@ -477,7 +476,7 @@ html.dark .card {
 }
 
 html.dark .divider {
-  background: var(--gray-300);
+  background: var(--gray-200);
 }
 
 /* ─── Skeleton ───────────────────────────────────── */
@@ -493,19 +492,20 @@ html.dark .divider {
   animation: fadeIn .2s ease;
 }
 
-/* ─── Navbar ─────────────────────────────────────── */
 .navbar {
   position: sticky;
   top: 0;
   z-index: 300;
-  background: var(--bg);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--gray-200);
   height: 58px;
 }
 
 html.dark .navbar {
-  background: var(--gray-100);
-  border-bottom-color: var(--gray-300);
+  background: linear-gradient(135deg, #000000 40%, var(--blue-700) 100%);
+  border-bottom-color: var(--gray-200);
 }
 
 .navbar-inner {
@@ -607,14 +607,14 @@ html.dark .navbar-search:focus {
 }
 
 html.dark .navbar-icon-btn {
-  border-color: var(--gray-300);
-  color: var(--gray-500);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 html.dark .navbar-icon-btn:hover {
-  border-color: var(--blue-500);
-  background: var(--blue-100);
-  color: var(--blue-500);
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 /* Location button: icon + text on desktop */
@@ -643,14 +643,15 @@ html.dark .navbar-icon-btn:hover {
 }
 
 html.dark .navbar-loc-btn {
-  border-color: var(--gray-300);
-  color: var(--gray-500);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.85);
   background: transparent;
 }
 
 html.dark .navbar-loc-btn:hover {
-  border-color: var(--blue-500);
-  color: var(--blue-400);
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .navbar-loc-icon {
@@ -909,7 +910,7 @@ html.dark .dropdown-item-danger:hover {
 
 html.dark .sidebar {
   background: var(--gray-100);
-  border-right-color: var(--gray-300);
+  border-right-color: var(--gray-200);
 }
 
 .sidebar-cat-btn {
@@ -1011,16 +1012,16 @@ html.dark .sidebar {
 /* ─── Listing card ───────────────────────────────── */
 .listing-card {
   background: var(--white);
-  border: 1.5px solid var(--gray-200);
-  border-radius: 12px;
+  border: 1px solid var(--gray-200);
+  border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
-  transition: border-color .15s, box-shadow .15s;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .listing-card:hover {
-  border-color: var(--blue-200);
-  box-shadow: var(--shadow-md);
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px);
 }
 
 html.dark .listing-card {
@@ -1200,21 +1201,17 @@ html.dark .listing-nav-btn:hover {
 }
 
 /* ─── Profile ────────────────────────────────────── */
-.profile-cover-banner {
-  height: 180px;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0284c7 100%);
-  width: 100%;
-}
-
-html.dark .profile-cover-banner {
-  background: linear-gradient(135deg, #020617 0%, #0f172a 60%, #1e1b4b 100%);
-}
-
 .profile-card-header {
-  margin-top: -60px;
+  margin-top: 24px;
   position: relative;
   z-index: 10;
-  background: var(--white);
+  background: linear-gradient(135deg, var(--white) 20%, var(--blue-50) 70%, var(--blue-200) 100%);
+  border: 1px solid var(--gray-200);
+}
+
+html.dark .profile-card-header {
+  background: linear-gradient(135deg, #000000 40%, var(--blue-700) 100%);
+  border: 1px solid var(--gray-200);
 }
 
 .profile-avatar-premium {
@@ -2989,18 +2986,9 @@ html.dark .pwd-error-box {
   }
 
   /* ── Navbar Mobile ── */
-  .navbar {
-    height: auto;
-    min-height: 58px;
-    padding-top: 6px;
-    padding-bottom: 6px;
-  }
-
   .navbar-inner {
     padding: 0 8px;
     gap: 4px;
-    flex-wrap: wrap;
-    height: auto;
   }
 
   .navbar-logo {
@@ -3048,27 +3036,15 @@ html.dark .pwd-error-box {
   }
 
   .navbar-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    font-size: 11px;
+    display: none !important;
   }
 
   .navbar-login-btn {
-    height: 32px;
-    padding: 0 10px;
-    font-size: 12px;
+    display: none !important;
   }
 
   .navbar-sell-btn {
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
-    padding: 0;
-    border-radius: 6px;
-    flex-shrink: 0;
-    order: 5;
-    box-shadow: none;
+    display: none !important;
   }
 
   .navbar-sell-text {
@@ -3076,9 +3052,7 @@ html.dark .pwd-error-box {
   }
 
   .navbar-sell-icon {
-    display: block;
-    width: 14px;
-    height: 14px;
+    display: none;
   }
 
   /* Let spacer use remaining space to push buttons to the right */
@@ -3139,10 +3113,9 @@ html.dark .pwd-error-box {
   .listing-card {
     display: flex;
     flex-direction: column;
-    border: none;
+    border: 1px solid var(--gray-200);
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
     background: var(--white);
     transition: transform 0.18s ease, box-shadow 0.18s ease;
   }
@@ -3292,4 +3265,290 @@ html.dark .pwd-error-box {
   .listing-card .text-xs {
     font-size: 8px !important;
   }
+}
+
+/* ─────────────────────────────────────────────────────────
+   Mobile & Tablet Bottom Navigation Bar
+   ───────────────────────────────────────────────────────── */
+.mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(229, 231, 235, 0.8);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+  padding-bottom: max(6px, env(safe-area-inset-bottom));
+  display: block;
+}
+
+html.dark .mobile-bottom-nav {
+  background: linear-gradient(135deg, var(--blue-700) 0%, #000000 60%);
+  border-top-color: rgba(30, 41, 59, 0.8);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+}
+
+/* Hide on Desktop (1025px and wider) */
+@media (min-width: 1025px) {
+  .mobile-bottom-nav {
+    display: none !important;
+  }
+}
+
+/* Page bottom padding on mobile & tablet so content isn't covered by bottom nav */
+@media (max-width: 1024px) {
+  body {
+    padding-bottom: 68px !important;
+  }
+}
+
+.mobile-bottom-nav-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 60px;
+  padding: 0 8px;
+}
+
+.mobile-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  flex: 1;
+  height: 100%;
+  color: #64748b;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+html.dark .mobile-nav-item {
+  color: #94a3b8;
+}
+
+.mobile-nav-item:hover,
+.mobile-nav-item.active {
+  color: #2563eb;
+}
+
+html.dark .mobile-nav-item:hover,
+html.dark .mobile-nav-item.active {
+  color: #60a5fa;
+}
+
+.mobile-nav-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  line-height: 1;
+}
+
+/* Center Sell (+) Button */
+.mobile-nav-sell-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex: 1;
+  height: 100%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  top: -12px;
+}
+
+.mobile-sell-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.38);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+}
+
+html.dark .mobile-sell-icon-wrap {
+  border-color: rgba(15, 23, 42, 0.9);
+  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.5);
+}
+
+.mobile-nav-sell-btn:active .mobile-sell-icon-wrap {
+  transform: scale(0.92);
+}
+
+/* ─── Support Page ───────────────────────────────── */
+.support-hero {
+  padding: 2rem 2.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.support-hero-icon {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 1rem;
+  background: var(--blue-100);
+  color: var(--blue-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.875rem;
+  margin: 0 auto 1rem;
+  border: 1px solid var(--blue-200);
+}
+
+.support-hero-title {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  margin-bottom: 0.75rem;
+  color: var(--gray-900);
+}
+
+.support-hero-subtitle {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  font-weight: 500;
+  line-height: 1.625;
+  max-width: 20rem;
+  margin: 0 auto;
+}
+
+.support-chat-container {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 1.5rem;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 520px;
+}
+
+.support-chat-header {
+  padding: 1rem;
+  background: var(--white);
+  border-bottom: 1px solid var(--gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 10;
+}
+
+.support-chat-avatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 9999px;
+  background: var(--blue-50);
+  color: var(--blue-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  border: 1px solid var(--blue-100);
+}
+
+.support-chat-status-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 9999px;
+  background: var(--green-500);
+  border: 2px solid var(--white);
+}
+
+.support-call-btn {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gray-50);
+  color: var(--gray-600);
+  border-radius: 9999px;
+  transition: background-color 0.15s;
+}
+
+.support-call-btn:hover {
+  background: var(--gray-100);
+}
+
+.support-chat-body {
+  background: var(--gray-50);
+}
+
+.support-chat-bubble {
+  border: 1px solid transparent;
+}
+
+.support-chat-bubble.user {
+  background: var(--blue-600);
+  color: #ffffff;
+  border-bottom-right-radius: 0.125rem;
+}
+
+.support-chat-bubble.bot {
+  background: var(--white);
+  color: var(--gray-700);
+  border-color: var(--gray-100);
+  border-bottom-left-radius: 0.125rem;
+}
+
+.support-typing-indicator {
+  background: var(--white);
+  color: var(--gray-400);
+  border: 1px solid var(--gray-100);
+}
+
+.support-chat-input-area {
+  background: var(--white);
+  border-top: 1px solid var(--gray-100);
+}
+
+.support-faq-answer {
+  color: var(--gray-600);
+  border-top: 1px solid var(--gray-100);
+}
+
+.support-ticket-container {
+  background: var(--white);
+  border: 1px solid var(--gray-200);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  box-shadow: var(--shadow-md);
+}
+
+.support-ticket-success-title {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--gray-900);
+  margin-bottom: 0.25rem;
+}
+
+.support-ticket-success-desc {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  max-width: 24rem;
+  margin: 0 auto 1.5rem;
+  line-height: 1.625;
 }

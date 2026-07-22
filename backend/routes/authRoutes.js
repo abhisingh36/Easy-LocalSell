@@ -8,6 +8,7 @@ const {
   verifyOtp,
   forgotPassword,
   resetPassword,
+  googleAuth,
 } = require('../controllers/authController');
 
 // Signup flow (3 steps)
@@ -17,6 +18,7 @@ router.post('/signup',      signup);       // Step 3: Create account
 
 // Login
 router.post('/login', login);
+router.post('/google', googleAuth);
 
 // Password recovery
 router.post('/forgot-password', forgotPassword);  // Send reset OTP

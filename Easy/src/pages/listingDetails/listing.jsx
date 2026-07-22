@@ -541,10 +541,10 @@ export default function Listing() {
           
           {/* Modal */}
           <div className="modal-wrap">
-            <div className="modal-card shadow-lg" style={{ maxWidth: "520px", maxHeight: "none", overflow: "visible" }}>
-              <div className="modal-body p-6">
+            <div className="modal-card shadow-lg" style={{ maxWidth: "520px" }}>
+              <div className="modal-body p-4 sm:p-6">
                 {/* Header */}
-                <div className="flex justify-between items-start mb-5">
+                <div className="flex justify-between items-start mb-3 sm:mb-5">
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 bg-blue-100 dark:bg-blue-950 rounded-full flex items-center justify-center text-xl font-bold text-blue-600 dark:text-blue-400 shrink-0 border-2 border-blue-200 dark:border-blue-900">
                       {p.sellerInitials}
@@ -575,10 +575,10 @@ export default function Listing() {
                   <button className="modal-close w-8 h-8 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full flex items-center justify-center transition-colors" onClick={() => setShowSellerModal(false)}>✕</button>
                 </div>
                 
-                <div className="divider my-4"></div>
+                <div className="divider my-3 sm:my-4"></div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-3 gap-3 text-center bg-gray-50 dark:bg-gray-200/50 border border-gray-200 dark:border-gray-300 rounded-xl p-4 mb-5">
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 text-center bg-gray-50 dark:bg-gray-200/50 border border-gray-200 dark:border-gray-300 rounded-xl p-3 sm:p-4 mb-3 sm:mb-5">
                   <div>
                     <p className="text-xl font-extrabold text-gray-900">
                       {sellerStatsLoading ? "…" : (sellerStats?.sold ?? "—")}
@@ -600,7 +600,7 @@ export default function Listing() {
                 </div>
 
                 {/* Verified Badges */}
-                <div className="mb-5">
+                <div className="mb-3 sm:mb-5">
                   <p className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2.5 text-left">Trust & Verification</p>
                   <div className="flex flex-wrap gap-2">
                     {["Phone Verified", "Email Verified", "ID Verified"].map(badge => (
@@ -615,7 +615,7 @@ export default function Listing() {
                 </div>
 
                 {/* Response speed & Active Status */}
-                <div className="grid grid-cols-2 gap-4 mb-5 text-left">
+                <div className="grid grid-cols-2 gap-2 sm:gap-4 mb-3 sm:mb-5 text-left">
                   <div className="p-3.5 bg-gray-50 dark:bg-gray-200/50 rounded-xl border border-gray-200 dark:border-gray-300">
                     <p className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">Response Speed</p>
                     <p className="text-sm font-bold text-gray-800">Replies within 1 hr</p>
@@ -627,8 +627,8 @@ export default function Listing() {
                 </div>
 
                 {/* Other listings from this seller */}
-                <div className="text-left mb-6">
-                  <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-3">Other listings from {p.seller}</p>
+                <div className="text-left mb-4 sm:mb-6">
+                  <p className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2 sm:mb-3">Other listings from {p.seller}</p>
                   {sellerListings.length === 0 ? (
                     <p className="text-sm text-gray-500 dark:text-gray-400 italic">No other listings from this seller.</p>
                   ) : (
@@ -656,14 +656,14 @@ export default function Listing() {
                 </div>
                 
                 {/* Actions */}
-                <div className="flex flex-col gap-2.5">
-                  <a href={`tel:${p.phone}`} className="btn btn-primary btn-w-full rounded-xl justify-center items-center text-sm font-bold py-3 text-white no-underline transition-all">
+                <div className="flex flex-col gap-2 sm:gap-2.5">
+                  <a href={`tel:${p.phone}`} className="btn btn-primary btn-w-full rounded-xl justify-center items-center text-sm font-bold py-2.5 sm:py-3 text-white no-underline transition-all">
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
                     Call {p.seller} ({p.phone})
                   </a>
-                  <button className="btn btn-secondary btn-w-full rounded-xl justify-center text-sm font-bold py-3 transition-all" onClick={() => { setShowSellerModal(false); handleMessageSeller(); }}>
+                  <button className="btn btn-secondary btn-w-full rounded-xl justify-center text-sm font-bold py-2.5 sm:py-3 transition-all" onClick={() => { setShowSellerModal(false); handleMessageSeller(); }}>
                     Message seller
                   </button>
                 </div>

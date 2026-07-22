@@ -269,10 +269,7 @@ export default function ProfilePage() {
     <div className="page-enter min-h-screen pb-12" style={{ background: "var(--bg)" }}>
       <Navbar />
 
-      {/* Cover Banner */}
-      <div className="profile-cover-banner" />
-
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-4">
 
         {/* Profile Card Header */}
         <div className="profile-card-header card p-6 sm:p-8 mb-8">

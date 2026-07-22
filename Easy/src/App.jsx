@@ -1,13 +1,16 @@
-﻿import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import Toast from './components/toast/Toast';
 import LoginModal from './components/loginModal/LoginModal';
 import LocationModal from './components/locationModal/LocationModal';
+import MobileBottomNav from './components/mobileBottomNav/MobileBottomNav';
 import Home from './pages/homePage/homePage';
 import Listing from './pages/listingDetails/listing';
 import PostItem from './pages/postItem/postitem';
 import Messages from './pages/messages/Messages';
 import Profile from './pages/profile/ProfilePage';
+import ReelsPage from './pages/reels/ReelsPage';
+import SupportPage from './pages/support/SupportPage';
 
 function App() {
   return (
@@ -20,9 +23,12 @@ function App() {
           <Route path="/post"     element={<PostItem />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/profile"  element={<Profile />} />
+          <Route path="/reels"    element={<ReelsPage />} />
+          <Route path="/support"  element={<SupportPage />} />
         </Routes>
 
-        {/* Global modals & toasts */}
+        {/* Global modals, mobile navbar & toasts */}
+        <MobileBottomNav />
         <LoginModal />
         <LocationModal />
         <Toast />

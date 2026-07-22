@@ -8,6 +8,7 @@ const userRoutes    = require('./routes/userRoutes');
 const seedRoute     = require('./routes/seedRoute');
 const messageRoutes = require('./routes/messageRoutes');
 const reviewRoutes  = require('./routes/reviewRoutes');
+const reelRoutes    = require('./routes/reelRoutes');
 const http = require('http');
 const { Server } = require('socket.io');
 const Message = require('./models/Message');
@@ -127,6 +128,7 @@ app.use('/api/users',    userRoutes);
 app.use('/api/reviews',  reviewRoutes);
 app.use('/api/seed',     seedRoute);
 app.use('/api/messages', messageRoutes);
+app.use('/api/reels',    reelRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

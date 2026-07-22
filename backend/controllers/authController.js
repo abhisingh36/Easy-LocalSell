@@ -280,3 +280,71 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ message: 'Password reset failed. Please try again.' });
   }
 };
+
+// ─────────────────────────────────────────────────────────────────
+// @desc    Google OAuth Login / Signup
+// @route   POST /api/auth/google
+// @access  Public
+// ─────────────────────────────────────────────────────────────────
+exports.googleAuth = async (req, res) => {
+  try {
+    const { name, email, profileImage, credential } = req.body;
+    let userEmail = normalizeEmail(email);
+    let userName = name?.trim();
+    let userImage = profileImage || "";
+
+    // If credential JWT token is passed from Google Identity Services:
+    if (credential) {
+      try {
+        const parts = credential.split('.');
+        if (parts.length === 3) {
+          const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf-8'));
+          if (payload.email) userEmail = normalizeEmail(payload.email);
+          if (payload.name) userName = payload.name;
+          if (payload.picture) userImage = payload.picture;
+        }
+      } catch (e) {
+        console.warn('Failed to parse Google credential JWT:', e.message);
+      }
+    }
+
+    if (!userEmail) {
+      return res.status(400).json({ message: 'Google account email is required' });
+    }
+
+    let user = await User.findOne({ email: userEmail });
+
+    if (!user) {
+      // Create a new user for Google login
+      const dummyPassword = Math.random().toString(36).slice(-10) + Math.random().toString(36).slice(-10);
+      user = await User.create({
+        name: userName || userEmail.split('@')[0],
+        email: userEmail,
+        password: dummyPassword,
+        location: 'Hazratganj, Lucknow',
+        profileImage: userImage,
+      });
+    } else {
+      // Update profileImage if user didn't have one and Google provided one
+      if (userImage && !user.profileImage) {
+        user.profileImage = userImage;
+        await user.save();
+      }
+    }
+
+    const token = signToken(user._id);
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone || '',
+      location: user.location || 'Hazratganj, Lucknow',
+      profileImage: user.profileImage || '',
+      token,
+    });
+  } catch (error) {
+    console.error('[googleAuth]', error);
+    res.status(500).json({ message: 'Google authentication failed. Please try again.' });
+  }
+};

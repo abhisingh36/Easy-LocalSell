@@ -152,6 +152,13 @@ export async function loginUser(identifier, password) {
   });
 }
 
+export async function googleLoginAPI(payload) {
+  return request("/auth/google", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
 export async function signupUser(name, email, phone, password, location) {
   return request("/auth/signup", {
     method: "POST",
@@ -203,6 +210,26 @@ export async function fetchUserProfile(userId) {
 export async function fetchUserListings(userId) {
   const data = await request(`/users/${userId}/listings`);
   return data.map(mapListingFromAPI);
+}
+
+/**
+ * Update user profile (name, location, profileImage).
+ */
+export async function updateUserProfileAPI(userId, payload) {
+  return request(`/users/${userId}`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * Change user password.
+ */
+export async function changePasswordAPI(userId, currentPassword, newPassword) {
+  return request(`/users/${userId}/change-password`, {
+    method: "PUT",
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
 }
 
 // ─── Messages API ───────────────────────────────────────
