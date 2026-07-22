@@ -505,7 +505,7 @@ export default function ReelsPage() {
                 <form onSubmit={handleUploadReel} className="flex flex-col gap-5">
                   
                   {/* File Upload Box */}
-                  <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 rounded-2xl p-4 text-center transition-colors hover:border-blue-400 dark:hover:border-blue-500">
+                  <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 rounded-2xl p-2 text-center transition-colors hover:border-blue-400 dark:hover:border-blue-500">
                     {videoPreview ? (
                       <div className="relative aspect-[9/16] max-h-[220px] mx-auto rounded-xl overflow-hidden bg-black shadow-sm">
                         <video src={videoPreview} className="w-full h-full object-cover" controls />
@@ -519,14 +519,14 @@ export default function ReelsPage() {
                         </button>
                       </div>
                     ) : (
-                      <label className="cursor-pointer block py-6">
-                        <div className="w-14 h-14 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-500 mx-auto flex items-center justify-center mb-3 transition-transform hover:scale-105">
-                          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <label className="cursor-pointer block py-3">
+                        <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-500 mx-auto flex items-center justify-center mb-2 transition-transform hover:scale-105">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
                           </svg>
                         </div>
                         <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">Click to select video</p>
-                        <p className="text-xs font-medium text-gray-400 mt-1.5">MP4, MOV up to 50MB</p>
+                        <p className="text-xs font-medium text-gray-400 mt-1">MP4, MOV up to 50MB</p>
                         <input type="file" accept="video/*" onChange={handleVideoSelect} className="hidden" disabled={uploading} />
                       </label>
                     )}
