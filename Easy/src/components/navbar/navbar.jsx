@@ -36,8 +36,7 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link to="/home" className="navbar-logo">
-          <span className="hidden md:inline">EASY</span>
-          <span className="md:hidden">ES</span>
+          <span>EASY</span>
         </Link>
 
         {/* Search */}
@@ -74,6 +73,22 @@ export default function Navbar() {
         </button>
 
         <div className="navbar-spacer" />
+
+        {/* Desktop Only Links: Reels & Support */}
+        <div className="hidden lg:flex items-center gap-2.5">
+          <Link to="/reels" className="navbar-loc-btn" style={{ padding: "0 14px", gap: "6px" }}>
+            <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span>Reels</span>
+          </Link>
+          <Link to="/support" className="navbar-loc-btn" style={{ padding: "0 14px", gap: "6px" }}>
+            <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 18v-6a9 9 0 0118 0v6M3 18a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3v5zm18 0a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3v5z" />
+            </svg>
+            <span>Support</span>
+          </Link>
+        </div>
 
         {/* Theme Toggle */}
         <button className="navbar-icon-btn" onClick={toggleTheme} title="Toggle Theme">
@@ -144,7 +159,10 @@ export default function Navbar() {
         {/* Avatar / Login */}
         {!isLoggedIn ? (
           <button id="login-btn" className="navbar-login-btn" onClick={() => triggerLoginModal()}>
-            Login
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span>Login</span>
           </button>
         ) : (
           <div id="avatar-btn" className="navbar-avatar" onClick={() => navigate("/profile")}>

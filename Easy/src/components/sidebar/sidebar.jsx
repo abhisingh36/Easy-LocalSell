@@ -35,7 +35,7 @@ export default function Sidebar({ mobileOpen = false }) {
     <aside className={`sidebar ${mobileOpen ? "mobile-open" : ""}`}>
       <div style={{ flex: 1 }}>
         {/* Categories */}
-        <p className="section-title px-5 mb-1.5">Categories</p>
+        <p className="section-title px-6 mb-1.5">Categories</p>
         {CATEGORIES.map(catName => {
           const active = catName === filters.category;
           const count = catName === "All listings" 
@@ -58,7 +58,7 @@ export default function Sidebar({ mobileOpen = false }) {
         <div className="divider my-3" />
 
         {/* Price */}
-        <div className="px-5">
+        <div className="px-6">
           <div className="flex justify-between items-center mb-1.5">
             <p className="section-title">Price Range</p>
             <span className="text-xs font-bold text-blue-600">₹{filters.priceMax.toLocaleString("en-IN")}</span>
@@ -76,9 +76,9 @@ export default function Sidebar({ mobileOpen = false }) {
         <div className="divider my-3" />
 
         {/* Radius */}
-        <div className="px-5">
+        <div className="px-6">
           <p className="section-title mb-2">Radius</p>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2.5">
             {RADIUS_OPTIONS.map(r => (
               <button key={r} id={`radius-${r.replace(" ","")}`}
                 className={`sidebar-radius-btn${r===filters.radius?" active":""}`}
@@ -90,7 +90,7 @@ export default function Sidebar({ mobileOpen = false }) {
         <div className="divider my-3" />
 
         {/* Condition */}
-        <div className="px-5">
+        <div className="px-6">
           <p className="section-title mb-2">Condition</p>
           <div className="grid grid-cols-2 gap-x-2">
             <div className="flex flex-col">

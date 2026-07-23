@@ -244,7 +244,7 @@ export default function ReelsPage() {
       </button>
 
       {/* Foolproof Fixed Position for Video Player */}
-      <div className="fixed top-0 bottom-[70px] sm:bottom-0 left-0 right-0 sm:left-[50%] sm:-translate-x-1/2 sm:max-w-[450px] w-full bg-black overflow-hidden z-10 touch-none">
+      <div className="fixed top-0 bottom-[calc(60px+env(safe-area-inset-bottom))] lg:bottom-0 left-0 right-0 sm:left-[50%] sm:-translate-x-1/2 sm:max-w-[450px] w-full bg-black overflow-hidden z-10 touch-none">
         {/* Loading State */}
         {isLoading && (
           <div className="flex flex-col items-center justify-center h-full">
@@ -359,7 +359,7 @@ export default function ReelsPage() {
                     )}
 
                     {/* Bottom Overlay Content */}
-                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 pb-6 z-20 flex items-end justify-between gap-3">
+                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 pb-[40px] lg:pb-6 z-20 flex items-end justify-between gap-3">
                       
                       {/* Seller & Details */}
                       <div className="flex-1 pr-2 text-white">

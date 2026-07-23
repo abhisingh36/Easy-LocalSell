@@ -129,10 +129,10 @@ export default function Home() {
         )}
         
         <div 
-          className={`lg:block ${showFilters ? "fixed left-0 top-0 bottom-0 w-[280px] pt-[60px] flex flex-col shadow-2xl bg-white lg:relative lg:w-auto lg:pt-0 lg:h-auto lg:shadow-none lg:flex-none" : "hidden"}`}
+          className={`lg:block lg:h-full ${showFilters ? "fixed left-0 top-0 bottom-0 w-[280px] pt-[60px] flex flex-col shadow-2xl bg-white lg:relative lg:w-auto lg:pt-0 lg:shadow-none lg:flex-none" : "hidden"}`}
           style={{ zIndex: 45 }}
         >
-          <div className="flex-1 overflow-y-auto">
+          <div className="h-full overflow-y-auto lg:overflow-hidden">
             <Sidebar mobileOpen={showFilters} />
           </div>
           {/* Close button inside sidebar on mobile */}
@@ -143,7 +143,7 @@ export default function Home() {
           </div>
         </div>
 
-        <main className="flex-1 px-3 md:px-6 pt-2 pb-5 md:py-5 min-w-0" style={{ overflowY: "auto", height: "100%" }}>
+        <main className="flex-1 px-3 md:px-6 pt-2 pb-[calc(80px+env(safe-area-inset-bottom))] lg:pb-5 min-w-0" style={{ overflowY: "auto", height: "100%" }}>
 
           {/* Tabs */}
           <div className="flex items-center border-b border-gray-200 mb-2 md:mb-4">

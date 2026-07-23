@@ -67,12 +67,12 @@
   --red-500: #ef4444;
   --gray-50: #f4f7fb;
   --gray-100: #eef2f6;
-  --gray-200: #e2e8f0;
-  --gray-300: #cbd5e1;
-  --gray-400: #94a3b8;
-  --gray-500: #64748b;
+  --gray-200: #cbd5e1;
+  --gray-300: #94a3b8;
+  --gray-400: #475569;
+  --gray-500: #475569;
   --gray-600: #475569;
-  --gray-700: #334155;
+  --gray-700: #475569;
   --gray-800: #1e293b;
   --gray-900: #0f172a;
   --white: #ffffff;
@@ -90,10 +90,10 @@ html.dark {
   --gray-100: #12131a;
   --gray-200: #222430;
   --gray-300: #333647;
-  --gray-400: #949bb7;
-  --gray-500: #afb5cc;
+  --gray-400: #cbd0e3;
+  --gray-500: #cbd0e3;
   --gray-600: #cbd0e3;
-  --gray-700: #d4d7e8;
+  --gray-700: #cbd0e3;
   --gray-800: #edf0f7;
   --gray-900: #f7f8fc;
   --blue-50: #0c1e32;
@@ -218,18 +218,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
   transform: scale(0.98);
 }
 
-@media (max-width: 767px) {
-  #sell-btn {
-    width: 40px !important;
-    height: 40px !important;
-    padding: 0 !important;
-  }
 
-  #sell-btn svg {
-    width: 20px !important;
-    height: 20px !important;
-  }
-}
 
 .btn-secondary {
   background: var(--white);
@@ -462,9 +451,9 @@ html.dark .card {
 
 /* ─── Section title ──────────────────────────────── */
 .section-title {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  color: var(--gray-400);
+  color: var(--gray-500);
   text-transform: uppercase;
   letter-spacing: .08em;
 }
@@ -697,6 +686,10 @@ html.dark .navbar-loc-btn:hover {
   transition: all .15s;
   font-family: inherit;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
 .navbar-login-btn:hover {
@@ -705,9 +698,15 @@ html.dark .navbar-loc-btn:hover {
 }
 
 html.dark .navbar-login-btn {
-  background: var(--gray-200);
-  color: var(--gray-900);
-  border-color: var(--gray-300);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.85);
+  background: transparent;
+}
+
+html.dark .navbar-login-btn:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 /* Sell button: text on desktop */
@@ -889,10 +888,10 @@ html.dark .dropdown-item-danger:hover {
 
 /* ─── Sidebar ────────────────────────────────────── */
 .sidebar {
-  width: 240px;
+  width: 280px;
   flex-shrink: 0;
   border-right: 1px solid var(--gray-200);
-  padding: 8px 0;
+  padding: 12px 0;
   position: relative;
   top: 0;
   background: var(--bg);
@@ -918,9 +917,9 @@ html.dark .sidebar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 7px 20px;
+  padding: 10px 24px;
   border: none;
-  font-size: 13px;
+  font-size: 14px;
   cursor: pointer;
   text-align: left;
   transition: background .12s, color .12s;
@@ -929,6 +928,7 @@ html.dark .sidebar {
   color: var(--gray-600);
   border-left: 3px solid transparent;
   font-weight: 400;
+  letter-spacing: 0.04em;
 }
 
 .sidebar-cat-btn:hover {
@@ -938,13 +938,13 @@ html.dark .sidebar {
 
 .sidebar-cat-btn.active {
   border-left-color: var(--blue-600);
-  background: var(--blue-50);
+  background: var(--blue-100);
   color: var(--blue-600);
   font-weight: 600;
 }
 
 .sidebar-radius-btn {
-  padding: 5px 10px;
+  padding: 6px 14px;
   border-radius: 9999px;
   font-size: 12px;
   font-weight: 500;
@@ -1079,7 +1079,7 @@ html.dark .related-card:hover {
 
 @media(max-width:1024px) {
   .listing-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-columns: repeat(3, 1fr) !important;
   }
 
   .sidebar {
@@ -3009,31 +3009,7 @@ html.dark .pwd-error-box {
     left: 10px;
   }
 
-  /* Location btn: compact on mobile */
-  .navbar-loc-btn {
-    height: 30px;
-    padding: 0 6px;
-    gap: 3px;
-    max-width: 88px;
-    font-size: 11px;
-    border-radius: 6px;
-    flex-shrink: 0;
-  }
 
-  .navbar-loc-name {
-    max-width: 52px;
-  }
-
-  .navbar-loc-radius {
-    display: none;
-  }
-
-  /* All icon buttons: 32x32 on mobile */
-  .navbar-icon-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-  }
 
   .navbar-avatar {
     display: none !important;
