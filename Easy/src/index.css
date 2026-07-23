@@ -144,17 +144,12 @@ html.dark body {
 }
 
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  display: none;
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--gray-300);
-  border-radius: 9999px;
-}
-
-html.dark ::-webkit-scrollbar-thumb {
-  background: var(--gray-600);
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 /* ─── Range slider ───────────────────────────────── */
@@ -1738,7 +1733,7 @@ html.dark .emoji-btn:hover {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 400;
+  z-index: 1000;
   background: rgba(0, 0, 0, 0.42);
   animation: fadeIn .15s ease;
 }
@@ -1746,7 +1741,7 @@ html.dark .emoji-btn:hover {
 .modal-wrap {
   position: fixed;
   inset: 0;
-  z-index: 500;
+  z-index: 1001;
   display: flex;
   align-items: center;
   justify-content: center;
