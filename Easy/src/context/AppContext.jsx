@@ -366,12 +366,36 @@ export function AppProvider({ children }) {
   const fetchListings = useCallback(async () => {
     try {
       const mapped = await fetchAllListings();
-      setListings(mapped);
+      
+      const userLoc = (userLocation?.name || "Hazratganj").toLowerCase();
+      const lucknowAreas = ["lucknow", "hazratganj", "gomti nagar", "aliganj", "indira nagar"];
+      
+      const updated = mapped.map(l => {
+        let d = l.distance || 1.5;
+        const lLoc = (l.location || "").toLowerCase();
+        
+        const userInLucknow = lucknowAreas.some(a => userLoc.includes(a));
+        const listingInLucknow = lucknowAreas.some(a => lLoc.includes(a));
+        
+        if (userInLucknow && listingInLucknow) {
+          // Keep database distance
+        } else if (!userLoc.includes(lLoc) && !lLoc.includes(userLoc)) {
+          // completely different city
+          d = 50 + Math.floor(Math.random() * 50);
+        } else {
+          // exact or partial match
+          d = Math.random() * 3 + 1;
+        }
+        
+        d = Math.round(d * 10) / 10;
+        return { ...l, distance: d, distLabel: `${d} km` };
+      });
+      
+      setListings(updated);
     } catch (err) {
       console.error("Error loading listings from API:", err);
-      // Keep whatever we had before; don't crash the UI
     }
-  }, []);
+  }, [userLocation]);
 
   useEffect(() => {
     fetchListings();

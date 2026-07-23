@@ -14,7 +14,7 @@ const RADIUS_OPTIONS    = ["1 km","2 km","5 km","10 km","20 km"];
 const CONDITION_OPTIONS = ["New","Like new","Good","Fair","For parts"];
 
 export default function Sidebar({ mobileOpen = false }) {
-  const { filters, setFilters, listings } = useApp();
+  const { filters, setFilters, listings, searchQuery } = useApp();
 
   function toggleCondition(c) {
     setFilters(prev => ({
@@ -31,6 +31,18 @@ export default function Sidebar({ mobileOpen = false }) {
 
   const pct = (filters.priceMax / 250000) * 100;
 
+  const radiusLimit = parseInt(filters.radius) || 5;
+  const baseListings = listings.filter(l => {
+    if (searchQuery?.trim()) {
+      const q = searchQuery.toLowerCase();
+      if (!l.title.toLowerCase().includes(q) && !l.category.toLowerCase().includes(q)) return false;
+    }
+    if (l.distance > radiusLimit) return false;
+    if (!filters.conditions.includes(l.condition)) return false;
+    if (l.price > filters.priceMax) return false;
+    return true;
+  });
+
   return (
     <aside className={`sidebar ${mobileOpen ? "mobile-open" : ""}`}>
       <div style={{ flex: 1 }}>
@@ -39,8 +51,8 @@ export default function Sidebar({ mobileOpen = false }) {
         {CATEGORIES.map(catName => {
           const active = catName === filters.category;
           const count = catName === "All listings" 
-            ? listings.length 
-            : listings.filter(l => l.category === catName).length;
+            ? baseListings.length 
+            : baseListings.filter(l => l.category === catName).length;
 
           return (
             <button

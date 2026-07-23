@@ -31,7 +31,7 @@ function SkeletonCard() {
 
 export default function Home() {
   const navigate = useNavigate();
-  const { listings, wishlist, toggleWishlist, searchQuery, setSearchQuery, filters, setFilters } = useApp();
+  const { listings, wishlist, toggleWishlist, searchQuery, setSearchQuery, filters, setFilters, userLocation } = useApp();
   const [activeTab, setActiveTab] = useState("nearby");
   const [showMap,   setShowMap]   = useState(true);
   const [loading]                 = useState(false);
@@ -194,8 +194,8 @@ export default function Home() {
             </div>
           ) : filtered.length === 0 ? (
             <div className="text-center py-16">
-              <p className="text-base font-semibold text-gray-600 mb-1.5">No listings found</p>
-              <p className="text-sm text-gray-400">Try adjusting your filters or search query</p>
+              <p className="text-base font-semibold text-gray-600 mb-1.5">No listings found in {userLocation?.name || "your location"}</p>
+              <p className="text-sm text-gray-400">Try another location or adjust your filters</p>
             </div>
           ) : (
             <div className="listing-grid">
