@@ -3009,7 +3009,15 @@ html.dark .pwd-error-box {
     left: 10px;
   }
 
+  .navbar-loc-btn {
+    height: 36px;
+    padding: 0 10px;
+  }
 
+  .navbar-icon-btn {
+    width: 36px;
+    height: 36px;
+  }
 
   .navbar-avatar {
     display: none !important;
