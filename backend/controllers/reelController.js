@@ -7,7 +7,9 @@ const User = require('../models/User');
 // @access  Public
 const getReels = async (req, res) => {
   try {
-    const reels = await Reel.find().sort({ createdAt: -1 });
+    const reels = await Reel.find()
+      .sort({ createdAt: -1 })
+      .populate('comments.user', 'name profileImage');
     res.json(reels);
   } catch (error) {
     console.error(error);
@@ -116,9 +118,43 @@ const deleteReel = async (req, res) => {
   }
 };
 
+// @desc    Add a comment to a reel
+// @route   POST /api/reels/:id/comment
+// @access  Private
+const addComment = async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text) {
+      return res.status(400).json({ message: 'Comment text is required' });
+    }
+
+    const reel = await Reel.findById(req.params.id);
+    if (!reel) {
+      return res.status(404).json({ message: 'Reel not found' });
+    }
+
+    const comment = {
+      user: req.user.id,
+      text,
+      createdAt: new Date()
+    };
+
+    reel.comments.push(comment);
+    await reel.save();
+
+    await reel.populate('comments.user', 'name profileImage');
+
+    res.status(201).json(reel);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 module.exports = {
   getReels,
   uploadReel,
   toggleLikeReel,
-  deleteReel
+  deleteReel,
+  addComment
 };

@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('../config/cloudinary');
-const { getReels, uploadReel, toggleLikeReel, deleteReel } = require('../controllers/reelController');
+const { getReels, uploadReel, toggleLikeReel, deleteReel, addComment } = require('../controllers/reelController');
 const { protect } = require('../utils/authMiddleware');
 
 // Configure Cloudinary Storage for multer
@@ -28,5 +28,8 @@ router.route('/:id')
 
 router.route('/:id/like')
   .put(protect, toggleLikeReel);
+
+router.route('/:id/comment')
+  .post(protect, addComment);
 
 module.exports = router;

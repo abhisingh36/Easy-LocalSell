@@ -18,6 +18,9 @@ export default function ReelsPage() {
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [reelToDelete, setReelToDelete] = useState(null);
+  
+  const [showCommentsModal, setShowCommentsModal] = useState(false);
+  const [commentText, setCommentText] = useState("");
 
   // Swipe logic state
   const [touchStartY, setTouchStartY] = useState(null);
@@ -114,6 +117,34 @@ export default function ReelsPage() {
     } catch (err) {
       console.error(err);
       showToast("Error liking reel", "danger");
+    }
+  };
+
+  const handleAddComment = async (e, reelId) => {
+    e.preventDefault();
+    if (!isLoggedIn) {
+      triggerLoginModal("Please log in to comment.");
+      return;
+    }
+    if (!commentText.trim()) return;
+
+    try {
+      const res = await fetch(`${API_BASE}/reels/${reelId}/comment`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${currentUser.token}`
+        },
+        body: JSON.stringify({ text: commentText.trim() })
+      });
+      if (!res.ok) throw new Error("Failed to add comment");
+      const updatedReel = await res.json();
+      
+      setReels((list) => list.map(r => r._id === reelId ? updatedReel : r));
+      setCommentText("");
+    } catch (err) {
+      console.error(err);
+      showToast("Error adding comment", "danger");
     }
   };
 
@@ -421,6 +452,25 @@ export default function ReelsPage() {
                           <span className="text-[11px] font-bold tracking-wide drop-shadow-md">{reel.likes.length}</span>
                         </button>
 
+                        {/* Comment Button */}
+                        <button
+                          onClick={() => {
+                            if (!isLoggedIn) {
+                              triggerLoginModal("Please log in to comment.");
+                              return;
+                            }
+                            setShowCommentsModal(true);
+                          }}
+                          className="flex flex-col items-center gap-1.5 group"
+                        >
+                          <div className="w-12 h-12 rounded-full bg-black/30 border border-white/10 backdrop-blur-xl text-white flex items-center justify-center hover:bg-white/20 transition-all duration-300 hover:scale-105">
+                            <svg className="w-6 h-6 drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                            </svg>
+                          </div>
+                          <span className="text-[11px] font-bold tracking-wide drop-shadow-md">{reel.comments?.length || 0}</span>
+                        </button>
+
                         {/* Share Button */}
                         <button
                           onClick={() => {
@@ -609,6 +659,63 @@ export default function ReelsPage() {
                   Yes, Delete
                 </button>
               </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Comments Modal */}
+      {showCommentsModal && reels[activeReelIndex] && (
+        <>
+          <div className="fixed inset-0 z-[1000] bg-black/50 backdrop-blur-sm transition-opacity" onClick={() => setShowCommentsModal(false)} />
+          <div className="fixed inset-x-0 bottom-0 z-[1010] flex flex-col bg-white dark:bg-gray-900 rounded-t-3xl shadow-[0_-8px_30px_rgba(0,0,0,0.12)] border-t border-gray-100 dark:border-gray-800 h-[60vh] sm:h-[70vh]">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 pb-24 scrollbar-hide">
+              <div className="flex justify-between items-center mb-6 sticky top-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md pb-4 z-10 border-b border-gray-100 dark:border-gray-800">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Comments ({reels[activeReelIndex].comments?.length || 0})</h3>
+                <button onClick={() => setShowCommentsModal(false)} className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+
+              {(!reels[activeReelIndex].comments || reels[activeReelIndex].comments.length === 0) ? (
+                <div className="text-center py-10 text-gray-500 dark:text-gray-400">
+                  <svg className="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                  <p>No comments yet. Be the first to comment!</p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-5">
+                  {reels[activeReelIndex].comments.map((comment, i) => (
+                    <div key={comment._id || i} className="flex gap-3">
+                      <div className="w-10 h-10 rounded-full bg-blue-100 border border-blue-200 flex-shrink-0 flex items-center justify-center overflow-hidden">
+                        {comment.user?.profileImage ? (
+                          <img src={comment.user.profileImage} className="w-full h-full object-cover" alt="" />
+                        ) : (
+                          <span className="text-blue-600 font-bold text-sm">{(comment.user?.name || "U").slice(0, 2).toUpperCase()}</span>
+                        )}
+                      </div>
+                      <div className="flex-1 bg-gray-50 dark:bg-gray-800 p-3 rounded-2xl rounded-tl-sm border border-gray-100 dark:border-gray-700">
+                        <p className="text-sm font-bold text-gray-900 dark:text-white mb-1">{comment.user?.name || "User"}</p>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{comment.text}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <div className="absolute bottom-0 inset-x-0 p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+              <form onSubmit={(e) => handleAddComment(e, reels[activeReelIndex]._id)} className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Add a comment..."
+                  value={commentText}
+                  onChange={(e) => setCommentText(e.target.value)}
+                  className="flex-1 bg-gray-100 dark:bg-gray-800 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white"
+                />
+                <button type="submit" disabled={!commentText.trim()} className="btn btn-primary rounded-xl px-6 py-3 font-bold disabled:opacity-50">
+                  Post
+                </button>
+              </form>
             </div>
           </div>
         </>
