@@ -411,7 +411,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center justify-start sm:justify-center gap-6 sm:gap-20 border-b border-gray-200 mb-8 pb-px overflow-x-auto scrollbar-hide px-2 sm:px-0">
+        <div className="flex items-center justify-center w-full gap-6 sm:gap-10 border-b border-gray-200 mb-8 pb-px overflow-x-auto scrollbar-hide px-2 sm:px-0">
           {[
             { id: "listings", label: `My Listings (${myListings.length})` },
             { id: "wishlist", label: `Wishlist (${myWishlist.length})` },
@@ -452,7 +452,7 @@ export default function ProfilePage() {
               style={{minHeight: 160}}
               onClick={() => navigate("/post")}>
               <div className="text-center group p-4">
-                <span className="text-5xl text-gray-400 group-hover:text-blue-600 transition-colors mb-2.5 block font-semibold">+</span>
+                <span className="text-5xl text-gray-400 group-hover:text-blue-600 transition-colors mb-2.5 block font-light">+</span>
                 <p className="text-xs font-bold text-gray-600 group-hover:text-blue-600 transition-colors">Add New Listing</p>
               </div>
             </div>

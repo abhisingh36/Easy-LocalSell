@@ -192,15 +192,13 @@ export default function Messages() {
   const totalUnread = conversations.reduce((s, c) => s + c.unread, 0);
 
   return (
-    <div className="page-enter flex flex-col h-screen overflow-hidden" style={{ background: "var(--bg)" }}>
+    <div className="page-enter fixed inset-0 flex flex-col overflow-hidden" style={{ background: "var(--bg)", zIndex: 10 }}>
       <Navbar />
-
       {/* Chat layout: full remaining height */}
-      <div className="flex flex-1 overflow-hidden" style={{ height: "calc(100vh - 58px)" }}>
+      <div className="flex flex-1 overflow-hidden pb-[calc(65px+env(safe-area-inset-bottom))] md:pb-0">
 
         {/* ── Left: Conversation list ── */}
         <div className={`conv-sidebar ${activeConv ? 'hidden-mobile' : ''}`}>
-
           {/* Header */}
           <div className="conv-header">
             <div className="flex items-center justify-between mb-3">
@@ -228,7 +226,11 @@ export default function Messages() {
               <div className="p-10 text-center text-gray-400">
                 <p className="text-sm">No conversations found</p>
               </div>
-            ) : filtered.map(c => (
+            ) : filtered.map(c => {
+              const itemListing = listings.find(l => l.id === c.listingId);
+              const isUserSeller = itemListing && currentUser && (itemListing.sellerId === currentUser._id || itemListing.sellerId === currentUser.id);
+
+              return (
               <div
                 key={c.id}
                 id={`conv-${c.id}`}
@@ -244,9 +246,14 @@ export default function Messages() {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center mb-0.5">
-                    <p className={`text-sm truncate ${c.unread > 0 ? "font-bold" : "font-semibold"} ${c.id === activeConv ? "text-blue-600" : "text-gray-900"}`}>
-                      {c.name}
-                    </p>
+                    <div className="flex items-center gap-1.5 min-w-0 pr-2">
+                      <p className={`text-sm truncate ${c.unread > 0 ? "font-bold" : "font-semibold"} ${c.id === activeConv ? "text-blue-600" : "text-gray-900"}`}>
+                        {c.name}
+                      </p>
+                      <span className="px-1 py-0.5 rounded text-[9px] uppercase tracking-wider font-bold bg-gray-100 text-gray-500 border border-gray-200 shrink-0">
+                        {isUserSeller ? "Buyer" : "Seller"}
+                      </span>
+                    </div>
                     <span className="text-xs text-gray-400 shrink-0 ml-1">{c.time}</span>
                   </div>
                   <div className="flex items-center gap-1 mb-0.5">
@@ -258,7 +265,8 @@ export default function Messages() {
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
@@ -280,12 +288,23 @@ export default function Messages() {
                   <div className="chat-avatar-sm shrink-0 shadow-sm" style={{ width: 38, height: 38, borderRadius: '50%', overflow: 'hidden' }}>
                     <img src={conv.img} alt="" className="w-full h-full object-cover" />
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-sm sm:text-base font-bold text-gray-900 leading-tight truncate">{conv.name}</p>
-                    <p className={`text-[11px] sm:text-xs flex items-center gap-1 mt-0.5 ${conv.online ? "text-green-600 font-medium" : "text-gray-400"}`}>
-                      <span className={`online-dot ${conv.online ? "online-dot-on" : "online-dot-off"}`} />
-                      {conv.online ? "Online" : "Offline"}
-                    </p>
+                  <div className="min-w-0 flex flex-col justify-center">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm sm:text-base font-bold text-gray-900 leading-tight truncate">{conv.name}</p>
+                      <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-600 border border-gray-200 shrink-0">
+                        {isSeller ? "Buyer" : "Seller"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <p className={`text-[11px] sm:text-xs flex items-center gap-1 shrink-0 ${conv.online ? "text-green-600 font-medium" : "text-gray-400"}`}>
+                        <span className={`online-dot ${conv.online ? "online-dot-on" : "online-dot-off"}`} />
+                        {conv.online ? "Online" : "Offline"}
+                      </p>
+                      <span className="text-[10px] text-gray-300 shrink-0">•</span>
+                      <p className="text-[11px] sm:text-xs text-gray-500 truncate min-w-0">
+                        {conv.item}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
@@ -422,7 +441,7 @@ export default function Messages() {
               </div>
 
               {/* Input bar */}
-              <div className="chat-input-bar relative">
+              <div className="chat-input-bar relative pb-[env(safe-area-inset-bottom)] md:pb-0">
                 {editingMsgId && (
                   <div className="absolute -top-10 left-4 text-xs text-blue-600 flex items-center gap-2 bg-white px-3 py-1.5 rounded-md shadow-md border border-blue-100 font-medium">
                     <span>Editing message</span>

@@ -293,7 +293,7 @@ export default function LoginModal() {
 
             {/* Login reason banner */}
             {loginReason && (
-              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800 font-medium">
+              <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800/50 rounded-lg text-xs text-amber-700 dark:text-amber-400 font-medium">
                 {loginReason}
               </div>
             )}

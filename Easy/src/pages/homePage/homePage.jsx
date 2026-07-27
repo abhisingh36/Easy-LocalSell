@@ -31,7 +31,7 @@ function SkeletonCard() {
 
 export default function Home() {
   const navigate = useNavigate();
-  const { listings, wishlist, toggleWishlist, searchQuery, setSearchQuery, filters, setFilters, userLocation } = useApp();
+  const { listings, wishlist, toggleWishlist, searchQuery, setSearchQuery, filters, setFilters, userLocation, currentUser } = useApp();
   const [activeTab, setActiveTab] = useState("nearby");
   const [showMap,   setShowMap]   = useState(true);
   const [loading]                 = useState(false);
@@ -50,15 +50,20 @@ export default function Home() {
     result = result.filter(l => l.distance <= radiusLimit);
     result = result.filter(l => filters.conditions.includes(l.condition));
     result = result.filter(l => l.price <= filters.priceMax);
+    if (activeTab === "my_listings") {
+      const uId = currentUser?._id || currentUser?.id;
+      result = result.filter(l => l.sellerId === uId);
+    }
+
     if (activeTab === "nearby") result.sort((a, b) => a.distance - b.distance);
     // BUG-11 FIX: Old code did `a.id - b.id` which gives NaN on MongoDB ObjectId strings.
     // Now properly sorts by createdAt date descending (newest first).
     else result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     return result;
-  }, [listings, searchQuery, filters, activeTab]);
+  }, [listings, searchQuery, filters, activeTab, currentUser]);
 
   return (
-    <div className="page-enter flex flex-col" style={{ background: "var(--bg)", height: "100dvh", overflow: "hidden" }}>
+    <div className="page-enter fixed inset-0 flex flex-col" style={{ background: "var(--bg)", zIndex: 10 }}>
       <Navbar />
 
       {/* Mobile Categories Bar */}
@@ -146,19 +151,19 @@ export default function Home() {
         <main className="flex-1 px-3 md:px-6 pt-2 pb-[calc(80px+env(safe-area-inset-bottom))] lg:pb-5 min-w-0" style={{ overflowY: "auto", height: "100%" }}>
 
           {/* Tabs */}
-          <div className="flex items-center border-b border-gray-200 mb-2 md:mb-4">
-            {["nearby", "newest"].map(tab => (
+          <div className="flex items-center border-b border-gray-200 mb-2 md:mb-4 overflow-x-auto scrollbar-hide shrink-0">
+            {["nearby", "newest", "my_listings"].map(tab => (
               <button
                 key={tab}
                 id={`tab-${tab}`}
-                className={`tab-btn${activeTab === tab ? " active" : ""}`}
+                className={`tab-btn shrink-0 ${activeTab === tab ? "active" : ""}`}
                 onClick={() => setActiveTab(tab)}
               >
-                {tab === "nearby" ? "Nearby" : "Newest first"}
+                {tab === "nearby" ? "Nearby" : tab === "newest" ? "Newest" : "My Listing"}
               </button>
             ))}
-            <span className="ml-auto text-xs text-gray-400 shrink-0">
-              {filtered.length} listing{filtered.length !== 1 ? "s" : ""} found
+            <span className="ml-auto pl-2 text-[11px] sm:text-xs text-gray-400 shrink-0">
+              {filtered.length} found
             </span>
           </div>
 
@@ -221,15 +226,18 @@ export default function Home() {
                           SOLD
                         </div>
                       )}
-                      <button
-                        id={`wishlist-${item.id}`}
-                        className="wishlist-btn-overlay"
-                        onClick={e => { e.stopPropagation(); toggleWishlist(item.id); }}
-                      >
-                        <svg width="13" height="13" fill={isWished ? "#ef4444" : "none"} stroke={isWished ? "#ef4444" : "#9ca3af"} viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                      </button>
+                      {!(currentUser && (item.sellerId === currentUser._id || item.sellerId === currentUser.id)) && (
+                        <button
+                          id={`wishlist-${item.id}`}
+                          className="wishlist-btn-overlay"
+                          style={{ zIndex: 10, top: "8px", right: "8px", width: "28px", height: "28px", background: "transparent", border: "none", boxShadow: "none" }}
+                          onClick={e => { e.stopPropagation(); toggleWishlist(item.id); }}
+                        >
+                          <svg width="22" height="22" fill={isWished ? "#ef4444" : "none"} stroke={isWished ? "#ef4444" : "#ffffff"} viewBox="0 0 24 24" style={{ filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.6))" }}>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                          </svg>
+                        </button>
+                      )}
                       <span className="listing-cat-label">{item.category}</span>
                     </div>
 

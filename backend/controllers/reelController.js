@@ -151,10 +151,81 @@ const addComment = async (req, res) => {
   }
 };
 
+// @desc    Delete a comment
+// @route   DELETE /api/reels/:id/comment/:commentId
+const deleteComment = async (req, res) => {
+  try {
+    const reel = await Reel.findById(req.params.id);
+    if (!reel) {
+      return res.status(404).json({ message: 'Reel not found' });
+    }
+
+    const commentIndex = reel.comments.findIndex(
+      (c) => c._id.toString() === req.params.commentId
+    );
+
+    if (commentIndex === -1) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    // Check user ownership
+    if (reel.comments[commentIndex].user.toString() !== (req.user._id || req.user.id).toString()) {
+      return res.status(401).json({ message: 'Not authorized to delete this comment' });
+    }
+
+    reel.comments.splice(commentIndex, 1);
+    await reel.save();
+    await reel.populate('comments.user', 'name profileImage');
+
+    res.status(200).json(reel);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+// @desc    Edit a comment
+// @route   PUT /api/reels/:id/comment/:commentId
+const editComment = async (req, res) => {
+  try {
+    const { text } = req.body;
+    if (!text || !text.trim()) {
+      return res.status(400).json({ message: 'Comment text is required' });
+    }
+
+    const reel = await Reel.findById(req.params.id);
+    if (!reel) {
+      return res.status(404).json({ message: 'Reel not found' });
+    }
+
+    const comment = reel.comments.id(req.params.commentId);
+
+    if (!comment) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    // Check user ownership
+    if (comment.user.toString() !== (req.user._id || req.user.id).toString()) {
+      return res.status(401).json({ message: 'Not authorized to edit this comment' });
+    }
+
+    comment.text = text.trim();
+    await reel.save();
+    await reel.populate('comments.user', 'name profileImage');
+
+    res.status(200).json(reel);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 module.exports = {
   getReels,
   uploadReel,
   toggleLikeReel,
   deleteReel,
-  addComment
+  addComment,
+  deleteComment,
+  editComment
 };

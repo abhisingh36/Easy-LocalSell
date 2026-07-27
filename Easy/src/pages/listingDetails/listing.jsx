@@ -139,6 +139,23 @@ export default function Listing() {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
 
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
+  const onTouchEndHandler = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+    if (isLeftSwipe && activeThumb < (p?.thumbs?.length || 1) - 1) setActiveThumb(prev => prev + 1);
+    if (isRightSwipe && activeThumb > 0) setActiveThumb(prev => prev - 1);
+  };
+
   function openImageModal() {
     setZoomScale(1);
     setPan({ x: 0, y: 0 });
@@ -226,7 +243,13 @@ export default function Listing() {
           <div className="flex-1 min-w-0">
 
             {/* Main image */}
-            <div className="rounded-xl overflow-hidden mb-2.5 relative w-full aspect-[4/3] sm:aspect-auto sm:h-[360px] lg:h-[420px]" style={{background:"#111"}}>
+            <div 
+              className="rounded-xl overflow-hidden mb-2.5 relative w-full aspect-[4/3] sm:aspect-auto sm:h-[360px] lg:h-[420px]" 
+              style={{background:"#111"}}
+              onTouchStart={onTouchStart}
+              onTouchMove={onTouchMove}
+              onTouchEnd={onTouchEndHandler}
+            >
               {p.sold && (
                 <div style={{
                   position: "absolute",
@@ -269,15 +292,28 @@ export default function Listing() {
                 }}
               />
 
+              {!isOwnListing && (
+                <button
+                  id={`wishlist-${p.id}`}
+                  className="wishlist-btn-overlay"
+                  style={{ zIndex: 10, top: "12px", right: "12px", width: "40px", height: "40px", background: "transparent", border: "none", boxShadow: "none" }}
+                  onClick={e => { e.stopPropagation(); toggleWishlist(p.id); }}
+                >
+                  <svg width="26" height="26" fill={isWished ? "#ef4444" : "none"} stroke={isWished ? "#ef4444" : "#ffffff"} viewBox="0 0 24 24" style={{ filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.6))" }}>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                </button>
+              )}
+
               {activeThumb > 0 && (
-                <button className="listing-nav-btn left-2.5" onClick={() => setActiveThumb(t => t-1)}>
+                <button className="listing-nav-btn left-2.5 hidden sm:flex" onClick={() => setActiveThumb(t => t-1)}>
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
                   </svg>
                 </button>
               )}
               {activeThumb < totalThumbs - 1 && (
-                <button className="listing-nav-btn right-2.5" onClick={() => setActiveThumb(t => t+1)}>
+                <button className="listing-nav-btn right-2.5 hidden sm:flex" onClick={() => setActiveThumb(t => t+1)}>
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/>
                   </svg>
@@ -345,8 +381,12 @@ export default function Listing() {
               {/* Seller */}
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-blue-600 shrink-0">
-                    {p.sellerInitials}
+                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-blue-600 shrink-0 overflow-hidden">
+                    {(isOwnListing && currentUser?.profileImage) ? (
+                      <img src={currentUser.profileImage} alt={p.seller} className="w-full h-full object-cover" />
+                    ) : (
+                      p.sellerInitials
+                    )}
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-gray-900">{p.seller}</p>
@@ -413,11 +453,6 @@ export default function Listing() {
                   <>
                     <button id="message-seller-btn" className="btn btn-primary btn-w-full rounded-lg justify-center" onClick={handleMessageSeller}>
                       Message seller
-                    </button>
-                    <button id="wishlist-btn"
-                      className={`btn btn-w-full rounded-lg justify-center${isWished ? " btn-danger" : " btn-secondary"}`}
-                      onClick={() => toggleWishlist(p.id)}>
-                      {isWished ? "Saved to wishlist" : "Save to wishlist"}
                     </button>
                     {/* Rate Seller — only for logged-in non-owners */}
                     {isLoggedIn && p.sellerId && (

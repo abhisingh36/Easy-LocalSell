@@ -135,7 +135,7 @@ export default function SupportPage() {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex items-center justify-start sm:justify-center gap-6 sm:gap-20 border-b border-gray-200 mb-8 pb-px overflow-x-auto scrollbar-hide px-2 sm:px-0">
+        <div className="flex items-center justify-center w-full gap-6 sm:gap-10 border-b border-gray-200 mb-8 pb-px overflow-x-auto scrollbar-hide px-2 sm:px-0">
           {[
             { id: "chat", label: "Live Chat" },
             { id: "faqs", label: "FAQs" },
