@@ -116,7 +116,7 @@ export default function SupportPage() {
   };
 
   return (
-    <div className="page-enter min-h-screen pb-24" style={{ background: "var(--bg)" }}>
+    <div className="page-enter min-h-screen pb-6 lg:pb-8" style={{ background: "var(--bg)" }}>
       <Navbar />
 
       <div className="max-w-[850px] mx-auto px-4 pt-4 sm:pt-6">
@@ -221,7 +221,7 @@ export default function SupportPage() {
 
         {/* ── TAB 2: FAQs ── */}
         {activeTab === "faqs" && (
-          <div className="space-y-3">
+          <div className="support-faq-container space-y-3">
             {FAQS.map((faq, idx) => (
               <div
                 key={idx}
@@ -267,7 +267,7 @@ export default function SupportPage() {
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleTicketSubmit} className="flex flex-col gap-4">
+              <form onSubmit={handleTicketSubmit} className="flex flex-col gap-4 h-full">
                 <div>
                   <label className="input-label mb-1 block">Issue Category</label>
                   <select
@@ -294,19 +294,19 @@ export default function SupportPage() {
                   />
                 </div>
 
-                <div>
+                <div className="flex-1 flex flex-col">
                   <label className="input-label mb-1 block">Detailed Description</label>
                   <textarea
                     rows={4}
                     placeholder="Provide details about your query or report..."
                     value={ticketDescription}
                     onChange={(e) => setTicketDescription(e.target.value)}
-                    className="input w-full resize-none"
+                    className="input w-full resize-none flex-1"
                     required
                   />
                 </div>
 
-                <button type="submit" className="btn btn-primary btn-w-full justify-center py-2.5 text-sm font-bold rounded-xl">
+                <button type="submit" className="btn btn-primary btn-w-full justify-center py-2.5 text-sm font-bold rounded-xl mt-auto shrink-0">
                   Submit Support Ticket →
                 </button>
               </form>

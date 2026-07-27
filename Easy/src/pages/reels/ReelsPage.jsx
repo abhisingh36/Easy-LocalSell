@@ -37,6 +37,7 @@ export default function ReelsPage() {
   const [title, setTitle] = useState("");
   const [selectedListingId, setSelectedListingId] = useState("");
   const [uploading, setUploading] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const videoRefs = useRef([]);
 
@@ -444,10 +445,26 @@ export default function ReelsPage() {
                     )}
 
                     {/* Bottom Overlay Content */}
-                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 pb-[40px] lg:pb-6 z-20 flex items-end justify-between gap-3">
+                    <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 pb-8 lg:pb-10 z-20 flex items-end justify-between gap-3">
                       
-                      {/* Seller & Details */}
+                      {/* Details & Seller */}
                       <div className="flex-1 pr-2 text-white">
+                        
+                        {/* View Product Details Button (Moved to top) */}
+                        {reel.listingId && (
+                          <button
+                            onClick={() => navigate(`/listing?id=${reel.listingId}`)}
+                            className="bg-gray-100 hover:bg-white text-gray-900 font-bold rounded-xl px-4 py-2 text-xs flex items-center gap-2 shadow-lg transition-transform hover:scale-105 mb-4"
+                            style={{ color: '#0f172a', backgroundColor: '#f1f5f9' }}
+                          >
+                            <span>View Product Details</span>
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                          </button>
+                        )}
+
+                        {/* Seller Profile */}
                         <div className="flex items-center gap-3 mb-3">
                           <div className="w-10 h-10 rounded-full bg-blue-600 border-2 border-white/40 overflow-hidden flex items-center justify-center font-bold text-sm shadow-sm">
                             {reel.sellerAvatar ? (
@@ -462,28 +479,23 @@ export default function ReelsPage() {
                           </div>
                         </div>
 
+                        {/* Title */}
                         <p className="text-sm font-semibold leading-snug drop-shadow-lg mb-3 line-clamp-2">{reel.title}</p>
 
-                        <div className="flex flex-wrap gap-1.5 mb-4">
-                          {reel.tags && reel.tags.filter(t => t !== '#Reel' && t !== '#Marketplace').map((t, idx) => (
-                            <span key={idx} className="badge px-2 py-0.5" style={{ backgroundColor: 'rgba(56, 189, 248, 0.15)', borderColor: 'rgba(56, 189, 248, 0.3)', color: '#bae6fd' }}>
-                              {t}
-                            </span>
-                          ))}
+                        {/* Tags */}
+                        <div className="flex flex-wrap gap-1.5 mb-1">
+                          {(() => {
+                            const listing = listings.find(l => String(l.id || l._id) === String(reel.listingId));
+                            const locTag = listing?.location ? `#${listing.location.replace(/\s+/g, '')}` : null;
+                            const allTags = [...(reel.tags || [])];
+                            if (locTag && !allTags.includes(locTag)) allTags.push(locTag);
+                            return allTags.filter(t => t !== '#Reel' && t !== '#Marketplace').map((t, idx) => (
+                              <span key={idx} className="badge px-2 py-0.5" style={{ backgroundColor: 'rgba(56, 189, 248, 0.15)', borderColor: 'rgba(56, 189, 248, 0.3)', color: '#bae6fd' }}>
+                                {t}
+                              </span>
+                            ));
+                          })()}
                         </div>
-
-                        {reel.listingId && (
-                          <button
-                            onClick={() => navigate(`/listing?id=${reel.listingId}`)}
-                            className="bg-gray-100 hover:bg-white text-gray-900 font-bold rounded-xl px-4 py-2 text-xs flex items-center gap-2 shadow-lg transition-transform hover:scale-105"
-                            style={{ color: '#0f172a', backgroundColor: '#f1f5f9' }}
-                          >
-                            <span>View Product Details</span>
-                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                            </svg>
-                          </button>
-                        )}
                       </div>
 
                       {/* Right Side Actions (Like, Share, Upload) */}
@@ -649,24 +661,54 @@ export default function ReelsPage() {
                   </div>
 
                   {/* Link Active Listing */}
-                  {listings.length > 0 && (
-                    <div>
-                      <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5 ml-1">Link to Listing</label>
-                      <select
-                        value={selectedListingId}
-                        onChange={(e) => setSelectedListingId(e.target.value)}
-                        className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all disabled:opacity-70 text-sm"
-                        disabled={uploading}
-                      >
-                        <option value="">-- No linked product --</option>
-                        {listings.map((item) => (
-                          <option key={item.id} value={item.id}>
-                            {item.title} ({item.priceLabel})
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  )}
+                  {(() => {
+                    const myListings = listings.filter(l => String(l.sellerId) === String(currentUser?._id || currentUser?.id));
+                    return myListings.length > 0 && (
+                      <div className="relative">
+                        <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5 ml-1">Link to Listing</label>
+                        <div 
+                          className={`w-full bg-white dark:bg-gray-800 border ${isDropdownOpen ? 'border-blue-500 ring-2 ring-blue-500/50' : 'border-gray-200 dark:border-gray-700'} text-gray-900 dark:text-white rounded-xl px-4 py-2.5 cursor-pointer flex justify-between items-center transition-all text-sm ${uploading ? 'opacity-70 pointer-events-none' : ''}`}
+                          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        >
+                          <span className="truncate pr-2">
+                            {selectedListingId 
+                              ? (() => {
+                                  const s = myListings.find(l => l.id === selectedListingId);
+                                  return s ? `${s.title} (${s.priceLabel})` : "-- No linked product --";
+                                })()
+                              : "-- No linked product --"
+                            }
+                          </span>
+                          <svg className={`w-4 h-4 text-gray-500 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+
+                        {/* Dropdown Menu (Floating Upwards) */}
+                        {isDropdownOpen && (
+                          <>
+                            <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)}></div>
+                            <div className="absolute z-50 w-full mb-1 bottom-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] max-h-[220px] overflow-y-auto overflow-x-hidden overscroll-contain">
+                              <div 
+                                className={`px-4 py-2.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${selectedListingId === "" ? 'font-bold text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/40' : 'text-gray-900 dark:text-white'}`}
+                                onClick={() => { setSelectedListingId(""); setIsDropdownOpen(false); }}
+                              >
+                                -- No linked product --
+                              </div>
+                              {myListings.map((item) => (
+                                <div 
+                                  key={item.id} 
+                                  className={`px-4 py-2.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors truncate ${selectedListingId === item.id ? 'font-bold text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/40' : 'text-gray-900 dark:text-white'}`}
+                                  title={`${item.title} (${item.priceLabel})`}
+                                  onClick={() => { setSelectedListingId(item.id); setIsDropdownOpen(false); }}
+                                >
+                                  {item.title} <span className="text-gray-500 dark:text-gray-400 font-normal">({item.priceLabel})</span>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   <button
                     type="submit"

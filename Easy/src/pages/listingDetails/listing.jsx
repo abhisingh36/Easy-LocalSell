@@ -370,7 +370,16 @@ export default function Listing() {
               <p className="text-sm font-bold text-gray-700 mb-3.5">Item details</p>
               <div className="grid grid-cols-2 gap-x-6 gap-y-3.5">
                 {/* BUG-20 FIX: Filter out empty values so blank rows don't render */}
-                {[["Brand",p.brand],["Model",p.model],["Age",p.age],["Original price",p.originalPrice],["Colour",p.colour],["Warranty",p.warranty]]
+                {[
+                  ["Brand",p.brand],["Model",p.model],["Age",p.age],["Original price",p.originalPrice],["Colour",p.colour],["Warranty",p.warranty],
+                  ["Storage",p.storage],["RAM",p.ram],["Operating System",p.os],
+                  ["Mileage",p.mileage],["Fuel Type",p.fuelType],["Transmission",p.transmission],["No. of Owners",p.owners],
+                  ["Size",p.size],["Material",p.material],["Gender",p.gender],
+                  ["Dimensions",p.dimensions],
+                  ["Author",p.author],["Language",p.language],["Genre",p.genre],
+                  ["Sport Type",p.sportType],
+                  ["Power",p.power]
+                ]
                   .filter(([, value]) => value && String(value).trim())
                   .map(([label,value]) => (
                   <div key={label} className="detail-cell">

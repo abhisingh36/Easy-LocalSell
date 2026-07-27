@@ -4,6 +4,7 @@ import Navbar from "../../components/navbar/navbar";
 import Sidebar from "../../components/sidebar/sidebar";
 import Map from "../map/Map";
 import { useApp } from "../../context/AppContext";
+import { CATEGORY_ICONS } from "../../utils/categoryIcons";
 
 const RADIUS_KM = { "1 km": 1, "2 km": 2, "5 km": 5, "10 km": 10, "20 km": 20 };
 
@@ -66,8 +67,27 @@ export default function Home() {
     <div className="page-enter fixed inset-0 flex flex-col" style={{ background: "var(--bg)", zIndex: 10 }}>
       <Navbar />
 
+      {/* Mobile Search Bar */}
+      <div className="lg:hidden px-3 py-2 border-b border-[var(--gray-200)]" style={{background: "var(--white)"}}>
+        <div style={{position: "relative", width: "100%"}}>
+          <span style={{position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--gray-400)", display: "flex", alignItems: "center"}}>
+            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
+            </svg>
+          </span>
+          <input
+            type="text"
+            placeholder="Search items, categories..."
+            value={searchQuery}
+            onChange={e => { setSearchQuery(e.target.value); }}
+            className="navbar-search"
+            style={{width: "100%", paddingLeft: 32}}
+          />
+        </div>
+      </div>
+
       {/* Mobile Categories Bar */}
-      <div className="lg:hidden bg-white border-b border-[var(--gray-200)] overflow-x-auto whitespace-nowrap scrollbar-hide px-3 py-0 flex gap-2 items-center shadow-sm">
+      <div className="lg:hidden bg-white border-b border-[var(--gray-200)] overflow-x-auto whitespace-nowrap scrollbar-hide px-3 py-1.5 flex gap-2 items-center shadow-sm">
         {/* Hamburger -> Opens Filters */}
         <button 
           onClick={() => setShowFilters(true)}
@@ -92,35 +112,19 @@ export default function Home() {
                 const scrollLeft = button.offsetLeft - (container.clientWidth / 2) + (button.clientWidth / 2);
                 container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
               }}
-              className={`shrink-0 text-[12.5px] px-2.5 py-1 rounded-md transition-all ${
+              className={`shrink-0 flex items-center gap-1.5 text-[12.5px] px-2.5 py-1 rounded-md transition-all ${
                 isActive 
                   ? "font-semibold text-blue-700 bg-blue-50" 
                   : "font-medium text-gray-600 hover:text-gray-900"
               }`}
             >
+              <span className={`flex items-center justify-center ${isActive ? "text-blue-600" : "text-gray-500"}`}>
+                {CATEGORY_ICONS[catName]}
+              </span>
               {catName}
             </button>
           );
         })}
-      </div>
-
-      {/* Mobile Search Bar — below categories */}
-      <div className="lg:hidden px-3 py-2 border-b border-[var(--gray-200)]" style={{background: "var(--white)"}}>
-        <div style={{position: "relative", width: "100%"}}>
-          <span style={{position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--gray-400)", display: "flex", alignItems: "center"}}>
-            <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
-            </svg>
-          </span>
-          <input
-            type="text"
-            placeholder="Search items, categories..."
-            value={searchQuery}
-            onChange={e => { setSearchQuery(e.target.value); }}
-            className="navbar-search"
-            style={{width: "100%", paddingLeft: 32}}
-          />
-        </div>
       </div>
 
       <div className="flex relative" style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>

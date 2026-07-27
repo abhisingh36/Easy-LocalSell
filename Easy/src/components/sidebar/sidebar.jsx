@@ -1,4 +1,5 @@
 import { useApp } from "../../context/AppContext";
+import { CATEGORY_ICONS } from "../../utils/categoryIcons";
 
 const CATEGORIES = [
   "All listings",
@@ -61,7 +62,12 @@ export default function Sidebar({ mobileOpen = false }) {
               className={`sidebar-cat-btn${active ? " active" : ""}`}
               onClick={() => setFilters(p => ({ ...p, category:catName }))}
             >
-              <span>{catName}</span>
+              <span className="flex items-center gap-2.5">
+                <span className={`flex items-center justify-center ${active ? "text-blue-600" : "text-gray-400"}`}>
+                  {CATEGORY_ICONS[catName]}
+                </span>
+                {catName}
+              </span>
               <span className={`text-xs ${active ? "font-bold text-blue-600" : "text-gray-400"}`}>{count}</span>
             </button>
           );

@@ -68,6 +68,22 @@ const listingSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+  storage: { type: String, default: "" },
+  ram: { type: String, default: "" },
+  os: { type: String, default: "" },
+  mileage: { type: String, default: "" },
+  fuelType: { type: String, default: "" },
+  transmission: { type: String, default: "" },
+  owners: { type: String, default: "" },
+  size: { type: String, default: "" },
+  material: { type: String, default: "" },
+  gender: { type: String, default: "" },
+  dimensions: { type: String, default: "" },
+  author: { type: String, default: "" },
+  language: { type: String, default: "" },
+  genre: { type: String, default: "" },
+  sportType: { type: String, default: "" },
+  power: { type: String, default: "" },
   distance: {
     type: Number,
     default: 1.5

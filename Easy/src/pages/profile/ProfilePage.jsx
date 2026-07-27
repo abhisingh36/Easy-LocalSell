@@ -266,7 +266,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="page-enter min-h-screen pb-12" style={{ background: "var(--bg)" }}>
+    <div className="page-enter min-h-screen pb-6 lg:pb-8" style={{ background: "var(--bg)" }}>
       <Navbar />
 
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-4">

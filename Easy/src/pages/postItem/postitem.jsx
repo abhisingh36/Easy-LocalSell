@@ -37,6 +37,24 @@ export default function PostItem() {
   const [originalPrice, setOriginalPrice] = useState(editListing?.originalPrice ? editListing.originalPrice.replace(/[^\d]/g, "") : "");
   const [warranty,      setWarranty]      = useState(editListing?.warranty || "");
 
+  // New Dynamic Fields
+  const [storage,       setStorage]       = useState(editListing?.storage || "");
+  const [ram,           setRam]           = useState(editListing?.ram || "");
+  const [os,            setOs]            = useState(editListing?.os || "");
+  const [mileage,       setMileage]       = useState(editListing?.mileage || "");
+  const [fuelType,      setFuelType]      = useState(editListing?.fuelType || "");
+  const [transmission,  setTransmission]  = useState(editListing?.transmission || "");
+  const [owners,        setOwners]        = useState(editListing?.owners || "");
+  const [size,          setSize]          = useState(editListing?.size || "");
+  const [material,      setMaterial]      = useState(editListing?.material || "");
+  const [gender,        setGender]        = useState(editListing?.gender || "");
+  const [dimensions,    setDimensions]    = useState(editListing?.dimensions || "");
+  const [author,        setAuthor]        = useState(editListing?.author || "");
+  const [language,      setLanguage]      = useState(editListing?.language || "");
+  const [genre,         setGenre]         = useState(editListing?.genre || "");
+  const [sportType,     setSportType]     = useState(editListing?.sportType || "");
+  const [power,         setPower]         = useState(editListing?.power || "");
+
   useEffect(() => {
     // BUG-13 FIX: Only auto-update location for NEW listings, not edits.
     // Previously this would overwrite the editListing's location whenever the user
@@ -173,7 +191,23 @@ export default function PostItem() {
         age: age.trim(),
         colour: colour.trim(),
         originalPrice: originalPrice ? `₹${Number(originalPrice).toLocaleString("en-IN")}` : "",
-        warranty: warranty.trim()
+        warranty: warranty.trim(),
+        storage: storage.trim(),
+        ram: ram.trim(),
+        os: os.trim(),
+        mileage: mileage.trim(),
+        fuelType: fuelType.trim(),
+        transmission: transmission.trim(),
+        owners: owners.trim(),
+        size: size.trim(),
+        material: material.trim(),
+        gender: gender.trim(),
+        dimensions: dimensions.trim(),
+        author: author.trim(),
+        language: language.trim(),
+        genre: genre.trim(),
+        sportType: sportType.trim(),
+        power: power.trim()
       };
 
       let success;
@@ -295,133 +329,214 @@ export default function PostItem() {
 
               {/* Details card */}
               <div className="card p-5">
-                <p className="text-base font-bold text-gray-900 mb-4">
+                <p className="text-base font-bold text-gray-900 dark:text-white mb-4">
                   {editListing ? "Edit Item Details" : "Item Details"}
                 </p>
 
-                {/* Title */}
-                <div className="mb-4">
-                  <label className="input-label" htmlFor="item-title">Item title *</label>
-                  <input id="item-title" className={`input${errors.title ? " error" : ""}`}
-                    placeholder="e.g. Sony WH-1000XM4 Wireless Headphones" value={title}
-                    maxLength={100}
-                    onChange={e => { setTitle(e.target.value); if (errors.title) setErrors(p => ({...p,title:""})); }} />
-                  {errors.title && <p className="input-error">{errors.title}</p>}
-                  <p className="text-xs text-gray-400 mt-1">{title.length}/100 characters</p>
-                </div>
-
-                {/* Description */}
-                <div className="mb-4">
-                  <label className="input-label" htmlFor="item-desc">Description *</label>
-                  <textarea id="item-desc" className={`input${errors.description ? " error" : ""}`}
-                    placeholder="Describe your item — brand, age, reason for selling..." rows={4}
-                    maxLength={MAX_DESC} value={description}
-                    style={{resize:"none", lineHeight:1.6}}
-                    onChange={e => { setDesc(e.target.value); if (errors.description) setErrors(p => ({...p,description:""})); }} />
-                  {errors.description && <p className="input-error">{errors.description}</p>}
-                  <p className={`text-xs mt-1 ${description.length > MAX_DESC*0.9 ? "text-amber-600" : "text-gray-400"}`}>
-                    {description.length}/{MAX_DESC} characters
-                  </p>
-                </div>
-
-                {/* Price & Location */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="input-label" htmlFor="item-price">Price (₹) *</label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-semibold">₹</span>
-                      <input id="item-price" className={`input ${errors.price ? "error" : ""}`} style={{ paddingLeft: '30px' }}
-                        type="number" min="0" placeholder="0" value={price}
-                        onChange={e => { setPrice(e.target.value); if (errors.price) setErrors(p => ({...p,price:""})); }} />
-                    </div>
-                    {errors.price && <p className="input-error">{errors.price}</p>}
-                  </div>
-                  <div>
-                    <label className="input-label" htmlFor="item-location">Location</label>
-                    <div className="relative">
-                      <input id="item-location" className="input pr-16" value={location}
-                        onChange={e => setLocation(e.target.value)} />
-                      <button id="detect-location" type="button"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-blue-600 font-medium bg-transparent border-0 cursor-pointer"
-                        onClick={() => setShowLocationModal(true)}>
-                        Detect
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Additional Details */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="input-label" htmlFor="item-brand">Brand</label>
-                    <input id="item-brand" className="input"
-                      placeholder="e.g. Sony, Apple, Penguin" value={brand}
-                      onChange={e => setBrand(e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="input-label" htmlFor="item-model">Model</label>
-                    <input id="item-model" className="input"
-                      placeholder="e.g. WH-1000XM4, Hardcover" value={model}
-                      onChange={e => setModel(e.target.value)} />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="input-label" htmlFor="item-age">Age</label>
-                    <input id="item-age" className="input"
-                      placeholder="e.g. 5 months, 1 year" value={age}
-                      onChange={e => setAge(e.target.value)} />
-                  </div>
-                  <div>
-                    <label className="input-label" htmlFor="item-colour">Colour</label>
-                    <input id="item-colour" className="input"
-                      placeholder="e.g. Black, White, Red" value={colour}
-                      onChange={e => setColour(e.target.value)} />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="input-label" htmlFor="item-original-price">Original price (₹)</label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-semibold">₹</span>
-                      <input id="item-original-price" className="input" style={{ paddingLeft: '30px' }}
-                        type="number" min="0" placeholder="e.g. 499" value={originalPrice}
-                        onChange={e => setOriginalPrice(e.target.value)} />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="input-label" htmlFor="item-warranty">Warranty</label>
-                    <input id="item-warranty" className="input"
-                      placeholder="e.g. 6 months remaining, N/A" value={warranty}
-                      onChange={e => setWarranty(e.target.value)} />
-                  </div>
-                </div>
-
-                {/* Category */}
-                <div className="mb-4">
+                {/* Category (Moved to top) */}
+                <div className={`mb-6 ${category ? 'border-b border-gray-100 dark:border-gray-800 pb-6' : ''}`}>
                   <label className="input-label">Category *</label>
-                  <div className="flex flex-wrap gap-2">
-                    {CATEGORIES.map(cat => (
-                      <button key={cat} type="button" id={`cat-${cat}`} className={`sel-cat-btn${cat===category?" active":""}`}
-                        onClick={() => { setCategory(cat); if (errors.category) setErrors(p => ({...p,category:""})); }}>{cat}</button>
-                    ))}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                    {CATEGORIES.map(cat => {
+                      const icons = {
+                        "Electronics": <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>,
+                        "Furniture": <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 9V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v2"/><path d="M2 13h20v2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-2z"/><path d="M4 17v4"/><path d="M20 17v4"/><path d="M4 13V9h16v4"/></svg>,
+                        "Clothing": <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.38 3.46 16 2a8.5 8.5 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg>,
+                        "Books": <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>,
+                        "Vehicles": <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg>,
+                        "Sports": <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 12h.01"/><path d="M11.99 12 11 16"/><path d="M11 16 8 19"/><path d="M11 16 14 19"/><path d="M11.99 12 14.5 9.5"/><path d="M14.5 9.5 14 5"/><path d="M14.5 9.5 19 10"/></svg>,
+                        "Kitchen": <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><path d="M6 2v2"/><path d="M10 2v2"/><path d="M14 2v2"/></svg>
+                      };
+                      return (
+                        <button key={cat} type="button" id={`cat-${cat}`} 
+                          className={`flex items-center justify-center px-3 py-1.5 gap-1.5 transition-all rounded-lg border font-medium 
+                            ${cat===category 
+                              ? "border-blue-600 bg-blue-50 text-blue-600" 
+                              : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"}`}
+                          onClick={() => { setCategory(cat); if (errors.category) setErrors(p => ({...p,category:""})); }}>
+                          <span className={`flex items-center justify-center ${cat===category ? "text-blue-600" : "text-gray-500"}`}>
+                            {icons[cat] || <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="m9 9 6 6"/><path d="m15 9-6 6"/></svg>}
+                          </span>
+                          <span className="text-[13px]">{cat}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                   {errors.category && <p className="input-error">{errors.category}</p>}
                 </div>
 
-                {/* Condition */}
-                <div className="mb-4">
-                  <label className="input-label">Condition *</label>
-                  <div className="flex flex-wrap gap-2">
-                    {CONDITIONS.map(cond => (
-                      <button key={cond} type="button" id={`cond-${cond}`} className={`sel-cond-btn${cond===condition?" active":""}`}
-                        onClick={() => { setCondition(cond); if (errors.condition) setErrors(p => ({...p,condition:""})); }}>{cond}</button>
-                    ))}
+                {category ? (
+                  <div className="animate-fade-in">
+                    {/* Title */}
+                    <div className="mb-4">
+                      <label className="input-label" htmlFor="item-title">Item title *</label>
+                      <input id="item-title" className={`input${errors.title ? " error" : ""}`}
+                        placeholder="e.g. Sony WH-1000XM4 Wireless Headphones" value={title}
+                        maxLength={100}
+                        onChange={e => { setTitle(e.target.value); if (errors.title) setErrors(p => ({...p,title:""})); }} />
+                      {errors.title && <p className="input-error">{errors.title}</p>}
+                      <p className="text-xs text-gray-400 mt-1">{title.length}/100 characters</p>
+                    </div>
+
+                    {/* Description */}
+                    <div className="mb-4">
+                      <label className="input-label" htmlFor="item-desc">Description *</label>
+                      <textarea id="item-desc" className={`input${errors.description ? " error" : ""}`}
+                        placeholder="Describe your item — brand, age, reason for selling..." rows={4}
+                        maxLength={MAX_DESC} value={description}
+                        style={{resize:"none", lineHeight:1.6}}
+                        onChange={e => { setDesc(e.target.value); if (errors.description) setErrors(p => ({...p,description:""})); }} />
+                      {errors.description && <p className="input-error">{errors.description}</p>}
+                      <p className={`text-xs mt-1 ${description.length > MAX_DESC*0.9 ? "text-amber-600" : "text-gray-400"}`}>
+                        {description.length}/{MAX_DESC} characters
+                      </p>
+                    </div>
+
+                    {/* Price & Location */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <label className="input-label" htmlFor="item-price">Price (₹) *</label>
+                        <div className="relative">
+                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-semibold">₹</span>
+                          <input id="item-price" className={`input ${errors.price ? "error" : ""}`} style={{ paddingLeft: '30px' }}
+                            type="number" min="0" placeholder="0" value={price}
+                            onChange={e => { setPrice(e.target.value); if (errors.price) setErrors(p => ({...p,price:""})); }} />
+                        </div>
+                        {errors.price && <p className="input-error">{errors.price}</p>}
+                      </div>
+                      <div>
+                        <label className="input-label" htmlFor="item-location">Location</label>
+                        <div className="relative">
+                          <input id="item-location" className="input pr-16" value={location}
+                            onChange={e => setLocation(e.target.value)} />
+                          <button id="detect-location" type="button"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-blue-600 font-medium bg-transparent border-0 cursor-pointer"
+                            onClick={() => setShowLocationModal(true)}>
+                            Detect
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Dynamic Additional Details */}
+                    {(() => {
+                      const isElectronics = category === "Electronics";
+                      const isVehicles = category === "Vehicles";
+                      const isClothing = category === "Clothing";
+                      const isFurniture = category === "Furniture";
+                      const isBooks = category === "Books";
+                      const isSports = category === "Sports";
+                      const isKitchen = category === "Kitchen";
+
+                      const showBrand = isElectronics || isFurniture || isClothing || isVehicles || isSports || isKitchen;
+                      const showModel = isElectronics || isVehicles;
+                      const showAge = isElectronics || isFurniture || isVehicles || isBooks || isSports || isKitchen;
+                      const showColour = isElectronics || isFurniture || isClothing || isVehicles;
+                      const showWarranty = isElectronics || isKitchen;
+
+                      // Helper to render an input field cleanly
+                      const Field = ({ id, label, placeholder, value, setter }) => (
+                        <div>
+                          <label className="input-label" htmlFor={id}>{label}</label>
+                          <input id={id} className="input" placeholder={placeholder} value={value} onChange={e => setter(e.target.value)} />
+                        </div>
+                      );
+
+                      return (
+                        <>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            {showBrand && <Field id="item-brand" label={isVehicles ? "Make / Brand" : "Brand"} placeholder="e.g. Sony, Apple, Honda" value={brand} setter={setBrand} />}
+                            {showModel && <Field id="item-model" label="Model" placeholder="e.g. WH-1000XM4, Civic" value={model} setter={setModel} />}
+                            {showAge && <Field id="item-age" label="Age" placeholder="e.g. 5 months, 1 year" value={age} setter={setAge} />}
+                            {showColour && <Field id="item-colour" label="Colour" placeholder="e.g. Black, White, Red" value={colour} setter={setColour} />}
+                            
+                            {isElectronics && (
+                              <>
+                                <Field id="item-storage" label="Storage" placeholder="e.g. 128GB, 256GB" value={storage} setter={setStorage} />
+                                <Field id="item-ram" label="RAM" placeholder="e.g. 4GB, 8GB" value={ram} setter={setRam} />
+                                <Field id="item-os" label="Operating System" placeholder="e.g. iOS, Android, Windows" value={os} setter={setOs} />
+                              </>
+                            )}
+                            
+                            {isVehicles && (
+                              <>
+                                <Field id="item-mileage" label="KMs Driven (Mileage)" placeholder="e.g. 15,000 km" value={mileage} setter={setMileage} />
+                                <Field id="item-fuel" label="Fuel Type" placeholder="e.g. Petrol, Diesel, EV" value={fuelType} setter={setFuelType} />
+                                <Field id="item-trans" label="Transmission" placeholder="e.g. Manual, Automatic" value={transmission} setter={setTransmission} />
+                                <Field id="item-owners" label="No. of Owners" placeholder="e.g. 1st, 2nd" value={owners} setter={setOwners} />
+                              </>
+                            )}
+                            
+                            {isClothing && (
+                              <>
+                                <Field id="item-size" label="Size" placeholder="e.g. S, M, L, XL, 42" value={size} setter={setSize} />
+                                <Field id="item-material" label="Material" placeholder="e.g. Cotton, Denim" value={material} setter={setMaterial} />
+                                <Field id="item-gender" label="Gender" placeholder="e.g. Men, Women, Unisex" value={gender} setter={setGender} />
+                              </>
+                            )}
+                            
+                            {isFurniture && (
+                              <>
+                                <Field id="item-material" label="Material" placeholder="e.g. Wood, Metal, Glass" value={material} setter={setMaterial} />
+                                <Field id="item-dimensions" label="Dimensions (L x W x H)" placeholder="e.g. 120 x 60 x 75 cm" value={dimensions} setter={setDimensions} />
+                              </>
+                            )}
+                            
+                            {isBooks && (
+                              <>
+                                <Field id="item-author" label="Author" placeholder="e.g. J.K. Rowling" value={author} setter={setAuthor} />
+                                <Field id="item-language" label="Language" placeholder="e.g. English, Hindi" value={language} setter={setLanguage} />
+                                <Field id="item-genre" label="Genre" placeholder="e.g. Fiction, Educational" value={genre} setter={setGenre} />
+                              </>
+                            )}
+                            
+                            {isSports && (
+                              <Field id="item-sport" label="Sport Type" placeholder="e.g. Cricket, Football, Gym" value={sportType} setter={setSportType} />
+                            )}
+                            
+                            {isKitchen && (
+                              <Field id="item-power" label="Power (W)" placeholder="e.g. 500W, 1000W" value={power} setter={setPower} />
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                              <label className="input-label" htmlFor="item-original-price">Original price (₹)</label>
+                              <div className="relative">
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-semibold">₹</span>
+                                <input id="item-original-price" className="input" style={{ paddingLeft: '30px' }}
+                                  type="number" min="0" placeholder="e.g. 499" value={originalPrice}
+                                  onChange={e => setOriginalPrice(e.target.value)} />
+                              </div>
+                            </div>
+                            {showWarranty && (
+                              <Field id="item-warranty" label="Warranty" placeholder="e.g. 6 months remaining, N/A" value={warranty} setter={setWarranty} />
+                            )}
+                          </div>
+                        </>
+                      );
+                    })()}
+
+                    {/* Condition */}
+                    <div className="mb-4">
+                      <label className="input-label">Condition *</label>
+                      <div className="flex flex-wrap gap-2">
+                        {CONDITIONS.map(cond => (
+                          <button key={cond} type="button" id={`cond-${cond}`} className={`sel-cond-btn${cond===condition?" active":""}`}
+                            onClick={() => { setCondition(cond); if (errors.condition) setErrors(p => ({...p,condition:""})); }}>{cond}</button>
+                        ))}
+                      </div>
+                      {errors.condition && <p className="input-error">{errors.condition}</p>}
+                    </div>
                   </div>
-                  {errors.condition && <p className="input-error">{errors.condition}</p>}
-                </div>
+                ) : (
+                  <div className="py-8 px-4 text-center bg-gray-50 rounded-xl border border-gray-200">
+                    <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <p className="text-gray-500 font-medium">Please select a category above to fill out item details.</p>
+                  </div>
+                )}
               </div>
             </>
           )}
