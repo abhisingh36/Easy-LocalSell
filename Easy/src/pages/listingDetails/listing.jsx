@@ -270,27 +270,36 @@ export default function Listing() {
                 </div>
               )}
 
-              {/* Blurred background — fills side gaps */}
-              <img
-                src={activeImg}
-                aria-hidden="true"
-                style={{
-                  position:"absolute", inset:0, width:"100%", height:"100%",
-                  objectFit:"cover", filter:"blur(22px)", transform:"scale(1.08)",
-                  opacity:0.75,
-                }}
-              />
-
-              {/* Actual image — full, uncropped */}
-              <img
-                src={activeImg}
-                alt={p.title}
+              {/* Image Slider */}
+              <div
+                className="absolute inset-0 flex transition-transform duration-300 ease-in-out"
+                style={{ transform: `translateX(-${activeThumb * 100}%)`, zIndex: 1 }}
                 onClick={openImageModal}
-                style={{
-                  position:"absolute", inset:0, width:"100%", height:"100%",
-                  objectFit:"contain", display:"block", zIndex:1, cursor:"pointer"
-                }}
-              />
+              >
+                {thumbs.map((thumbSrc, idx) => (
+                  <div key={idx} className="w-full h-full shrink-0 relative overflow-hidden">
+                    {/* Blurred background — fills side gaps */}
+                    <img
+                      src={thumbSrc}
+                      aria-hidden="true"
+                      style={{
+                        position:"absolute", inset:0, width:"100%", height:"100%",
+                        objectFit:"cover", filter:"blur(22px)", transform:"scale(1.08)",
+                        opacity:0.75,
+                      }}
+                    />
+                    {/* Actual image — full, uncropped */}
+                    <img
+                      src={thumbSrc}
+                      alt={`${p.title} - ${idx}`}
+                      style={{
+                        position:"absolute", inset:0, width:"100%", height:"100%",
+                        objectFit:"contain", display:"block", zIndex:1, cursor:"pointer"
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
 
               {!isOwnListing && (
                 <button
@@ -306,14 +315,14 @@ export default function Listing() {
               )}
 
               {activeThumb > 0 && (
-                <button className="listing-nav-btn left-2.5 hidden sm:flex" onClick={() => setActiveThumb(t => t-1)}>
+                <button className="listing-nav-btn left-2.5 hidden sm:flex items-center justify-center" onClick={() => setActiveThumb(t => t-1)}>
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
                   </svg>
                 </button>
               )}
               {activeThumb < totalThumbs - 1 && (
-                <button className="listing-nav-btn right-2.5 hidden sm:flex" onClick={() => setActiveThumb(t => t+1)}>
+                <button className="listing-nav-btn right-2.5 hidden sm:flex items-center justify-center" onClick={() => setActiveThumb(t => t+1)}>
                   <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/>
                   </svg>

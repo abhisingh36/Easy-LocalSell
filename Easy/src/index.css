@@ -1133,9 +1133,6 @@ html.dark .related-card:hover {
   border: none;
   border-radius: 50%;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 10;
   transition: all .15s;
   color: var(--gray-900);
