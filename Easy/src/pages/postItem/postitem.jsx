@@ -330,7 +330,7 @@ export default function PostItem() {
                     <label className="input-label" htmlFor="item-price">Price (₹) *</label>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-semibold">₹</span>
-                      <input id="item-price" className={`input pl-6${errors.price ? " error" : ""}`}
+                      <input id="item-price" className={`input ${errors.price ? "error" : ""}`} style={{ paddingLeft: '30px' }}
                         type="number" min="0" placeholder="0" value={price}
                         onChange={e => { setPrice(e.target.value); if (errors.price) setErrors(p => ({...p,price:""})); }} />
                     </div>
@@ -386,7 +386,7 @@ export default function PostItem() {
                     <label className="input-label" htmlFor="item-original-price">Original price (₹)</label>
                     <div className="relative">
                       <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-semibold">₹</span>
-                      <input id="item-original-price" className="input pl-6"
+                      <input id="item-original-price" className="input" style={{ paddingLeft: '30px' }}
                         type="number" min="0" placeholder="e.g. 499" value={originalPrice}
                         onChange={e => setOriginalPrice(e.target.value)} />
                     </div>

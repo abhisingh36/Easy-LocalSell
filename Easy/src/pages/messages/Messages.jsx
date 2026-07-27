@@ -90,14 +90,14 @@ export default function Messages() {
   function handleContextMenu(e, msg, isMe) {
     if (!isMe || msg.isDeleted || String(msg._id).startsWith("temp-")) return;
     e.preventDefault();
-    
+
     // Calculate safe coordinates to prevent popup from going off-screen
     const menuWidth = 140; // approx width for w-32 + padding
     const menuHeight = 100;
-    
+
     let x = e.clientX - 2;
     let y = e.clientY - 4;
-    
+
     if (x + menuWidth > window.innerWidth) {
       x = window.innerWidth - menuWidth - 10;
     }
@@ -143,13 +143,13 @@ export default function Messages() {
     const lat = coords?.[0] || 26.8467;
     const lng = coords?.[1] || 80.9462;
     const locName = name || "Hazratganj";
-    
+
     sendMessage(activeConv, `[LOCATION]${lat},${lng},${locName}`);
     setLocationShared(p => ({ ...p, [activeConv]: true }));
     showToast("Location shared!", "info");
   }
 
-  function renderMessageContent(text) {
+  function renderMessageContent(text, isMe) {
     if (!text) return text;
     if (text.startsWith("[LOCATION]")) {
       const parts = text.replace("[LOCATION]", "").split(",");
@@ -157,12 +157,15 @@ export default function Messages() {
       const lng = parseFloat(parts[1]);
       const name = parts.slice(2).join(",");
       if (!isNaN(lat) && !isNaN(lng)) {
+        // Map bubble styles mimicking standard text bubbles
+        const borderRadiusClass = isMe ? 'rounded-[18px] rounded-br-[6px]' : 'rounded-[18px] rounded-bl-[6px]';
+
         return (
-          <a 
-            href={`https://www.google.com/maps?q=${lat},${lng}`} 
-            target="_blank" 
+          <a
+            href={`https://www.google.com/maps?q=${lat},${lng}`}
+            target="_blank"
             rel="noreferrer"
-            className="block w-72 h-56 sm:w-96 sm:h-72 rounded-xl overflow-hidden flex flex-col shadow-md ring-4 ring-blue-500 bg-white hover:opacity-95 transition-opacity m-1"
+            className={`block w-52 h-40 sm:w-72 sm:h-52 ${borderRadiusClass} overflow-hidden flex flex-col shadow-sm transition-opacity ${isMe ? 'border-[2px] border-blue-500' : 'border border-gray-200'}`}
           >
             <div className="flex-1 w-full relative pointer-events-none">
               <MapContainer center={[lat, lng]} zoom={15} style={{ height: "100%", width: "100%", position: "absolute", inset: 0 }} zoomControl={false} dragging={false} scrollWheelZoom={false}>
@@ -170,8 +173,8 @@ export default function Messages() {
                 <Marker position={[lat, lng]} />
               </MapContainer>
             </div>
-            <div className="bg-white px-3 py-2 text-sm text-gray-800 font-medium truncate border-t border-gray-100 flex items-center gap-1.5 shrink-0">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-500 shrink-0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <div className={`px-3 py-2 text-sm font-medium truncate flex items-center gap-1.5 shrink-0 ${isMe ? 'bg-blue-600 text-white' : 'bg-white text-gray-900'}`}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={isMe ? 'text-blue-100' : 'text-red-500'} shrink-0="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
               {name}
             </div>
           </a>
@@ -187,7 +190,7 @@ export default function Messages() {
     if (!hasMessage && c.id !== activeConv) return false;
 
     return c.name.toLowerCase().includes(search.toLowerCase()) ||
-           c.item.toLowerCase().includes(search.toLowerCase());
+      c.item.toLowerCase().includes(search.toLowerCase());
   });
   const totalUnread = conversations.reduce((s, c) => s + c.unread, 0);
 
@@ -195,7 +198,7 @@ export default function Messages() {
     <div className="page-enter fixed inset-0 flex flex-col overflow-hidden" style={{ background: "var(--bg)", zIndex: 10 }}>
       <Navbar />
       {/* Chat layout: full remaining height */}
-      <div className="flex flex-1 overflow-hidden pb-[calc(65px+env(safe-area-inset-bottom))] md:pb-0">
+      <div className={`flex flex-1 overflow-hidden pb-[calc(72px+env(safe-area-inset-bottom))] md:pb-0`}>
 
         {/* ── Left: Conversation list ── */}
         <div className={`conv-sidebar ${activeConv ? 'hidden-mobile' : ''}`}>
@@ -206,13 +209,12 @@ export default function Messages() {
               {totalUnread > 0 && <span className="badge badge-blue">{totalUnread} new</span>}
             </div>
             <div className="relative">
-              <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"
-                width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"
+                width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
               </svg>
               <input
-                className="input text-sm"
-                style={{ paddingLeft: 30 }}
+                className="input text-sm w-full !pl-9"
                 placeholder="Search conversations..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
@@ -231,40 +233,40 @@ export default function Messages() {
               const isUserSeller = itemListing && currentUser && (itemListing.sellerId === currentUser._id || itemListing.sellerId === currentUser.id);
 
               return (
-              <div
-                key={c.id}
-                id={`conv-${c.id}`}
-                className={`conv-item${c.id === activeConv ? " active" : ""}`}
-                onClick={() => selectConv(c.id)}
-              >
-                <div className="conv-avatar-wrap">
-                  <div className="conv-avatar">
-                    <img src={c.img} alt="" className="w-full h-full object-cover" />
-                  </div>
-                  {c.online && <div className="online-indicator" />}
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-center mb-0.5">
-                    <div className="flex items-center gap-1.5 min-w-0 pr-2">
-                      <p className={`text-sm truncate ${c.unread > 0 ? "font-bold" : "font-semibold"} ${c.id === activeConv ? "text-blue-600" : "text-gray-900"}`}>
-                        {c.name}
-                      </p>
-                      <span className="px-1 py-0.5 rounded text-[9px] uppercase tracking-wider font-bold bg-gray-100 text-gray-500 border border-gray-200 shrink-0">
-                        {isUserSeller ? "Buyer" : "Seller"}
-                      </span>
+                <div
+                  key={c.id}
+                  id={`conv-${c.id}`}
+                  className={`conv-item${c.id === activeConv ? " active" : ""}`}
+                  onClick={() => selectConv(c.id)}
+                >
+                  <div className="conv-avatar-wrap">
+                    <div className="conv-avatar">
+                      <img src={c.img} alt="" className="w-full h-full object-cover" />
                     </div>
-                    <span className="text-xs text-gray-400 shrink-0 ml-1">{c.time}</span>
+                    {c.online && <div className="online-indicator" />}
                   </div>
-                  <div className="flex items-center gap-1 mb-0.5">
-                    <p className="text-xs text-gray-500 truncate flex-1">{c.item} · {c.price}</p>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <p className="text-xs text-gray-400 truncate flex-1">{c.preview}</p>
-                    {c.unread > 0 && <span className="unread-count">{c.unread}</span>}
+
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-center mb-0.5">
+                      <div className="flex items-center gap-1.5 min-w-0 pr-2">
+                        <p className={`text-sm truncate ${c.unread > 0 ? "font-bold" : "font-semibold"} ${c.id === activeConv ? "text-blue-600" : "text-gray-900"}`}>
+                          {c.name}
+                        </p>
+                        <span className="px-1 py-0.5 rounded text-[9px] uppercase tracking-wider font-bold bg-gray-100 text-gray-500 border border-gray-200 shrink-0">
+                          {isUserSeller ? "Buyer" : "Seller"}
+                        </span>
+                      </div>
+                      <span className="text-xs text-gray-400 shrink-0 ml-1">{c.time}</span>
+                    </div>
+                    <div className="flex items-center gap-1 mb-0.5">
+                      <p className="text-xs text-gray-500 truncate flex-1">{c.item} · {c.price}</p>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <p className="text-xs text-gray-400 truncate flex-1">{c.preview}</p>
+                      {c.unread > 0 && <span className="unread-count">{c.unread}</span>}
+                    </div>
                   </div>
                 </div>
-              </div>
               );
             })}
           </div>
@@ -278,7 +280,7 @@ export default function Messages() {
               {/* Combined Chat Header */}
               <div className="chat-header flex items-center justify-between gap-1 sm:gap-2 p-2 sm:p-3 border-b border-gray-100 min-h-[60px]">
                 {/* Left: Back btn + User Info */}
-                <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 min-w-0">
+                <div className="flex items-center gap-1.5 sm:gap-3 flex-1 min-w-0">
                   {/* Mobile Back Button */}
                   <button className="md:hidden text-gray-500 hover:text-gray-900 p-1 shrink-0 -ml-1 transition-colors" onClick={() => selectConv(null)}>
                     <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -317,14 +319,14 @@ export default function Messages() {
                     <p className="text-sm font-medium text-gray-800 truncate max-w-[180px]">{conv.item}</p>
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-bold text-blue-600">{conv.price}</p>
-                      {conv.sold && <span className="badge badge-green px-1.5 py-0.5" style={{fontSize: 10}}>Sold</span>}
+                      {conv.sold && <span className="badge badge-green px-1.5 py-0.5" style={{ fontSize: 10 }}>Sold</span>}
                     </div>
                   </div>
                 </div>
 
                 {/* Right: Actions Dropdown */}
                 <div className="relative shrink-0 ml-auto">
-                  <button 
+                  <button
                     className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-900 rounded-full hover:bg-gray-100 transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -336,27 +338,27 @@ export default function Messages() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                     </svg>
                   </button>
-                  
+
                   {/* Dropdown Menu */}
                   {showActionsMenu && (
-                    <div 
+                    <div
                       className="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] border border-gray-100 py-1.5 z-50 overflow-hidden"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <button 
+                      <button
                         className="w-full text-left px-4 py-2.5 text-sm font-bold text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2.5"
                         onClick={() => {
                           navigate(`/listing?id=${conv.listingId}`);
                           setShowActionsMenu(false);
                         }}
                       >
-                        <svg className="text-gray-400" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                        <svg className="text-gray-400" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                         View Listing
                       </button>
-                      
+
                       {isSeller && (
                         <>
-                          <button 
+                          <button
                             className={`w-full text-left px-4 py-2.5 text-sm font-bold transition-colors flex items-center gap-2.5 ${conv.sold ? 'text-amber-600 hover:bg-amber-50' : 'text-blue-600 hover:bg-blue-50'}`}
                             onClick={() => {
                               toggleSold(activeConv);
@@ -364,18 +366,18 @@ export default function Messages() {
                               setShowActionsMenu(false);
                             }}
                           >
-                            <svg className={conv.sold ? 'text-amber-500' : 'text-blue-500'} width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <svg className={conv.sold ? 'text-amber-500' : 'text-blue-500'} width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             {conv.sold ? "Mark as Active" : "Mark as Sold"}
                           </button>
-                          
-                          <button 
+
+                          <button
                             className={`w-full text-left px-4 py-2.5 text-sm font-bold transition-colors flex items-center gap-2.5 ${locationShared[activeConv] ? 'text-gray-400 bg-gray-50' : 'text-green-600 hover:bg-green-50'}`}
                             onClick={() => {
                               handleShareLocation();
                               setShowActionsMenu(false);
                             }}
                           >
-                            <svg className={locationShared[activeConv] ? 'text-gray-400' : 'text-green-500'} width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <svg className={locationShared[activeConv] ? 'text-gray-400' : 'text-green-500'} width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                             {locationShared[activeConv] ? "Location Sent" : "Share Location"}
                           </button>
                         </>
@@ -413,7 +415,7 @@ export default function Messages() {
                             {msg.isDeleted ? (
                               <span className="italic opacity-70">🚫 This message was deleted</span>
                             ) : (
-                              renderMessageContent(msg.text)
+                              renderMessageContent(msg.text, isMe)
                             )}
                           </div>
                           <div className={`msg-meta ${isMe ? "justify-end" : "justify-start"}`}>
@@ -487,12 +489,12 @@ export default function Messages() {
 
       {/* Context Menu */}
       {contextMenu && (
-        <div 
+        <div
           className="fixed bg-white shadow-xl rounded-md border border-gray-100 z-50 overflow-hidden w-32"
           style={{ top: contextMenu.mouseY, left: contextMenu.mouseX }}
         >
           {!contextMenu.isLocation && (
-            <div 
+            <div
               className="px-4 py-2.5 text-sm hover:bg-gray-50 cursor-pointer font-medium text-gray-700"
               onClick={() => {
                 setEditingMsgId(contextMenu.msgId);
@@ -504,7 +506,7 @@ export default function Messages() {
               Edit
             </div>
           )}
-          <div 
+          <div
             className="px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 cursor-pointer font-medium border-t border-gray-100"
             onClick={() => {
               setMessageToDelete(contextMenu.msgId);

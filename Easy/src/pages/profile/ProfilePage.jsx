@@ -272,29 +272,44 @@ export default function ProfilePage() {
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 mt-4">
 
         {/* Profile Card Header */}
-        <div className="profile-card-header card p-6 sm:p-8 mb-8">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
+        <div className="profile-card-header card p-4 sm:p-8 mb-6 sm:mb-8">
+          <div className="flex flex-col md:flex-row items-start md:items-start gap-4 md:gap-8">
 
-            {/* Avatar */}
-            <div className="relative">
-              <div className="profile-avatar-premium overflow-hidden">
-                {currentUser.profileImage ? (
-                  <img src={currentUser.profileImage} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  currentUser.initials
+            {/* Avatar + Name row on mobile */}
+            <div className="flex flex-row items-center gap-4 md:flex-col md:items-start w-full md:w-auto">
+
+              {/* Avatar */}
+              <div className="relative flex-shrink-0">
+                <div className="profile-avatar-premium overflow-hidden">
+                  {currentUser.profileImage ? (
+                    <img src={currentUser.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    currentUser.initials
+                  )}
+                </div>
+                <span className="profile-verified-badge" title="Verified Seller">
+                  <svg className="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                  </svg>
+                </span>
+              </div>
+
+              {/* Name + Badge — on mobile this sits to the right of avatar */}
+              <div className="flex flex-col items-start gap-1.5 md:hidden">
+                <h1 className="text-xl font-extrabold text-gray-900 tracking-tight leading-tight">{currentUser.name}</h1>
+                {myListings.length > 0 && (
+                  <span className="badge badge-blue font-bold px-2 py-0.5 text-[10px] rounded-full uppercase tracking-wider">
+                    Pro Seller
+                  </span>
                 )}
               </div>
-              <span className="profile-verified-badge" title="Verified Seller">
-                <svg className="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                </svg>
-              </span>
             </div>
 
             {/* User Details */}
-            <div className="flex-1 text-center md:text-left">
-              <div className="flex flex-col sm:flex-row items-center gap-2.5 mb-1.5 justify-center md:justify-start">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">{currentUser.name}</h1>
+            <div className="flex-1 text-center md:text-left w-full">
+              {/* Name + Badge on desktop only */}
+              <div className="hidden md:flex flex-row items-center gap-2.5 mb-1.5 justify-start">
+                <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">{currentUser.name}</h1>
                 {myListings.length > 0 && (
                   <span className="badge badge-blue font-bold px-2.5 py-0.5 text-[11px] rounded-full uppercase tracking-wider">
                     Pro Seller
@@ -336,82 +351,64 @@ export default function ProfilePage() {
 
             {/* Items Sold */}
             <div className="profile-stat-card">
-              <span className="stat-icon-wrap icon-green">
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-              </span>
-              <div>
-                <p className="text-2xl font-black text-gray-900 leading-none mb-1">{stats.sold ?? 0}</p>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Items Sold</p>
+              <div className="stat-card-top">
+                <span className="stat-icon-wrap icon-green">
+                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                  </svg>
+                </span>
+                <p className="text-2xl font-black text-gray-900 leading-none">{stats.sold ?? 0}</p>
               </div>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Items Sold</p>
             </div>
 
             {/* Active Listings */}
             <div className="profile-stat-card">
-              <span className="stat-icon-wrap icon-blue">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                </svg>
-              </span>
-              <div>
-                <p className="text-2xl font-black text-gray-900 leading-none mb-1">
-                  {myListings.filter(l => !l.sold).length}
-                </p>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Active Listings</p>
+              <div className="stat-card-top">
+                <span className="stat-icon-wrap icon-blue">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                  </svg>
+                </span>
+                <p className="text-2xl font-black text-gray-900 leading-none">{myListings.filter(l => !l.sold).length}</p>
               </div>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Active Listings</p>
             </div>
 
             {/* Avg Rating — dynamic */}
             <div className="profile-stat-card">
-              <span className="stat-icon-wrap icon-amber">
-                <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                </svg>
-              </span>
-              <div>
-                {avgRating != null ? (
-                  <>
-                    <p className="text-2xl font-black text-gray-900 leading-none mb-1">{avgRating}★</p>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                      Avg Rating <span className="text-gray-300">({reviewCount})</span>
-                    </p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-2xl font-black text-gray-300 leading-none mb-1">—</p>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">No ratings yet</p>
-                  </>
-                )}
+              <div className="stat-card-top">
+                <span className="stat-icon-wrap icon-amber">
+                  <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                  </svg>
+                </span>
+                <p className="text-2xl font-black text-gray-900 leading-none">{avgRating != null ? `${avgRating}★` : '—'}</p>
               </div>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                {avgRating != null ? `Avg Rating (${reviewCount})` : 'No ratings yet'}
+              </p>
             </div>
 
             {/* Response Rate — dynamic */}
             <div className="profile-stat-card">
-              <span className="stat-icon-wrap icon-purple">
-                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
-              </span>
-              <div>
-                {responseRate != null ? (
-                  <>
-                    <p className="text-2xl font-black text-gray-900 leading-none mb-1">{responseRate}</p>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Response Rate</p>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-2xl font-black text-gray-300 leading-none mb-1">—</p>
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">No messages yet</p>
-                  </>
-                )}
+              <div className="stat-card-top">
+                <span className="stat-icon-wrap icon-purple">
+                  <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                </span>
+                <p className="text-2xl font-black text-gray-900 leading-none">{responseRate != null ? responseRate : '—'}</p>
               </div>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                {responseRate != null ? 'Response Rate' : 'No messages yet'}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center justify-center w-full gap-6 sm:gap-10 border-b border-gray-200 mb-8 pb-px overflow-x-auto scrollbar-hide px-2 sm:px-0">
+        <div className="flex items-center justify-start md:justify-center w-full gap-6 sm:gap-10 border-b border-gray-200 mb-8 pb-px overflow-x-auto scrollbar-hide px-4 md:px-0">
           {[
             { id: "listings", label: `My Listings (${myListings.length})` },
             { id: "wishlist", label: `Wishlist (${myWishlist.length})` },
