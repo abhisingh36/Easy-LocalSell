@@ -32,13 +32,24 @@ const onlineUsers = new Map(); // userId -> Set<socketId>
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
-  socket.on('user_connected', (userId) => {
+  socket.on('user_connected', async (userId) => {
     if (!userId) return;
     if (!onlineUsers.has(userId)) {
       onlineUsers.set(userId, new Set());
     }
     onlineUsers.get(userId).add(socket.id);
     io.emit('user_status', { userId, online: true });
+    
+    // Join personal room
+    socket.join(userId.toString());
+    
+    // Auto-join all existing conversation rooms to survive nodemon restarts
+    try {
+      const convs = await Conversation.find({ participants: userId });
+      convs.forEach(c => socket.join(c._id.toString()));
+    } catch (e) {
+      console.error('Error auto-joining rooms:', e);
+    }
   });
 
   socket.on('check_online', (userIds) => {
@@ -63,13 +74,21 @@ io.on('connection', (socket) => {
         text: data.text
       });
       
-      await Conversation.findByIdAndUpdate(data.conversationId, {
+      const conv = await Conversation.findByIdAndUpdate(data.conversationId, {
         lastMessage: newMessage._id
       });
 
       await newMessage.populate('sender', 'name _id');
 
       io.to(data.conversationId).emit('receive_message', newMessage);
+      
+      // Also emit to receiver's personal room for new conversations they haven't joined yet
+      if (conv && conv.participants) {
+        const receiverId = conv.participants.find(p => p.toString() !== data.senderId);
+        if (receiverId) {
+          io.to(receiverId.toString()).emit('receive_message', newMessage);
+        }
+      }
     } catch (error) {
       console.error('Error saving message via socket:', error);
     }
