@@ -38,15 +38,18 @@ export default function Messages() {
     return firstWithMsg ? firstWithMsg.id : null;
   });
   
+  const [isInputFocused, setIsInputFocused] = useState(false);
+
   useEffect(() => {
-    if (activeConv) {
+    if (activeConv && isInputFocused) {
       setHideMobileNav(true);
     } else {
       setHideMobileNav(false);
     }
     // Cleanup when component unmounts
     return () => setHideMobileNav(false);
-  }, [activeConv, setHideMobileNav]);
+  }, [activeConv, isInputFocused, setHideMobileNav]);
+  
   const [contextMenu, setContextMenu] = useState(null);
   const [editingMsgId, setEditingMsgId] = useState(null);
 
@@ -482,6 +485,8 @@ export default function Messages() {
                   placeholder={`Message ${conv.name}...`}
                   value={inputText}
                   onChange={e => setInputText(e.target.value)}
+                  onFocus={() => setIsInputFocused(true)}
+                  onBlur={() => setIsInputFocused(false)}
                   onKeyDown={handleKey}
                   className="input flex-1 text-sm rounded-full bg-gray-50"
                 />
