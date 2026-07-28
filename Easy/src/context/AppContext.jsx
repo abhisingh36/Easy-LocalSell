@@ -16,19 +16,19 @@ function formatConversationTime(isoString) {
   if (!isoString) return "now";
   const date = new Date(isoString);
   const now = new Date();
-  
+
   const isToday = date.getDate() === now.getDate() && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
   if (isToday) {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
-  
+
   const yesterday = new Date(now);
   yesterday.setDate(now.getDate() - 1);
   const isYesterday = date.getDate() === yesterday.getDate() && date.getMonth() === yesterday.getMonth() && date.getFullYear() === yesterday.getFullYear();
   if (isYesterday) {
     return "Yesterday";
   }
-  
+
   return date.toLocaleDateString([], { month: "short", day: "numeric", year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined });
 }
 
@@ -159,12 +159,12 @@ export function AppProvider({ children }) {
         setConversations(prev => prev.map(c =>
           String(c.id) === String(message.conversationId)
             ? {
-                ...c,
-                lastMessage: message,
-                preview: message.isDeleted ? "🚫 This message was deleted" : message.text,
-                unread: senderId === myId ? 0 : (c.unread || 0) + 1,
-                time: "now"
-              }
+              ...c,
+              lastMessage: message,
+              preview: message.isDeleted ? "🚫 This message was deleted" : message.text,
+              unread: senderId === myId ? 0 : (c.unread || 0) + 1,
+              time: "now"
+            }
             : c
         ));
       });
@@ -436,17 +436,17 @@ export function AppProvider({ children }) {
   const fetchListings = useCallback(async () => {
     try {
       const mapped = await fetchAllListings();
-      
+
       const userLoc = (userLocation?.name || "Hazratganj").toLowerCase();
       const lucknowAreas = ["lucknow", "hazratganj", "gomti nagar", "aliganj", "indira nagar"];
-      
+
       const updated = mapped.map(l => {
         let d = l.distance || 1.5;
         const lLoc = (l.location || "").toLowerCase();
-        
+
         const userInLucknow = lucknowAreas.some(a => userLoc.includes(a));
         const listingInLucknow = lucknowAreas.some(a => lLoc.includes(a));
-        
+
         if (userInLucknow && listingInLucknow) {
           // Keep database distance
         } else if (!userLoc.includes(lLoc) && !lLoc.includes(userLoc)) {
@@ -456,11 +456,11 @@ export function AppProvider({ children }) {
           // exact or partial match
           d = Math.random() * 3 + 1;
         }
-        
+
         d = Math.round(d * 10) / 10;
         return { ...l, distance: d, distLabel: `${d} km` };
       });
-      
+
       setListings(updated);
     } catch (err) {
       console.error("Error loading listings from API:", err);
@@ -616,13 +616,13 @@ export function AppProvider({ children }) {
 
         const updated = {
           ...prev,
-          name:         nextName,
-          initials:     newInitials,
-          sold:         profile.stats?.sold     ?? prev.sold,
-          active:       profile.stats?.active   ?? prev.active,
-          response:     profile.stats?.response ?? prev.response,
-          phone:        profile.phone           || prev.phone || "",
-          location:     profile.location        || prev.location || "",
+          name: nextName,
+          initials: newInitials,
+          sold: profile.stats?.sold ?? prev.sold,
+          active: profile.stats?.active ?? prev.active,
+          response: profile.stats?.response ?? prev.response,
+          phone: profile.phone || prev.phone || "",
+          location: profile.location || prev.location || "",
           profileImage: profile.profileImage !== undefined ? profile.profileImage : prev.profileImage,
           joinedYear: profile.createdAt
             ? new Date(profile.createdAt).getFullYear().toString()

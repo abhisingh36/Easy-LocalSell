@@ -18,7 +18,7 @@ export default function ReelsPage() {
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [reelToDelete, setReelToDelete] = useState(null);
-  
+
   const [showCommentsModal, setShowCommentsModal] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
@@ -64,7 +64,7 @@ export default function ReelsPage() {
     videoRefs.current.forEach((vRef, idx) => {
       if (vRef) {
         if (idx === activeReelIndex && isPlaying) {
-          vRef.play().catch(() => {});
+          vRef.play().catch(() => { });
         } else {
           vRef.pause();
         }
@@ -80,7 +80,7 @@ export default function ReelsPage() {
         headers: { "Authorization": `Bearer ${currentUser.token}` }
       });
       if (!res.ok) throw new Error("Delete failed");
-      
+
       showToast("Reel deleted successfully", "success");
       setShowDeleteConfirm(false);
       setReelToDelete(null);
@@ -146,7 +146,7 @@ export default function ReelsPage() {
       });
       if (!res.ok) throw new Error("Failed to add comment");
       const updatedReel = await res.json();
-      
+
       setReels((list) => list.map(r => r._id === reelId ? updatedReel : r));
       setCommentText("");
     } catch (err) {
@@ -253,10 +253,10 @@ export default function ReelsPage() {
       if (!res.ok) throw new Error("Upload failed");
 
       showToast("Your 1-minute video reel is published!", "success");
-      
+
       // Refresh reels
       await fetchReels();
-      
+
       setActiveReelIndex(0);
       setUploading(false);
       setShowUploadModal(false);
@@ -295,7 +295,7 @@ export default function ReelsPage() {
 
   const handleWheel = (e) => {
     if (reels.length <= 1 || isWheeling.current) return;
-    
+
     // Threshold to prevent tiny accidental scrolls
     if (Math.abs(e.deltaY) > 20) {
       isWheeling.current = true;
@@ -317,10 +317,10 @@ export default function ReelsPage() {
 
   return (
     <div className="page-enter bg-gray-50 min-h-[100dvh]">
-      
+
       {/* Floating Back Button & Top Gradient */}
       <div className="fixed top-0 left-0 right-0 h-24 bg-gradient-to-b from-black/70 to-transparent z-[400] pointer-events-none"></div>
-      <button 
+      <button
         onClick={() => navigate(-1)}
         className="fixed top-4 left-4 sm:top-6 sm:left-6 z-[500] w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white shadow-lg hover:bg-white/40 transition-all"
       >
@@ -365,7 +365,7 @@ export default function ReelsPage() {
 
         {/* Reels Main Player View - Smooth Scroll Track */}
         {!isLoading && reels.length > 0 && (
-          <div 
+          <div
             className="relative h-full w-full overflow-hidden bg-black touch-none"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
@@ -392,7 +392,7 @@ export default function ReelsPage() {
             </button>
 
             {/* Scrollable Track */}
-            <div 
+            <div
               className="h-full w-full transition-transform duration-500 ease-in-out"
               style={{ transform: `translateY(-${activeReelIndex * 100}%)` }}
             >
@@ -400,17 +400,17 @@ export default function ReelsPage() {
                 const isActive = index === activeReelIndex;
                 return (
                   <div key={reel._id} className="relative h-full w-full flex-shrink-0 bg-black overflow-hidden">
-                    
+
                     {/* Blurred Background Layer (for non-vertical videos) */}
                     <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
-                       <video
-                         src={reel.videoUrl}
-                         className="w-full h-full object-cover opacity-40 blur-2xl scale-110 pointer-events-none"
-                         loop
-                         playsInline
-                         muted
-                         autoPlay={isActive}
-                       />
+                      <video
+                        src={reel.videoUrl}
+                        className="w-full h-full object-cover opacity-40 blur-2xl scale-110 pointer-events-none"
+                        loop
+                        playsInline
+                        muted
+                        autoPlay={isActive}
+                      />
                     </div>
 
                     {/* Main Video Player */}
@@ -446,10 +446,10 @@ export default function ReelsPage() {
 
                     {/* Bottom Overlay Content */}
                     <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent p-4 pb-8 lg:pb-10 z-20 flex items-end justify-between gap-3">
-                      
+
                       {/* Details & Seller */}
                       <div className="flex-1 pr-2 text-white">
-                        
+
                         {/* View Product Details Button (Moved to top) */}
                         {reel.listingId && (
                           <button
@@ -500,7 +500,7 @@ export default function ReelsPage() {
 
                       {/* Right Side Actions (Like, Share, Upload) */}
                       <div className="flex flex-col items-center gap-5 text-white pb-2 pr-1">
-                        
+
                         {/* Like Button */}
                         <button
                           onClick={() => handleToggleLike(reel._id)}
@@ -598,17 +598,17 @@ export default function ReelsPage() {
           <div className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm transition-opacity" onClick={() => !uploading && setShowUploadModal(false)} />
           <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 pointer-events-none">
             <div className="bg-white dark:bg-gray-900 w-full max-w-[480px] rounded-3xl shadow-2xl pointer-events-auto flex flex-col max-h-[90vh] overflow-hidden border border-gray-100 dark:border-gray-800">
-              
+
               <div className="p-5 flex items-center justify-between border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 flex items-center justify-center text-sm">
                     📹
-                  </div> 
+                  </div>
                   Upload Reel
                 </h3>
-                <button 
+                <button
                   disabled={uploading}
-                  className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-gray-900 dark:hover:text-white flex items-center justify-center transition-colors disabled:opacity-50" 
+                  className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 hover:text-gray-900 dark:hover:text-white flex items-center justify-center transition-colors disabled:opacity-50"
                   onClick={() => setShowUploadModal(false)}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -617,7 +617,7 @@ export default function ReelsPage() {
 
               <div className="p-6 overflow-y-auto">
                 <form onSubmit={handleUploadReel} className="flex flex-col gap-5">
-                  
+
                   {/* File Upload Box */}
                   <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/30 rounded-2xl p-2 text-center transition-colors hover:border-blue-400 dark:hover:border-blue-500">
                     {videoPreview ? (
@@ -666,16 +666,16 @@ export default function ReelsPage() {
                     return myListings.length > 0 && (
                       <div className="relative">
                         <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5 ml-1">Link to Listing</label>
-                        <div 
+                        <div
                           className={`w-full bg-white dark:bg-gray-800 border ${isDropdownOpen ? 'border-blue-500 ring-2 ring-blue-500/50' : 'border-gray-200 dark:border-gray-700'} text-gray-900 dark:text-white rounded-xl px-4 py-2.5 cursor-pointer flex justify-between items-center transition-all text-sm ${uploading ? 'opacity-70 pointer-events-none' : ''}`}
                           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         >
                           <span className="truncate pr-2">
-                            {selectedListingId 
+                            {selectedListingId
                               ? (() => {
-                                  const s = myListings.find(l => l.id === selectedListingId);
-                                  return s ? `${s.title} (${s.priceLabel})` : "-- No linked product --";
-                                })()
+                                const s = myListings.find(l => l.id === selectedListingId);
+                                return s ? `${s.title} (${s.priceLabel})` : "-- No linked product --";
+                              })()
                               : "-- No linked product --"
                             }
                           </span>
@@ -687,15 +687,15 @@ export default function ReelsPage() {
                           <>
                             <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)}></div>
                             <div className="absolute z-50 w-full mb-1 bottom-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] max-h-[220px] overflow-y-auto overflow-x-hidden overscroll-contain">
-                              <div 
+                              <div
                                 className={`px-4 py-2.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${selectedListingId === "" ? 'font-bold text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/40' : 'text-gray-900 dark:text-white'}`}
                                 onClick={() => { setSelectedListingId(""); setIsDropdownOpen(false); }}
                               >
                                 -- No linked product --
                               </div>
                               {myListings.map((item) => (
-                                <div 
-                                  key={item.id} 
+                                <div
+                                  key={item.id}
                                   className={`px-4 py-2.5 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors truncate ${selectedListingId === item.id ? 'font-bold text-blue-600 dark:text-blue-400 bg-blue-50/50 dark:bg-blue-900/40' : 'text-gray-900 dark:text-white'}`}
                                   title={`${item.title} (${item.priceLabel})`}
                                   onClick={() => { setSelectedListingId(item.id); setIsDropdownOpen(false); }}
@@ -761,7 +761,7 @@ export default function ReelsPage() {
         <>
           <div className="fixed inset-0 z-[1000] bg-black/40 backdrop-blur-sm transition-opacity" onClick={() => setShowCommentsModal(false)} />
           <div className="fixed inset-x-3 bottom-[4.5rem] sm:inset-x-4 sm:bottom-20 z-[1010] flex flex-col bg-white/90 backdrop-blur-2xl rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.1)] border border-gray-200 h-[65vh] transition-transform overflow-hidden md:inset-x-auto md:right-8 lg:right-16 md:bottom-12 md:top-12 md:h-auto md:w-[380px] lg:w-[420px] md:shadow-2xl">
-            
+
             {/* Modal Header (Fixed) */}
             <div className="flex-none px-5 sm:px-6 pt-5 pb-4 border-b border-gray-200 relative shrink-0">
               <div className="w-12 h-1.5 bg-gray-300 rounded-full absolute top-2.5 left-1/2 -translate-x-1/2 md:hidden"></div>
@@ -832,7 +832,7 @@ export default function ReelsPage() {
                 </div>
               )}
             </div>
-            
+
             <div className="absolute bottom-0 inset-x-0 p-4 bg-white/60 backdrop-blur-xl border-t border-gray-200">
               <form onSubmit={(e) => handleAddComment(e, reels[activeReelIndex]._id)} className="flex items-center gap-3">
                 <input
@@ -841,9 +841,9 @@ export default function ReelsPage() {
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
                   disabled={isSubmittingComment}
-                  className="flex-1 bg-transparent border border-gray-200 focus:border-blue-500/50 rounded-2xl px-5 h-12 text-sm focus:ring-4 focus:ring-blue-500/10 text-gray-900 transition-all placeholder-gray-500"
+                  className="flex-1 min-w-0 bg-transparent border border-gray-200 focus:border-blue-500/50 rounded-2xl px-5 h-12 text-sm focus:ring-4 focus:ring-blue-500/10 text-gray-900 transition-all placeholder-gray-500"
                 />
-                <button type="submit" disabled={!commentText.trim() || isSubmittingComment} className="btn btn-primary rounded-2xl px-6 h-12 font-bold disabled:opacity-50 flex items-center justify-center min-w-[80px]">
+                <button type="submit" disabled={!commentText.trim() || isSubmittingComment} className="bg-blue-500 hover:bg-blue-600 text-white rounded-2xl px-6 h-12 font-bold disabled:opacity-50 flex items-center justify-center min-w-[80px] shrink-0 transition-colors">
                   {isSubmittingComment ? (
                     <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                   ) : "Post"}

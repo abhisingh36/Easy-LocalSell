@@ -113,8 +113,8 @@ export default function Home() {
                 container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
               }}
               className={`shrink-0 flex items-center gap-1.5 text-[12.5px] px-2.5 py-1 rounded-md transition-all ${isActive
-                  ? "font-semibold text-blue-700 bg-blue-50"
-                  : "font-medium text-gray-600 hover:text-gray-900"
+                ? "font-semibold text-blue-700 bg-blue-50"
+                : "font-medium text-gray-600 hover:text-gray-900"
                 }`}
             >
               <span className={`flex items-center justify-center ${isActive ? "text-blue-600" : "text-gray-500"}`}>

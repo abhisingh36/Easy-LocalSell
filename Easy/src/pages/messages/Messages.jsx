@@ -31,25 +31,13 @@ export default function Messages() {
   const [searchParams] = useSearchParams();
   const initConvId = searchParams.get("conv") || null;
 
-  const { conversations, messages, loadMessages, typing, sendMessage, editMessage, deleteMessage, markRead, toggleSold, showToast, isLoggedIn, triggerLoginModal, listings, currentUser, userLocation, setHideMobileNav } = useApp();
+  const { conversations, messages, loadMessages, typing, sendMessage, editMessage, deleteMessage, markRead, toggleSold, showToast, isLoggedIn, triggerLoginModal, listings, currentUser, userLocation } = useApp();
   const [activeConv, setActiveConv] = useState(() => {
     if (initConvId) return initConvId;
     const firstWithMsg = conversations.find(c => c.lastMessage);
     return firstWithMsg ? firstWithMsg.id : null;
   });
-  
-  const [isInputFocused, setIsInputFocused] = useState(false);
 
-  useEffect(() => {
-    if (activeConv && isInputFocused) {
-      setHideMobileNav(true);
-    } else {
-      setHideMobileNav(false);
-    }
-    // Cleanup when component unmounts
-    return () => setHideMobileNav(false);
-  }, [activeConv, isInputFocused, setHideMobileNav]);
-  
   const [contextMenu, setContextMenu] = useState(null);
   const [editingMsgId, setEditingMsgId] = useState(null);
 
@@ -214,7 +202,7 @@ export default function Messages() {
     <div className="page-enter fixed inset-0 flex flex-col overflow-hidden" style={{ background: "var(--bg)", zIndex: 10 }}>
       <Navbar />
       {/* Chat layout: full remaining height */}
-      <div className={`flex flex-1 overflow-hidden pb-[calc(72px+env(safe-area-inset-bottom))] md:pb-0`}>
+      <div className="flex flex-1 overflow-hidden pb-[calc(72px+env(safe-area-inset-bottom))] md:pb-0">
 
         {/* ── Left: Conversation list ── */}
         <div className={`conv-sidebar ${activeConv ? 'hidden-mobile' : ''}`}>

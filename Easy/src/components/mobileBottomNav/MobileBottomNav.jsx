@@ -1,10 +1,55 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { useApp } from "../../context/AppContext";
 
 export default function MobileBottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const { isLoggedIn, triggerLoginModal, currentUser, hideMobileNav } = useApp();
+
+  // Detect keyboard open/close
+  // Primary: focusin/focusout on input/textarea (works on ALL mobile browsers)
+  // Fallback: visualViewport resize API
+  useEffect(() => {
+    let closeTimer = null;
+
+    const onFocusIn = (e) => {
+      const tag = e.target.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) {
+        clearTimeout(closeTimer);
+        document.body.classList.add("keyboard-open");
+      }
+    };
+
+    const onFocusOut = (e) => {
+      const tag = e.target.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) {
+        // Small delay to avoid flicker when moving between inputs
+        closeTimer = setTimeout(() => {
+          document.body.classList.remove("keyboard-open");
+        }, 150);
+      }
+    };
+
+    // Fallback: visualViewport API
+    const vv = window.visualViewport;
+    const onResize = () => {
+      const isKeyboard = window.innerHeight - vv.height > 150;
+      document.body.classList.toggle("keyboard-open", isKeyboard);
+    };
+
+    document.addEventListener("focusin", onFocusIn, true);
+    document.addEventListener("focusout", onFocusOut, true);
+    if (vv) vv.addEventListener("resize", onResize);
+
+    return () => {
+      clearTimeout(closeTimer);
+      document.removeEventListener("focusin", onFocusIn, true);
+      document.removeEventListener("focusout", onFocusOut, true);
+      if (vv) vv.removeEventListener("resize", onResize);
+      document.body.classList.remove("keyboard-open");
+    };
+  }, []);
 
   if (hideMobileNav) return null;
 
@@ -36,7 +81,7 @@ export default function MobileBottomNav() {
   return (
     <div className="mobile-bottom-nav">
       <div className="mobile-bottom-nav-inner">
-        
+
         {/* 1. Home */}
         <Link
           to="/home"

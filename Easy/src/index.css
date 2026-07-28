@@ -3359,7 +3359,7 @@ html.dark .pwd-error-box {
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 999;
+  z-index: 9999;
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -3367,6 +3367,9 @@ html.dark .pwd-error-box {
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
   padding-bottom: max(6px, env(safe-area-inset-bottom));
   display: block;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  will-change: transform;
 }
 
 html.dark .mobile-bottom-nav {
@@ -3806,4 +3809,15 @@ html.dark .mobile-sell-icon-wrap {
     max-height: 500px;
     overflow-y: auto;
   }
+}
+
+/* ── Keyboard open state (detected via focusin/focusout + visualViewport API) ── */
+/* Hide bottom navbar when keyboard is open so it doesn't float above keyboard */
+body.keyboard-open .mobile-bottom-nav {
+  display: none !important;
+}
+
+/* Remove bottom padding reserved for navbar when keyboard is open */
+body.keyboard-open {
+  padding-bottom: 0 !important;
 }

@@ -116,7 +116,7 @@ export default function SupportPage() {
   };
 
   return (
-    <div className="page-enter min-h-screen pb-6 lg:pb-8" style={{ background: "var(--bg)" }}>
+    <div className="page-enter min-h-screen pb-[calc(80px+env(safe-area-inset-bottom))] lg:pb-8" style={{ background: "var(--bg)" }}>
       <Navbar />
 
       <div className="max-w-[850px] mx-auto px-4 pt-4 sm:pt-6">
@@ -184,11 +184,10 @@ export default function SupportPage() {
                   className={`flex flex-col max-w-[85%] ${msg.sender === "user" ? "ml-auto items-end" : "mr-auto items-start"}`}
                 >
                   <div
-                    className={`support-chat-bubble px-4 py-3 rounded-2xl text-[13px] leading-relaxed ${
-                      msg.sender === "user"
+                    className={`support-chat-bubble px-4 py-3 rounded-2xl text-[13px] leading-relaxed ${msg.sender === "user"
                         ? "user"
                         : "bot"
-                    }`}
+                      }`}
                   >
                     {msg.text}
                   </div>
@@ -204,7 +203,7 @@ export default function SupportPage() {
             </div>
 
             {/* Chat Input */}
-            <form onSubmit={handleSendChatMessage} className="support-chat-input-area p-3 flex gap-2">
+            <form onSubmit={handleSendChatMessage} className="support-chat-input-area p-3 flex gap-2 mt-auto">
               <input
                 type="text"
                 placeholder="Ask support anything..."
