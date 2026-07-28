@@ -68,6 +68,8 @@ export function AppProvider({ children }) {
     conditions: ["New", "Like new", "Good", "Fair", "For parts"], priceMax: 250000,
   });
 
+  const [hideMobileNav, setHideMobileNav] = useState(false);
+
   // ── Theme ───────────────────────────────────────────
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem("theme");
@@ -645,7 +647,8 @@ export function AppProvider({ children }) {
     showLoginModal, setShowLoginModal,
     loginReason, setLoginReason, triggerLoginModal,
     showLocationModal, setShowLocationModal,
-    userLocation, setUserLocation,  // BUG-01 FIX: Removed duplicate userLocation, setUserLocation entry
+    userLocation, setUserLocation,
+    hideMobileNav, setHideMobileNav,
     conversations, messages, typing, loadMessages,
     sendMessage, editMessage, deleteMessage, markRead, toggleSold, startChat,
     toasts, showToast,

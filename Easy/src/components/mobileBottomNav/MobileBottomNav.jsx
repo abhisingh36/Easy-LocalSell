@@ -4,7 +4,9 @@ import { useApp } from "../../context/AppContext";
 export default function MobileBottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isLoggedIn, triggerLoginModal, currentUser } = useApp();
+  const { isLoggedIn, triggerLoginModal, currentUser, hideMobileNav } = useApp();
+
+  if (hideMobileNav) return null;
 
   const activePath = location.pathname;
 

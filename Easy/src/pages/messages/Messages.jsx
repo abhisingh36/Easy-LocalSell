@@ -31,12 +31,22 @@ export default function Messages() {
   const [searchParams] = useSearchParams();
   const initConvId = searchParams.get("conv") || null;
 
-  const { conversations, messages, loadMessages, typing, sendMessage, editMessage, deleteMessage, markRead, toggleSold, showToast, isLoggedIn, triggerLoginModal, listings, currentUser, userLocation } = useApp();
+  const { conversations, messages, loadMessages, typing, sendMessage, editMessage, deleteMessage, markRead, toggleSold, showToast, isLoggedIn, triggerLoginModal, listings, currentUser, userLocation, setHideMobileNav } = useApp();
   const [activeConv, setActiveConv] = useState(() => {
     if (initConvId) return initConvId;
     const firstWithMsg = conversations.find(c => c.lastMessage);
     return firstWithMsg ? firstWithMsg.id : null;
   });
+  
+  useEffect(() => {
+    if (activeConv) {
+      setHideMobileNav(true);
+    } else {
+      setHideMobileNav(false);
+    }
+    // Cleanup when component unmounts
+    return () => setHideMobileNav(false);
+  }, [activeConv, setHideMobileNav]);
   const [contextMenu, setContextMenu] = useState(null);
   const [editingMsgId, setEditingMsgId] = useState(null);
 
