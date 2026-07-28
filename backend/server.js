@@ -26,7 +26,7 @@ const io = new Server(server, {
 const PORT = process.env.PORT || 5000;
 
 // Track online users
-const onlineUsers = new Map(); // userId -> socketId
+const onlineUsers = new Map(); // userId -> Set<socketId>
 
 // Socket.io logic
 io.on('connection', (socket) => {
@@ -34,7 +34,10 @@ io.on('connection', (socket) => {
 
   socket.on('user_connected', (userId) => {
     if (!userId) return;
-    onlineUsers.set(userId, socket.id);
+    if (!onlineUsers.has(userId)) {
+      onlineUsers.set(userId, new Set());
+    }
+    onlineUsers.get(userId).add(socket.id);
     io.emit('user_status', { userId, online: true });
   });
 
@@ -42,7 +45,7 @@ io.on('connection', (socket) => {
     if (!Array.isArray(userIds)) return;
     const statusMap = {};
     userIds.forEach(id => {
-       statusMap[id] = onlineUsers.has(id);
+       statusMap[id] = onlineUsers.has(id) && onlineUsers.get(id).size > 0;
     });
     socket.emit('online_status_result', statusMap);
   });
@@ -119,10 +122,13 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
     let disconnectedUserId = null;
-    for (const [userId, sockId] of onlineUsers.entries()) {
-      if (sockId === socket.id) {
-        disconnectedUserId = userId;
-        onlineUsers.delete(userId);
+    for (const [userId, sockets] of onlineUsers.entries()) {
+      if (sockets.has(socket.id)) {
+        sockets.delete(socket.id);
+        if (sockets.size === 0) {
+          disconnectedUserId = userId;
+          onlineUsers.delete(userId);
+        }
         break;
       }
     }
