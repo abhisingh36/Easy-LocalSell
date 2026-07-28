@@ -70,11 +70,36 @@ export function mapListingFromAPI(item) {
     location: item.location,
     description: item.description || "",
     originalPrice: item.originalPrice || `₹${(item.price * 1.5).toFixed(0)}`,
-    brand: item.brand || "",
-    model: item.model || "",
-    age: item.age || "",
-    colour: item.colour || "",
-    warranty: item.warranty || "",
+    // ── Basic details ──
+    brand:        item.brand        || "",
+    model:        item.model        || "",
+    age:          item.age          || "",
+    colour:       item.colour       || "",
+    warranty:     item.warranty     || "",
+    // ── Electronics ──
+    storage:      item.storage      || "",
+    ram:          item.ram          || "",
+    os:           item.os           || "",
+    // ── Vehicles ──
+    mileage:      item.mileage      || "",
+    fuelType:     item.fuelType     || "",
+    transmission: item.transmission || "",
+    owners:       item.owners       || "",
+    // ── Clothing ──
+    size:         item.size         || "",
+    material:     item.material     || "",
+    gender:       item.gender       || "",
+    // ── Furniture ──
+    dimensions:   item.dimensions   || "",
+    // ── Books ──
+    author:       item.author       || "",
+    language:     item.language     || "",
+    genre:        item.genre        || "",
+    // ── Sports ──
+    sportType:    item.sportType    || "",
+    // ── Kitchen / Appliances ──
+    power:        item.power        || "",
+    // ── Seller info ──
     seller: item.sellerName || "Unknown Seller",
     sellerInitials:
       item.sellerInitials ||

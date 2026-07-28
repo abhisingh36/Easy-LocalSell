@@ -590,7 +590,10 @@ export default function PostItem() {
               </div>
 
               {/* Additional specs in Review */}
-              {(brand || model || age || originalPrice || colour || warranty) && (
+              {(brand || model || age || originalPrice || colour || warranty ||
+                storage || ram || os || mileage || fuelType || transmission || owners ||
+                size || material || gender || dimensions ||
+                author || language || genre || sportType || power) && (
                 <div className="mt-6 border border-gray-200 rounded-xl overflow-hidden bg-white shadow-sm">
                   <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Specifications</p>
@@ -630,6 +633,109 @@ export default function PostItem() {
                       <div className="flex flex-col gap-0.5">
                         <span className="text-xs text-gray-400">Warranty Status</span>
                         <span className="font-semibold text-gray-900">{warranty}</span>
+                      </div>
+                    )}
+                    {/* Electronics */}
+                    {storage && (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-gray-400">Storage</span>
+                        <span className="font-semibold text-gray-900">{storage}</span>
+                      </div>
+                    )}
+                    {ram && (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-gray-400">RAM</span>
+                        <span className="font-semibold text-gray-900">{ram}</span>
+                      </div>
+                    )}
+                    {os && (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-gray-400">Operating System</span>
+                        <span className="font-semibold text-gray-900">{os}</span>
+                      </div>
+                    )}
+                    {/* Vehicles */}
+                    {mileage && (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-gray-400">Mileage</span>
+                        <span className="font-semibold text-gray-900">{mileage}</span>
+                      </div>
+                    )}
+                    {fuelType && (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-gray-400">Fuel Type</span>
+                        <span className="font-semibold text-gray-900">{fuelType}</span>
+                      </div>
+                    )}
+                    {transmission && (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-gray-400">Transmission</span>
+                        <span className="font-semibold text-gray-900">{transmission}</span>
+                      </div>
+                    )}
+                    {owners && (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-gray-400">No. of Owners</span>
+                        <span className="font-semibold text-gray-900">{owners}</span>
+                      </div>
+                    )}
+                    {/* Clothing */}
+                    {size && (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-gray-400">Size</span>
+                        <span className="font-semibold text-gray-900">{size}</span>
+                      </div>
+                    )}
+                    {material && (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-gray-400">Material</span>
+                        <span className="font-semibold text-gray-900">{material}</span>
+                      </div>
+                    )}
+                    {gender && (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-gray-400">Gender</span>
+                        <span className="font-semibold text-gray-900">{gender}</span>
+                      </div>
+                    )}
+                    {/* Furniture */}
+                    {dimensions && (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-gray-400">Dimensions</span>
+                        <span className="font-semibold text-gray-900">{dimensions}</span>
+                      </div>
+                    )}
+                    {/* Books */}
+                    {author && (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-gray-400">Author</span>
+                        <span className="font-semibold text-gray-900">{author}</span>
+                      </div>
+                    )}
+                    {language && (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-gray-400">Language</span>
+                        <span className="font-semibold text-gray-900">{language}</span>
+                      </div>
+                    )}
+                    {genre && (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-gray-400">Genre</span>
+                        <span className="font-semibold text-gray-900">{genre}</span>
+                      </div>
+                    )}
+                    {/* Sports */}
+                    {sportType && (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-gray-400">Sport Type</span>
+                        <span className="font-semibold text-gray-900">{sportType}</span>
+                      </div>
+                    )}
+                    {/* Kitchen / Appliances */}
+                    {power && (
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs text-gray-400">Power</span>
+                        <span className="font-semibold text-gray-900">{power}</span>
                       </div>
                     )}
                   </div>

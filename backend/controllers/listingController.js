@@ -270,7 +270,10 @@ exports.createListing = async (req, res) => {
   try {
     const {
       title, description, price, category, condition,
-      location, images, seller, sellerName, sellerInitials, sellerPhone
+      location, images, seller, sellerName, sellerInitials, sellerPhone,
+      brand, model, age, colour, originalPrice, warranty, storage, ram, os, 
+      mileage, fuelType, transmission, owners, size, material, gender, 
+      dimensions, author, language, genre, sportType, power
     } = req.body;
 
     // Validation
@@ -294,6 +297,9 @@ exports.createListing = async (req, res) => {
       sellerName: sellerName || 'Unknown',
       sellerInitials: sellerInitials || sellerName?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U',
       sellerPhone: sellerPhone || '',
+      brand, model, age, colour, originalPrice, warranty, storage, ram, os, 
+      mileage, fuelType, transmission, owners, size, material, gender, 
+      dimensions, author, language, genre, sportType, power,
       distance: Number((Math.random() * 2 + 0.2).toFixed(1))
     });
 
@@ -328,18 +334,19 @@ exports.updateListing = async (req, res) => {
       return res.status(403).json({ message: 'Not authorized to update this listing' });
     }
 
-    const { title, description, price, category, condition, location, images, sold } = req.body;
+    const allowedUpdates = [
+      'title', 'description', 'price', 'category', 'condition', 'location', 'images', 'sold',
+      'brand', 'model', 'age', 'colour', 'originalPrice', 'warranty', 'storage', 'ram', 'os', 
+      'mileage', 'fuelType', 'transmission', 'owners', 'size', 'material', 'gender', 'dimensions', 
+      'author', 'language', 'genre', 'sportType', 'power'
+    ];
 
-    // Build update object — only include fields that were sent
     const update = {};
-    if (title !== undefined) update.title = title;
-    if (description !== undefined) update.description = description;
-    if (price !== undefined) update.price = Number(price);
-    if (category !== undefined) update.category = category;
-    if (condition !== undefined) update.condition = condition;
-    if (location !== undefined) update.location = location;
-    if (images !== undefined) update.images = images;
-    if (sold !== undefined) update.sold = sold;
+    allowedUpdates.forEach(field => {
+      if (req.body[field] !== undefined) {
+        update[field] = field === 'price' ? Number(req.body[field]) : req.body[field];
+      }
+    });
 
     const updatedListing = await Listing.findByIdAndUpdate(
       id,
