@@ -13,29 +13,42 @@ export default function MobileBottomNav() {
   useEffect(() => {
     let closeTimer = null;
 
+    const openKeyboard = () => {
+      clearTimeout(closeTimer);
+      document.body.classList.add("keyboard-open");
+      // Inline style overrides ALL CSS (including !important) — removes blank space
+      document.body.style.paddingBottom = "0px";
+    };
+
+    const closeKeyboard = () => {
+      closeTimer = setTimeout(() => {
+        document.body.classList.remove("keyboard-open");
+        // Restore original bottom padding for the navbar
+        document.body.style.paddingBottom = "";
+      }, 150);
+    };
+
     const onFocusIn = (e) => {
       const tag = e.target.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) {
-        clearTimeout(closeTimer);
-        document.body.classList.add("keyboard-open");
+        openKeyboard();
       }
     };
 
     const onFocusOut = (e) => {
       const tag = e.target.tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) {
-        // Small delay to avoid flicker when moving between inputs
-        closeTimer = setTimeout(() => {
-          document.body.classList.remove("keyboard-open");
-        }, 150);
+        closeKeyboard();
       }
     };
 
     // Fallback: visualViewport API
     const vv = window.visualViewport;
     const onResize = () => {
+      if (!vv) return;
       const isKeyboard = window.innerHeight - vv.height > 150;
-      document.body.classList.toggle("keyboard-open", isKeyboard);
+      if (isKeyboard) openKeyboard();
+      else closeKeyboard();
     };
 
     document.addEventListener("focusin", onFocusIn, true);
@@ -48,6 +61,7 @@ export default function MobileBottomNav() {
       document.removeEventListener("focusout", onFocusOut, true);
       if (vv) vv.removeEventListener("resize", onResize);
       document.body.classList.remove("keyboard-open");
+      document.body.style.paddingBottom = "";
     };
   }, []);
 
