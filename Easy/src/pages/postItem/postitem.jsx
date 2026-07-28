@@ -9,6 +9,14 @@ const MAX_DESC    = 500;
 const MAX_PHOTOS  = 6;
 const STEPS       = ["Photos & Details","Review","Publish"];
 
+// Helper to render an input field cleanly
+const Field = ({ id, label, placeholder, value, setter }) => (
+  <div>
+    <label className="input-label" htmlFor={id}>{label}</label>
+    <input id={id} className="input" placeholder={placeholder} value={value} onChange={e => setter(e.target.value)} />
+  </div>
+);
+
 export default function PostItem() {
   const navigate = useNavigate();
   const locationState = useLocation();
@@ -433,14 +441,6 @@ export default function PostItem() {
                       const showAge = isElectronics || isFurniture || isVehicles || isBooks || isSports || isKitchen;
                       const showColour = isElectronics || isFurniture || isClothing || isVehicles;
                       const showWarranty = isElectronics || isKitchen;
-
-                      // Helper to render an input field cleanly
-                      const Field = ({ id, label, placeholder, value, setter }) => (
-                        <div>
-                          <label className="input-label" htmlFor={id}>{label}</label>
-                          <input id={id} className="input" placeholder={placeholder} value={value} onChange={e => setter(e.target.value)} />
-                        </div>
-                      );
 
                       return (
                         <>
