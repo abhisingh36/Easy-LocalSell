@@ -68,7 +68,10 @@ export default function Messages() {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [msgs, isTyping]);
+    if (activeConv && conv?.unread > 0) {
+      markRead(activeConv);
+    }
+  }, [msgs, isTyping, activeConv, conv, markRead]);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -421,7 +424,19 @@ export default function Messages() {
                           <div className={`msg-meta ${isMe ? "justify-end" : "justify-start"}`}>
                             <p className="text-xs text-gray-400">{formatTime(msg.createdAt)}</p>
                             {msg.isEdited && !msg.isDeleted && <span className="text-xs text-gray-400 italic ml-1">(edited)</span>}
-                            {isMe && <span className="msg-status">{msg.readBy && msg.readBy.length > 0 ? "read" : "sent"}</span>}
+                            {isMe && (
+                              <span className="ml-1 flex items-center">
+                                {msg.readBy && msg.readBy.length > 0 ? (
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M7 12l5 5L22 7M2 12l5 5m5-5l5-5" />
+                                  </svg>
+                                ) : (
+                                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M5 12l5 5L20 7" />
+                                  </svg>
+                                )}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>

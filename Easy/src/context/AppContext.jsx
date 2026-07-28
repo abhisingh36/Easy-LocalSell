@@ -12,6 +12,26 @@ import {
 } from "../services/api";
 import { io } from "socket.io-client";
 
+function formatConversationTime(isoString) {
+  if (!isoString) return "now";
+  const date = new Date(isoString);
+  const now = new Date();
+  
+  const isToday = date.getDate() === now.getDate() && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+  if (isToday) {
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+  
+  const yesterday = new Date(now);
+  yesterday.setDate(now.getDate() - 1);
+  const isYesterday = date.getDate() === yesterday.getDate() && date.getMonth() === yesterday.getMonth() && date.getFullYear() === yesterday.getFullYear();
+  if (isYesterday) {
+    return "Yesterday";
+  }
+  
+  return date.toLocaleDateString([], { month: "short", day: "numeric", year: date.getFullYear() !== now.getFullYear() ? "numeric" : undefined });
+}
+
 // ─── Context ────────────────────────────────────────────
 const AppContext = createContext(null);
 
@@ -85,6 +105,25 @@ export function AppProvider({ children }) {
 
       socket.on("connect", () => {
         console.log("Connected to socket server");
+        socket.emit("user_connected", currentUser._id || currentUser.id);
+      });
+
+      socket.on("user_status", ({ userId, online }) => {
+        setConversations(prev => prev.map(c => {
+          if (String(c.otherUserId) === String(userId)) {
+            return { ...c, online };
+          }
+          return c;
+        }));
+      });
+
+      socket.on("online_status_result", (statusMap) => {
+        setConversations(prev => prev.map(c => {
+          if (c.otherUserId && statusMap[c.otherUserId] !== undefined) {
+            return { ...c, online: statusMap[c.otherUserId] };
+          }
+          return c;
+        }));
       });
 
       socket.on("receive_message", (message) => {
@@ -160,27 +199,53 @@ export function AppProvider({ children }) {
         }));
       });
 
+      socket.on("messages_read", ({ conversationId, userId }) => {
+        setMessages((prev) => {
+          const msgs = prev[conversationId] || [];
+          let changed = false;
+          const newMsgs = msgs.map(m => {
+            const senderId = m.sender?._id || m.sender;
+            if (String(senderId) !== String(userId) && (!m.readBy || !m.readBy.includes(userId))) {
+              changed = true;
+              return { ...m, readBy: [...(m.readBy || []), userId] };
+            }
+            return m;
+          });
+          return changed ? { ...prev, [conversationId]: newMsgs } : prev;
+        });
+      });
+
       // Load initial conversations
       fetchConversations(currentUser._id || currentUser.id).then(data => {
         // Map to expected format
-        const mappedConvs = data.map(conv => ({
-          ...conv,
-          id: conv._id,
-          name: conv.participants.find(p => p._id !== (currentUser._id || currentUser.id))?.name || "User",
-          initials: conv.participants.find(p => p._id !== (currentUser._id || currentUser.id))?.name?.substring(0, 2).toUpperCase() || "U",
-          item: conv.listingId?.title || "Item",
-          price: conv.listingId ? `₹${Number(conv.listingId.price).toLocaleString("en-IN")}` : "",
-          preview: conv.lastMessage?.text || "New conversation",
-          time: conv.lastMessage ? new Date(conv.lastMessage.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "now",
-          unread: 0,
-          img: conv.listingId?.images?.[0] || "",
-          listingId: conv.listingId?._id
-        }));
+        const mappedConvs = data.map(conv => {
+          const otherParticipant = conv.participants.find(p => p._id !== (currentUser._id || currentUser.id));
+          return {
+            ...conv,
+            id: conv._id,
+            name: otherParticipant?.name || "User",
+            initials: otherParticipant?.name?.substring(0, 2).toUpperCase() || "U",
+            otherUserId: otherParticipant?._id,
+            item: conv.listingId?.title || "Item",
+            price: conv.listingId ? `₹${Number(conv.listingId.price).toLocaleString("en-IN")}` : "",
+            preview: conv.lastMessage?.text || "New conversation",
+            time: formatConversationTime(conv.lastMessage?.createdAt),
+            unread: 0,
+            img: conv.listingId?.images?.[0] || "",
+            listingId: conv.listingId?._id
+          };
+        });
         setConversations(mappedConvs);
 
         // BUG-14 FIX: Join rooms only after socket is confirmed connected
         // socket.io will queue emits, but using the connect event is safer
-        const joinRooms = () => data.forEach(conv => socket.emit("join_conversation", conv._id));
+        const joinRooms = () => {
+          data.forEach(conv => socket.emit("join_conversation", conv._id));
+          const otherUserIds = mappedConvs.map(c => c.otherUserId).filter(Boolean);
+          if (otherUserIds.length > 0) {
+            socket.emit("check_online", otherUserIds);
+          }
+        };
         if (socket.connected) {
           joinRooms();
         } else {
@@ -227,10 +292,10 @@ export function AppProvider({ children }) {
     }
     const isAdding = !wishlistRef.current.includes(id);
     setWishlist(prev => isAdding ? [...prev, id] : prev.filter(x => x !== id));
-    showToast(
-      isAdding ? "Added to wishlist" : "Removed from wishlist",
-      isAdding ? "success" : "info"
-    );
+    // showToast(
+    //   isAdding ? "Added to wishlist" : "Removed from wishlist",
+    //   isAdding ? "success" : "info"
+    // );
   }, [isLoggedIn, triggerLoginModal, showToast]);
 
   // ── Send message ────────────────────────────────────
@@ -304,7 +369,10 @@ export function AppProvider({ children }) {
     setConversations(prev =>
       prev.map(c => c.id === convId ? { ...c, unread: 0 } : c)
     );
-  }, []);
+    if (socketRef.current && currentUser) {
+      socketRef.current.emit("mark_read", { conversationId: convId, userId: currentUser._id || currentUser.id });
+    }
+  }, [currentUser]);
 
   // ── Mark sold ───────────────────────────────────────
   const toggleSold = useCallback((convId) => {

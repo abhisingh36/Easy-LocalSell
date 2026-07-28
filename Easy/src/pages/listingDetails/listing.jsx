@@ -332,10 +332,10 @@ export default function Listing() {
             </div>
 
             {/* Thumbnails */}
-            <div className="flex gap-2 mb-5">
+            <div className="flex gap-4 mb-5 overflow-x-auto scrollbar-hide">
               {thumbs.map((img, i) => (
                 <button key={i} id={`thumb-${i}`} onClick={() => img && setActiveThumb(i)}
-                  className={`flex-1 h-[72px] rounded-lg overflow-hidden flex items-center justify-center p-0 transition-colors border-[1.5px] ${i===activeThumb ? "border-blue-600 bg-blue-50" : "border-gray-200 bg-gray-50"} ${img ? "cursor-pointer" : "cursor-default"}`}>
+                  className={`w-[72px] h-[72px] shrink-0 rounded-lg overflow-hidden flex items-center justify-center p-0 transition-colors border-[1.5px] ${i===activeThumb ? "border-blue-600 bg-blue-50" : "border-gray-200 bg-gray-50"} ${img ? "cursor-pointer" : "cursor-default"}`}>
                   {img
                     ? <img src={img} alt="" className="w-full h-full object-cover"/>
                     : <span className="text-gray-300 text-xl">+</span>
@@ -615,13 +615,21 @@ export default function Listing() {
                         Member since {sellerStats?.memberSince ?? "—"}
                       </p>
                       <div className="flex items-center gap-1.5 mt-1">
-                        <Stars count={sellerStats?.rating ? Math.round(sellerStats.rating) : 4}/>
-                        <span className="text-xs font-semibold text-gray-800 ml-1">
-                          {sellerStats?.rating ?? "4.8"}
-                        </span>
-                        <span className="text-xs text-gray-400">
-                          · {sellerStats?.reviews ?? "—"} reviews
-                        </span>
+                        {sellerStats?.reviews > 0 ? (
+                          <>
+                            <Stars count={Math.round(sellerStats.rating || 0)} />
+                            <span className="text-xs font-semibold text-gray-800 ml-1">
+                              {sellerStats.rating}
+                            </span>
+                            <span className="text-xs text-gray-400">
+                              · {sellerStats.reviews} review{sellerStats.reviews !== 1 ? "s" : ""}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-xs text-gray-400">
+                            {sellerStatsLoading ? "Loading…" : "No reviews yet"}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>

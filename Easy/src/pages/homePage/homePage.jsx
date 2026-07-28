@@ -10,7 +10,7 @@ const RADIUS_KM = { "1 km": 1, "2 km": 2, "5 km": 5, "10 km": 10, "20 km": 20 };
 
 function condColor(cond) {
   if (cond === "Like new") return "badge-blue";
-  if (cond === "Good")     return "badge-amber";
+  if (cond === "Good") return "badge-amber";
   return "badge-gray";
 }
 
@@ -32,10 +32,10 @@ function SkeletonCard() {
 
 export default function Home() {
   const navigate = useNavigate();
-  const { listings, wishlist, toggleWishlist, searchQuery, setSearchQuery, filters, setFilters, userLocation, currentUser } = useApp();
+  const { listings, wishlist, toggleWishlist, searchQuery, setSearchQuery, filters, setFilters, userLocation, currentUser, triggerLoginModal } = useApp();
   const [activeTab, setActiveTab] = useState("nearby");
-  const [showMap,   setShowMap]   = useState(true);
-  const [loading]                 = useState(false);
+  const [showMap, setShowMap] = useState(true);
+  const [loading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
   const filtered = useMemo(() => {
@@ -68,9 +68,9 @@ export default function Home() {
       <Navbar />
 
       {/* Mobile Search Bar */}
-      <div className="lg:hidden px-3 py-2 border-b border-[var(--gray-200)]" style={{background: "var(--white)"}}>
-        <div style={{position: "relative", width: "100%"}}>
-          <span style={{position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--gray-400)", display: "flex", alignItems: "center"}}>
+      <div className="lg:hidden px-3 py-2 border-b border-[var(--gray-200)]" style={{ background: "var(--white)" }}>
+        <div style={{ position: "relative", width: "100%" }}>
+          <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--gray-400)", display: "flex", alignItems: "center" }}>
             <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
             </svg>
@@ -81,7 +81,7 @@ export default function Home() {
             value={searchQuery}
             onChange={e => { setSearchQuery(e.target.value); }}
             className="navbar-search"
-            style={{width: "100%", paddingLeft: 32}}
+            style={{ width: "100%", paddingLeft: 32 }}
           />
         </div>
       </div>
@@ -89,7 +89,7 @@ export default function Home() {
       {/* Mobile Categories Bar */}
       <div className="lg:hidden bg-white border-b border-[var(--gray-200)] overflow-x-auto whitespace-nowrap scrollbar-hide px-3 py-1.5 flex gap-2 items-center shadow-sm">
         {/* Hamburger -> Opens Filters */}
-        <button 
+        <button
           onClick={() => setShowFilters(true)}
           className="flex items-center gap-1 text-[12.5px] font-semibold text-gray-800 shrink-0 py-2"
         >
@@ -112,11 +112,10 @@ export default function Home() {
                 const scrollLeft = button.offsetLeft - (container.clientWidth / 2) + (button.clientWidth / 2);
                 container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
               }}
-              className={`shrink-0 flex items-center gap-1.5 text-[12.5px] px-2.5 py-1 rounded-md transition-all ${
-                isActive 
-                  ? "font-semibold text-blue-700 bg-blue-50" 
+              className={`shrink-0 flex items-center gap-1.5 text-[12.5px] px-2.5 py-1 rounded-md transition-all ${isActive
+                  ? "font-semibold text-blue-700 bg-blue-50"
                   : "font-medium text-gray-600 hover:text-gray-900"
-              }`}
+                }`}
             >
               <span className={`flex items-center justify-center ${isActive ? "text-blue-600" : "text-gray-500"}`}>
                 {CATEGORY_ICONS[catName]}
@@ -130,14 +129,14 @@ export default function Home() {
       <div className="flex relative" style={{ flex: 1, minHeight: 0, overflow: "hidden" }}>
         {/* Mobile Backdrop */}
         {showFilters && (
-          <div 
-            className="fixed inset-0 bg-black/50 md:hidden" 
+          <div
+            className="fixed inset-0 bg-black/50 md:hidden"
             style={{ zIndex: 40 }}
             onClick={() => setShowFilters(false)}
           />
         )}
-        
-        <div 
+
+        <div
           className={`lg:block lg:h-full ${showFilters ? "fixed left-0 top-0 bottom-0 w-[280px] pt-[60px] flex flex-col shadow-2xl bg-white lg:relative lg:w-auto lg:pt-0 lg:shadow-none lg:flex-none" : "hidden"}`}
           style={{ zIndex: 45 }}
         >
@@ -161,7 +160,13 @@ export default function Home() {
                 key={tab}
                 id={`tab-${tab}`}
                 className={`tab-btn shrink-0 ${activeTab === tab ? "active" : ""}`}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  if (tab === "my_listings" && !currentUser) {
+                    triggerLoginModal();
+                    return;
+                  }
+                  setActiveTab(tab);
+                }}
               >
                 {tab === "nearby" ? "Nearby" : tab === "newest" ? "Newest" : "My Listing"}
               </button>

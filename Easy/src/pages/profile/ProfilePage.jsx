@@ -475,10 +475,13 @@ export default function ProfilePage() {
             <div className="listing-grid">
               {myWishlist.map(item => (
                 <div key={item.id} className="listing-card relative" onClick={() => navigate(`/listing?id=${item.id}`)}>
-                  <button className="absolute top-2.5 right-2.5 z-10 w-8 h-8 bg-white/95 rounded-full flex items-center justify-center shadow-sm hover:scale-105 transition-transform duration-200"
-                    onClick={ev => { ev.stopPropagation(); toggleWishlist(item.id); }}>
-                    <svg className="w-4.5 h-4.5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  <button
+                    className="absolute"
+                    style={{ zIndex: 10, top: "8px", right: "8px", width: "28px", height: "28px", background: "transparent", border: "none", boxShadow: "none" }}
+                    onClick={ev => { ev.stopPropagation(); toggleWishlist(item.id); }}
+                  >
+                    <svg width="22" height="22" fill="#ef4444" stroke="#ef4444" viewBox="0 0 24 24" style={{ filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.6))" }}>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                   </button>
                   <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">

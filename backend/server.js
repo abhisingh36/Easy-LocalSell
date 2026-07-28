@@ -25,9 +25,27 @@ const io = new Server(server, {
 
 const PORT = process.env.PORT || 5000;
 
+// Track online users
+const onlineUsers = new Map(); // userId -> socketId
+
 // Socket.io logic
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
+
+  socket.on('user_connected', (userId) => {
+    if (!userId) return;
+    onlineUsers.set(userId, socket.id);
+    io.emit('user_status', { userId, online: true });
+  });
+
+  socket.on('check_online', (userIds) => {
+    if (!Array.isArray(userIds)) return;
+    const statusMap = {};
+    userIds.forEach(id => {
+       statusMap[id] = onlineUsers.has(id);
+    });
+    socket.emit('online_status_result', statusMap);
+  });
 
   socket.on('join_conversation', (conversationId) => {
     socket.join(conversationId);
@@ -86,8 +104,31 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('mark_read', async (data) => {
+    try {
+      await Message.updateMany(
+        { conversationId: data.conversationId, sender: { $ne: data.userId }, readBy: { $ne: data.userId } },
+        { $push: { readBy: data.userId } }
+      );
+      io.to(data.conversationId).emit('messages_read', { conversationId: data.conversationId, userId: data.userId });
+    } catch (error) {
+      console.error('Error marking messages as read via socket:', error);
+    }
+  });
+
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
+    let disconnectedUserId = null;
+    for (const [userId, sockId] of onlineUsers.entries()) {
+      if (sockId === socket.id) {
+        disconnectedUserId = userId;
+        onlineUsers.delete(userId);
+        break;
+      }
+    }
+    if (disconnectedUserId) {
+      io.emit('user_status', { userId: disconnectedUserId, online: false });
+    }
   });
 });
 

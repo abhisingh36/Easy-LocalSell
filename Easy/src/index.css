@@ -1283,7 +1283,7 @@ html.dark .profile-verified-badge {
 }
 
 /* Text label aligns under the number, not the icon */
-.profile-stat-card > .text-xs {
+.profile-stat-card>.text-xs {
   padding-left: 38px;
 }
 
@@ -1293,6 +1293,7 @@ html.dark .profile-verified-badge {
     height: 32px;
     border-radius: 6px;
   }
+
   .navbar-loc-btn {
     height: 32px;
     padding: 0 10px;
@@ -1405,19 +1406,23 @@ html.dark .profile-stat-card {
 }
 
 .icon-green {
-  background: #bbf7d0;  /* green-200 */
+  background: #bbf7d0;
+  /* green-200 */
 }
 
 .icon-blue {
-  background: #bfdbfe;  /* blue-200 */
+  background: #bfdbfe;
+  /* blue-200 */
 }
 
 .icon-amber {
-  background: #fde68a;  /* amber-200 */
+  background: #fde68a;
+  /* amber-200 */
 }
 
 .icon-purple {
-  background: #e9d5ff;  /* purple-200 */
+  background: #e9d5ff;
+  /* purple-200 */
 }
 
 /* ─── Post item ──────────────────────────────────── */
@@ -2159,7 +2164,7 @@ html.dark .loc-search-bar {
 }
 
 html.dark .loc-map-footer {
-  background: var(--gray-200);
+  background: var(--gray-100);
   border-top-color: var(--gray-300);
 }
 

@@ -122,15 +122,19 @@ export default function LoginModal() {
   // ─────────────────────────────────────────────────────────────────
   function validateStep1() {
     const e = {};
-    if (!name.trim() || name.trim().length < 2) e.name = "Enter your full name";
-    if (!phone.trim() || phone.replace(/\D/g, "").length < 10) e.phone = "Enter a valid 10-digit phone number";
-    if (!email.trim() || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) e.email = "Enter a valid email address";
+    const nameRegex = /^[a-zA-Z\s'-]{2,}$/;
+    if (!name.trim() || !nameRegex.test(name.trim())) e.name = "Enter a valid full name (letters only)";
+    if (!phone.trim() || !/^\+?[0-9\s-]{10,15}$/.test(phone) || phone.replace(/\D/g, "").length !== 10) e.phone = "Enter a valid 10-digit phone number";
+    if (!email.trim() || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) e.email = "Enter a valid email address";
     return e;
   }
   function validateStep3() {
     const e = {};
     if (!location.trim()) e.location = "Your location is required";
-    if (!password || password.length < 6) e.password = "Password must be at least 6 characters";
+    const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    if (!password || !strongRegex.test(password)) {
+      e.password = "Password must be at least 8 chars with upper, lower, number, and special char";
+    }
     if (password !== confirm) e.confirm = "Passwords do not match";
     return e;
   }
@@ -224,7 +228,7 @@ export default function LoginModal() {
   // ─────────────────────────────────────────────────────────────────
   async function handleForgotSend(e) {
     e.preventDefault();
-    if (!forgotEmail.trim() || !/^[^@]+@[^@]+\.[^@]+$/.test(forgotEmail)) {
+    if (!forgotEmail.trim() || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(forgotEmail)) {
       setErrors({ forgotEmail: "Enter a valid email address" }); return;
     }
     setLoading(true); setErrors({});
@@ -257,7 +261,8 @@ export default function LoginModal() {
     e.preventDefault();
     const errs = {};
     if (!resetOtp.replace(/\D/g, "") || resetOtp.replace(/\D/g, "").length < 6) errs.resetOtp = "Enter the 6-digit code";
-    if (!newPassword || newPassword.length < 6) errs.newPassword = "Password must be at least 6 characters";
+    const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+    if (!newPassword || !strongRegex.test(newPassword)) errs.newPassword = "Password must be at least 8 chars with upper, lower, number, and special char";
     if (newPassword !== newPasswordConfirm) errs.newPasswordConfirm = "Passwords do not match";
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setLoading(true); setErrors({});
@@ -474,7 +479,7 @@ export default function LoginModal() {
                       }
                     />
                     <div className="field-row-2">
-                      <PasswordField id="m-signup-pass" label="Password" placeholder="Min. 6 characters"
+                      <PasswordField id="m-signup-pass" label="Password" placeholder="Strong password (min 8 chars)"
                         value={password} onChange={e => { setPassword(e.target.value); clearErr("password"); }}
                         error={errors.password} showPass={showPass} onToggle={() => setShowPass(v => !v)} />
                       <ModalField id="m-confirm" label="Confirm password" type={showPass ? "text" : "password"}
@@ -570,7 +575,7 @@ export default function LoginModal() {
                 {/* Step 3: New password */}
                 {forgotStep === 3 && (
                   <form onSubmit={handleResetPassword} className="flex flex-col gap-2 md:gap-3" noValidate>
-                    <PasswordField id="m-new-pass" label="New password" placeholder="Min. 6 characters"
+                    <PasswordField id="m-new-pass" label="New password" placeholder="Strong password (min 8 chars)"
                       value={newPassword} onChange={e => { setNewPassword(e.target.value); clearErr("newPassword"); }}
                       error={errors.newPassword} showPass={showNewPass} onToggle={() => setShowNewPass(v => !v)} />
                     <ModalField id="m-new-pass-confirm" label="Confirm new password"
