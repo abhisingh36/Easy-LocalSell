@@ -586,13 +586,11 @@ export function AppProvider({ children }) {
   }, []);
 
   const logout = useCallback(() => {
-    const userId = currentUser?._id || currentUser?.id;
     localStorage.removeItem("currentUser");
-    if (userId) localStorage.removeItem(`wishlist_${userId}`);
     setCurrentUser(null);
     setIsLoggedIn(false);
-    setWishlist([]);
-  }, [currentUser]);
+    setWishlist([]);  // Sirf memory clear — localStorage mein wishlist rehti hai
+  }, []);
 
   // ── Update current user profile ─────────────────────
   const updateUser = useCallback(async (payload) => {
