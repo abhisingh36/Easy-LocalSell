@@ -395,8 +395,8 @@ html.dark .input-error {
 
 /* ─── Autofill Fix ───────────────────────────────── */
 input:-webkit-autofill,
-input:-webkit-autofill:hover, 
-input:-webkit-autofill:focus, 
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 1000px var(--white) inset !important;
   -webkit-text-fill-color: var(--gray-900) !important;
@@ -404,8 +404,8 @@ input:-webkit-autofill:active {
 }
 
 html.dark input:-webkit-autofill,
-html.dark input:-webkit-autofill:hover, 
-html.dark input:-webkit-autofill:focus, 
+html.dark input:-webkit-autofill:hover,
+html.dark input:-webkit-autofill:focus,
 html.dark input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 1000px #222430 inset !important;
   -webkit-text-fill-color: var(--gray-900) !important;
@@ -3094,6 +3094,9 @@ html.dark .pwd-error-box {
 
 @media(max-width: 768px) {
 
+  /* Show map overlay tap-to-expand only on mobile */
+  :root { --map-overlay-display: block; }
+
   .loc-modal-map {
     height: 220px !important;
   }
@@ -3228,9 +3231,8 @@ html.dark .pwd-error-box {
     transform: scale(0.97);
   }
 
-  /* Image: 4:3 ratio */
+  /* Image: Mobile Aspect Ratio */
   .listing-card>div[class*="aspect-"] {
-    aspect-ratio: 4 / 3 !important;
     width: 100%;
     flex-shrink: 0;
     overflow: hidden;
@@ -3836,7 +3838,26 @@ body.keyboard-open .mobile-bottom-nav {
   display: none !important;
 }
 
-/* Remove bottom padding reserved for navbar when keyboard is open */
 body.keyboard-open {
   padding-bottom: 0 !important;
+}
+
+/* ─── Tighter Card Info Section ─── */
+.listing-card > div:nth-child(2) {
+  padding: 6px 10px 8px !important; /* Reduce padding */
+  gap: 0px !important;              /* Remove gap from flex column */
+}
+.listing-card > div:nth-child(2) p.text-lg {
+  margin-bottom: 0px !important;
+  line-height: 1.1 !important;      /* Tighter price line height */
+}
+.listing-card > div:nth-child(2) p.text-sm {
+  margin-bottom: 4px !important;
+  line-height: 1.2 !important;      /* Tighter title line height */
+}
+
+/* ─── Fix Map Modal Height ─── */
+.leaflet-map-container.absolute {
+  height: 100% !important;
+  width: 100% !important;
 }

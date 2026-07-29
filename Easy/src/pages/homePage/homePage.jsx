@@ -37,6 +37,7 @@ export default function Home() {
   const [showMap, setShowMap] = useState(true);
   const [loading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [mapModalOpen, setMapModalOpen] = useState(false);
 
   const filtered = useMemo(() => {
     let result = [...listings];
@@ -186,8 +187,89 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            {showMap && <Map />}
+            <div className="relative">
+              {showMap && (
+                <>
+                  <Map />
+                  {/* Clickable overlay on mobile to open full screen map */}
+                  <div 
+                    className="absolute inset-0 z-[1000] cursor-pointer"
+                    style={{ display: 'var(--map-overlay-display, none)' }}
+                    onClick={() => setMapModalOpen(true)}
+                  />
+                </>
+              )}
+            </div>
           </div>
+
+          {/* Centered Interactive Map Modal */}
+          {mapModalOpen && (
+            <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+              <div
+                className="rounded-2xl overflow-hidden flex flex-col w-full max-w-lg shadow-2xl h-[75vh]"
+                style={{ backgroundColor: 'var(--white)' }}
+              >
+                {/* Header */}
+                <div
+                  className="px-5 py-4 flex justify-between items-center shrink-0"
+                  style={{ borderBottom: '1px solid var(--gray-100)' }}
+                >
+                  <h2 className="text-base font-bold" style={{ color: 'var(--gray-900)' }}>
+                    Interactive Map
+                  </h2>
+                  <button
+                    onClick={() => setMapModalOpen(false)}
+                    className="btn btn-ghost btn-sm"
+                    style={{
+                      width: 36, height: 36, borderRadius: '50%', padding: 0,
+                      backgroundColor: 'var(--gray-100)',
+                      color: 'var(--gray-900)',
+                    }}
+                  >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"></line>
+                      <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Radius Pills */}
+                <div
+                  className="px-5 py-3 shrink-0 flex flex-wrap items-center gap-2"
+                  style={{ borderBottom: '1px solid var(--gray-100)', backgroundColor: 'var(--white)' }}
+                >
+                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--gray-400)' }}>
+                    Radius
+                  </span>
+                  {Object.keys(RADIUS_KM).map(r => {
+                    const isActive = filters.radius === r;
+                    return (
+                      <button
+                        key={r}
+                        onClick={() => setFilters(prev => ({ ...prev, radius: r }))}
+                        className="text-sm font-medium transition-all"
+                        style={{
+                          padding: '5px 16px',
+                          borderRadius: 99,
+                          border: `1.5px solid ${isActive ? 'var(--blue-600)' : 'var(--gray-200)'}`,
+                          backgroundColor: isActive ? 'var(--blue-600)' : 'transparent',
+                          color: isActive ? '#fff' : 'var(--gray-900)',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {r}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Map */}
+                <div className="flex-1 w-full relative min-h-0" style={{ backgroundColor: 'var(--gray-100)' }}>
+                  <Map interactive={true} fullScreen={true} className="" />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Grid header */}
           <div className="flex items-center justify-between mb-3.5">
@@ -223,7 +305,7 @@ export default function Home() {
                     onClick={() => navigate(`/listing?id=${item.id}`)}
                   >
                     {/* Image */}
-                    <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
+                    <div className="aspect-[16/9] relative overflow-hidden bg-gray-100">
                       <img
                         src={item.img}
                         alt={item.title}
@@ -251,9 +333,9 @@ export default function Home() {
                     </div>
 
                     {/* Info */}
-                    <div className="px-3.5 py-3">
-                      <p className="text-lg font-bold text-gray-900 mb-1">{item.priceLabel}</p>
-                      <p className="text-sm text-gray-500 mb-2.5 truncate">{item.title}</p>
+                    <div className="px-3 py-2">
+                      <p className="text-lg font-bold text-gray-900 mb-0.5">{item.priceLabel}</p>
+                      <p className="text-sm text-gray-500 mb-1.5 truncate">{item.title}</p>
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-gray-400">{item.distLabel}</span>
                         <span className={`badge ${condColor(item.condition)}`}>{item.condition}</span>

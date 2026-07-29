@@ -426,7 +426,7 @@ export default function ProfilePage() {
           <div className="listing-grid">
             {myListings.map(item => (
               <div key={item.id} className="listing-card" onClick={() => navigate(`/listing?id=${item.id}`)}>
-                <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
+                <div className="aspect-[16/9] relative overflow-hidden bg-gray-100">
                   <img src={item.img} alt="" className="w-full h-full object-cover block" loading="lazy" />
                   {item.sold && (
                     <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-extrabold text-lg uppercase tracking-wider z-[5]">
@@ -434,9 +434,9 @@ export default function ProfilePage() {
                     </div>
                   )}
                 </div>
-                <div className="px-3.5 py-3">
-                  <p className="text-lg font-bold text-gray-900 mb-1">{item.priceLabel}</p>
-                  <p className="text-sm text-gray-500 mb-2.5 truncate">{item.title}</p>
+                <div className="px-3 py-2">
+                  <p className="text-lg font-bold text-gray-900 mb-0.5">{item.priceLabel}</p>
+                  <p className="text-sm text-gray-500 mb-1.5 truncate">{item.title}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-gray-400">{item.distLabel}</span>
                     <span className={`badge ${item.condition === "Like new" ? "badge-blue" : "badge-amber"}`}>{item.condition}</span>
@@ -483,15 +483,15 @@ export default function ProfilePage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                     </svg>
                   </button>
-                  <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
+                  <div className="aspect-[16/9] relative overflow-hidden bg-gray-100">
                     <img src={item.img} alt="" className="w-full h-full object-cover block" loading="lazy" />
                     {item.sold && (
                       <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-extrabold text-lg uppercase tracking-wider z-[5]">Sold</div>
                     )}
                   </div>
-                  <div className="px-3.5 py-3">
-                    <p className="text-lg font-bold text-gray-900 mb-1">{item.priceLabel}</p>
-                    <p className="text-sm text-gray-500 mb-2.5 truncate">{item.title}</p>
+                  <div className="px-3 py-2">
+                    <p className="text-lg font-bold text-gray-900 mb-0.5">{item.priceLabel}</p>
+                    <p className="text-sm text-gray-500 mb-1.5 truncate">{item.title}</p>
                   </div>
                 </div>
               ))}

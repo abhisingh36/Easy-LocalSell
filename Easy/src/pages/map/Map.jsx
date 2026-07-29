@@ -29,37 +29,68 @@ function FitToRadius({ center, radiusM }) {
   const map = useMap();
   useEffect(() => {
     if (!center || !radiusM) return;
-    const lat_rad   = center[0] * Math.PI / 180;
-    const R         = 6378137; // Earth radius in metres
-    const mapHeight = map.getSize().y;           // actual pixel height
-    const targetPx  = (mapHeight / 2) - 20;      // circle radius in px (20px edge gap)
-    // Web Mercator: metersPerPixel = (2Ï€·R·cos(lat)) / (256 · 2^zoom)
-    const zoom = Math.log2(
-      (2 * Math.PI * R * Math.cos(lat_rad)) / (256 * (radiusM / targetPx))
-    );
-    map.flyTo(center, zoom, { animate: true, duration: 0.4 });
-  }, [center?.[0], center?.[1], radiusM]);
+
+    const updateFit = () => {
+      const mapHeight = map.getSize().y;           // actual pixel height
+      if (mapHeight <= 40) return; // Prevent negative log causing NaN crash
+
+      const lat_rad   = center[0] * Math.PI / 180;
+      const R         = 6378137; // Earth radius in metres
+      const targetPx  = (mapHeight / 2) - 20;      // circle radius in px (20px edge gap)
+      const zoom = Math.log2(
+        (2 * Math.PI * R * Math.cos(lat_rad)) / (256 * (radiusM / targetPx))
+      );
+      
+      if (!isNaN(zoom)) {
+        map.flyTo(center, zoom, { animate: true, duration: 0.4 });
+      }
+    };
+
+    updateFit();
+    map.on("resize", updateFit);
+    return () => map.off("resize", updateFit);
+  }, [center?.[0], center?.[1], radiusM, map]);
   return null;
 }
 
-const Map = () => {
+function InvalidateMapSize() {
+  const map = useMap();
+  useEffect(() => {
+    // Small delay to ensure container dimensions are fully calculated
+    const timer = setTimeout(() => {
+      map.invalidateSize();
+    }, 200);
+    return () => clearTimeout(timer);
+  }, [map]);
+  return null;
+}
+
+const Map = ({ 
+  interactive = !L.Browser.mobile, 
+  className = "card overflow-hidden",
+  fullScreen = false
+}) => {
   const { userLocation, filters } = useApp();
   const center  = userLocation.coords || [26.8467, 80.9462];
   const radiusM = RADIUS_MAP[filters.radius] || 5000;
 
   return (
-    <div className="card overflow-hidden">
+    <div className={className} style={fullScreen ? { width: "100%", height: "100%", position: "absolute", inset: 0 } : { width: "100%" }}>
       <MapContainer
         center={center}
         zoom={14}
         zoomSnap={0}
         zoomDelta={0.5}
         scrollWheelZoom={false}
-        className="leaflet-map-container"
-        style={{ width: "100%" }}
+        dragging={interactive}
+        touchZoom={interactive}
+        className={`leaflet-map-container ${fullScreen ? "absolute inset-0 z-0" : ""}`}
+        style={fullScreen ? { width: "100%", height: "100%" } : { width: "100%" }}
         attributionControl={false}
         zoomControl={false}
       >
+        <InvalidateMapSize />
+        <FitToRadius center={center} radiusM={radiusM} />
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />

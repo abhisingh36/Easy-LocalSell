@@ -711,7 +711,7 @@ export default function Listing() {
                             navigate(`/listing?id=${item.id}`);
                           }}
                         >
-                          <div className="aspect-[4/3] relative overflow-hidden bg-gray-100">
+                          <div className="aspect-[16/9] relative overflow-hidden bg-gray-100">
                             <img src={item.img} alt="" className="w-full h-full object-cover" />
                           </div>
                           <div className="p-2.5 min-w-0">
