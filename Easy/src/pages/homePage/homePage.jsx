@@ -204,29 +204,39 @@ export default function Home() {
 
           {/* Centered Interactive Map Modal */}
           {mapModalOpen && (
-            <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(3px)', WebkitBackdropFilter: 'blur(3px)' }}>
               <div
                 className="rounded-2xl overflow-hidden flex flex-col w-full max-w-lg shadow-2xl h-[75vh]"
-                style={{ backgroundColor: 'var(--white)' }}
+                style={{
+                  backgroundColor: 'var(--white)',
+                  border: '2px solid var(--gray-300)',
+                  boxShadow: '0 24px 48px -8px rgba(0,0,0,0.25), 0 0 0 1px var(--gray-200)'
+                }}
               >
                 {/* Header */}
                 <div
                   className="px-5 py-4 flex justify-between items-center shrink-0"
-                  style={{ borderBottom: '1px solid var(--gray-100)' }}
+                  style={{ borderBottom: '2px solid var(--gray-200)' }}
                 >
                   <h2 className="text-base font-bold" style={{ color: 'var(--gray-900)' }}>
                     Interactive Map
                   </h2>
                   <button
                     onClick={() => setMapModalOpen(false)}
-                    className="btn btn-ghost btn-sm"
+                    onMouseEnter={e => e.currentTarget.style.opacity = '0.8'}
+                    onMouseLeave={e => e.currentTarget.style.opacity = '1'}
                     style={{
-                      width: 36, height: 36, borderRadius: '50%', padding: 0,
-                      backgroundColor: 'var(--gray-100)',
-                      color: 'var(--gray-900)',
+                      width: 34, height: 34, borderRadius: '50%', padding: 0,
+                      backgroundColor: 'var(--gray-200)',
+                      border: '1.5px solid var(--gray-300)',
+                      color: 'var(--gray-800)',
+                      cursor: 'pointer',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      flexShrink: 0,
+                      transition: 'opacity 0.15s',
                     }}
                   >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <line x1="18" y1="6" x2="6" y2="18"></line>
                       <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
@@ -236,7 +246,7 @@ export default function Home() {
                 {/* Radius Pills */}
                 <div
                   className="px-5 py-3 shrink-0 flex flex-wrap items-center gap-2"
-                  style={{ borderBottom: '1px solid var(--gray-100)', backgroundColor: 'var(--white)' }}
+                   style={{ borderBottom: '2px solid var(--gray-200)', backgroundColor: 'var(--white)' }}
                 >
                   <span className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--gray-400)' }}>
                     Radius
