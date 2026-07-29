@@ -75,9 +75,8 @@ export default function PostItem() {
   useEffect(() => {
     if (!isLoggedIn) {
       navigate("/home");
-      triggerLoginModal("Please log in to sell items.");
     }
-  }, [isLoggedIn, navigate, triggerLoginModal]);
+  }, [isLoggedIn, navigate]);
 
   const compressImage = (file) => {
     return new Promise((resolve) => {

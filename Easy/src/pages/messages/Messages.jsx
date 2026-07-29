@@ -77,9 +77,8 @@ export default function Messages() {
   useEffect(() => {
     if (!isLoggedIn) {
       navigate("/home");
-      triggerLoginModal("Please log in to view your messages.");
     }
-  }, [isLoggedIn, navigate, triggerLoginModal]);
+  }, [isLoggedIn, navigate]);
 
 
   useEffect(() => {

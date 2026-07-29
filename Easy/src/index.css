@@ -393,6 +393,25 @@ html.dark .input-error {
   color: var(--red-400);
 }
 
+/* ─── Autofill Fix ───────────────────────────────── */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--white) inset !important;
+  -webkit-text-fill-color: var(--gray-900) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+html.dark input:-webkit-autofill,
+html.dark input:-webkit-autofill:hover, 
+html.dark input:-webkit-autofill:focus, 
+html.dark input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #222430 inset !important;
+  -webkit-text-fill-color: var(--gray-900) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
 /* ─── Card ───────────────────────────────────────── */
 .card {
   background: var(--white);

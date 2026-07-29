@@ -158,9 +158,8 @@ export default function ProfilePage() {
   useEffect(() => {
     if (!isLoggedIn) {
       navigate("/home");
-      triggerLoginModal("Please log in to view your profile.");
     }
-  }, [isLoggedIn, navigate, triggerLoginModal]);
+  }, [isLoggedIn, navigate]);
 
   // ── Refresh live stats ───────────────────────────────────────
   useEffect(() => {

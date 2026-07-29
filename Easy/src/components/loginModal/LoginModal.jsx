@@ -271,6 +271,9 @@ export default function LoginModal() {
       // Return to login with success message
       setMode("login");
       setForgotStep(1);
+      setDevOtp(null);
+      clearInterval(timerRef.current);
+      setTimer(0);
       setErrors({ success: "Password reset! Please log in with your new password." });
     } catch (err) {
       setErrors({ global: err.data?.message || err.message || "Reset failed. Please try again." });
@@ -345,7 +348,7 @@ export default function LoginModal() {
             {/* Dev OTP hint — shows when no Gmail configured */}
             {devOtp && (
               <div className="mb-4 p-3.5 bg-amber-50 border border-amber-300 rounded-xl">
-                <p className="text-xs font-bold text-amber-700 mb-1.5">ðŸ›  Dev Mode — No email service configured</p>
+                <p className="text-xs font-bold text-amber-700 mb-1.5">🛠️ Dev Mode — No email service configured</p>
                 <p className="text-xs text-amber-800 mb-2">Your code (would be emailed in production):</p>
                 <p className="text-center font-mono text-2xl font-black tracking-[0.4em] text-amber-900 bg-amber-100 rounded-lg py-2">
                   {devOtp}
@@ -353,7 +356,7 @@ export default function LoginModal() {
               </div>
             )}
 
-            {/* â•â•â•â•â•â•â•â•â•â•â•â• LOGIN â•â•â•â•â•â•â•â•â•â•â•â• */}
+            {/* ════════════ LOGIN ════════════ */}
             {mode === "login" && (
               <form onSubmit={handleLogin} className="flex flex-col gap-3" noValidate>
                 <ModalField
@@ -378,7 +381,7 @@ export default function LoginModal() {
               </form>
             )}
 
-            {/* â•â•â•â•â•â•â•â•â•â•â•â• SIGNUP â•â•â•â•â•â•â•â•â•â•â•â• */}
+            {/* ════════════ SIGNUP ════════════ */}
             {mode === "signup" && (
               <div className="flex flex-col gap-3">
                 {/* Progress bar */}
@@ -415,7 +418,7 @@ export default function LoginModal() {
                 {signupStep === 2 && (
                   <form onSubmit={handleVerifyOtp} className="flex flex-col gap-2 md:gap-3" noValidate>
                     <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-800 leading-relaxed">
-                      ðŸ“§ A 6-digit code was sent to <strong>{email}</strong>.<br />
+                      📧 A 6-digit code was sent to <strong>{email}</strong>.<br />
                       Check your inbox — and spam folder if you don't see it.
                     </div>
 
@@ -444,7 +447,7 @@ export default function LoginModal() {
 
                     <div className="flex justify-between items-center text-xs">
                       <button type="button" onClick={() => { setSignupStep(1); setErrors({}); clearInterval(timerRef.current); setTimer(0); setDevOtp(null); }}
-                        className="text-gray-500 hover:text-gray-800 font-medium">â† Back</button>
+                        className="text-gray-500 hover:text-gray-800 font-medium">← Back</button>
                       <button type="button" onClick={handleSendOtp} disabled={timer > 0 || loading}
                         className={`font-semibold ${timer > 0 ? "text-gray-400 cursor-not-allowed" : "text-blue-600 hover:text-blue-700 cursor-pointer"}`}>
                         {timer > 0 ? `Resend in ${timer}s` : "Resend code"}
@@ -517,7 +520,7 @@ export default function LoginModal() {
                     </button>
                     <button type="button" onClick={() => switchMode("login")}
                       className="text-xs text-center text-gray-500 hover:text-gray-800 font-medium mt-1">
-                      â† Back to login
+                      ← Back to login
                     </button>
                   </form>
                 )}
@@ -526,7 +529,7 @@ export default function LoginModal() {
                 {forgotStep === 2 && (
                   <div className="flex flex-col gap-2 md:gap-3">
                     <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-800 leading-relaxed">
-                      ðŸ“§ Reset code sent to <strong>{forgotEmail}</strong>.<br />
+                      📧 Reset code sent to <strong>{forgotEmail}</strong>.<br />
                       Check your inbox — and spam folder if you don't see it.
                     </div>
 
@@ -552,7 +555,7 @@ export default function LoginModal() {
 
                     <div className="flex justify-between items-center text-xs">
                       <button type="button" onClick={() => { setForgotStep(1); setErrors({}); clearInterval(timerRef.current); setTimer(0); setDevOtp(null); }}
-                        className="text-gray-500 hover:text-gray-800 font-medium">â† Back</button>
+                        className="text-gray-500 hover:text-gray-800 font-medium">← Back</button>
                       <button type="button" onClick={handleForgotResend} disabled={timer > 0 || loading}
                         className={`font-semibold ${timer > 0 ? "text-gray-400 cursor-not-allowed" : "text-blue-600 hover:text-blue-700 cursor-pointer"}`}>
                         {timer > 0 ? `Resend in ${timer}s` : "Resend code"}
