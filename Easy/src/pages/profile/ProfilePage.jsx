@@ -473,25 +473,35 @@ export default function ProfilePage() {
           ) : (
             <div className="listing-grid">
               {myWishlist.map(item => (
-                <div key={item.id} className="listing-card relative" onClick={() => navigate(`/listing?id=${item.id}`)}>
-                  <button
-                    className="absolute"
-                    style={{ zIndex: 10, top: "8px", right: "8px", width: "28px", height: "28px", background: "transparent", border: "none", boxShadow: "none" }}
-                    onClick={ev => { ev.stopPropagation(); toggleWishlist(item.id); }}
-                  >
-                    <svg width="22" height="22" fill="#ef4444" stroke="#ef4444" viewBox="0 0 24 24" style={{ filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.6))" }}>
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </button>
+                <div key={item.id} className="listing-card" onClick={() => navigate(`/listing?id=${item.id}`)}>
+                  {/* Image */}
                   <div className="aspect-[16/9] relative overflow-hidden bg-gray-100">
-                    <img src={item.img} alt="" className="w-full h-full object-cover block" loading="lazy" />
+                    <img src={item.img} alt={item.title} className="w-full h-full object-cover block" loading="lazy" />
                     {item.sold && (
-                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-extrabold text-lg uppercase tracking-wider z-[5]">Sold</div>
+                      <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-extrabold text-lg uppercase tracking-wider z-[5]">SOLD</div>
                     )}
+                    {/* Heart button inside image */}
+                    <button
+                      className="wishlist-btn-overlay"
+                      style={{ zIndex: 10, top: "8px", right: "8px", width: "28px", height: "28px", background: "transparent", border: "none", boxShadow: "none" }}
+                      onClick={ev => { ev.stopPropagation(); toggleWishlist(item.id); }}
+                    >
+                      <svg width="22" height="22" fill="#ef4444" stroke="#ef4444" viewBox="0 0 24 24" style={{ filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.6))" }}>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                    </button>
+                    {item.category && <span className="listing-cat-label">{item.category}</span>}
                   </div>
+                  {/* Info */}
                   <div className="px-3 py-2">
                     <p className="text-lg font-bold text-gray-900 mb-0.5">{item.priceLabel}</p>
                     <p className="text-sm text-gray-500 mb-1.5 truncate">{item.title}</p>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-400">{item.distLabel}</span>
+                      {item.condition && (
+                        <span className={`badge ${item.condition === "Like new" ? "badge-blue" : "badge-amber"}`}>{item.condition}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}

@@ -51,7 +51,18 @@ export function AppProvider({ children }) {
 
   const [currentUser, setCurrentUser] = useState(getInitialUser());
   const [listings, setListings] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
+  const getInitialWishlist = (user) => {
+    try {
+      const userId = user?._id || user?.id;
+      if (!userId) return [];
+      const saved = localStorage.getItem(`wishlist_${userId}`);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const [wishlist, setWishlist] = useState(() => getInitialWishlist(getInitialUser()));
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("currentUser"));
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -283,9 +294,16 @@ export function AppProvider({ children }) {
     }, duration);
   }, []);
 
-  // ── Wishlist toggle ─────────────────────────────────
+  // ── Wishlist: persist to localStorage on change ─────
   const wishlistRef = useRef(wishlist);
   wishlistRef.current = wishlist;
+
+  useEffect(() => {
+    const userId = currentUser?._id || currentUser?.id;
+    if (userId) {
+      localStorage.setItem(`wishlist_${userId}`, JSON.stringify(wishlist));
+    }
+  }, [wishlist, currentUser]);
 
   const toggleWishlist = useCallback((id) => {
     if (!isLoggedIn) {
@@ -294,11 +312,7 @@ export function AppProvider({ children }) {
     }
     const isAdding = !wishlistRef.current.includes(id);
     setWishlist(prev => isAdding ? [...prev, id] : prev.filter(x => x !== id));
-    // showToast(
-    //   isAdding ? "Added to wishlist" : "Removed from wishlist",
-    //   isAdding ? "success" : "info"
-    // );
-  }, [isLoggedIn, triggerLoginModal, showToast]);
+  }, [isLoggedIn, triggerLoginModal]);
 
   // ── Send message ────────────────────────────────────
   const sendMessage = useCallback((convId, text) => {
@@ -524,6 +538,7 @@ export function AppProvider({ children }) {
   }, [fetchListings, showToast]);
 
   // ── Auth ────────────────────────────────────────────
+  // Load wishlist from localStorage when user logs in
   const login = useCallback(async (userData) => {
     // userData comes directly from the backend (has _id, name, email, phone, token)
     const base = {
@@ -543,6 +558,9 @@ export function AppProvider({ children }) {
     localStorage.setItem("currentUser", JSON.stringify(base));
     setCurrentUser(base);
     setIsLoggedIn(true);
+    // Restore wishlist for this user from localStorage
+    const savedWishlist = localStorage.getItem(`wishlist_${userData._id}`);
+    setWishlist(savedWishlist ? JSON.parse(savedWishlist) : []);
 
     // Immediately fetch live stats from backend and update stored user
     if (userData._id) {
@@ -568,10 +586,13 @@ export function AppProvider({ children }) {
   }, []);
 
   const logout = useCallback(() => {
+    const userId = currentUser?._id || currentUser?.id;
     localStorage.removeItem("currentUser");
+    if (userId) localStorage.removeItem(`wishlist_${userId}`);
     setCurrentUser(null);
     setIsLoggedIn(false);
-  }, []);
+    setWishlist([]);
+  }, [currentUser]);
 
   // ── Update current user profile ─────────────────────
   const updateUser = useCallback(async (payload) => {
