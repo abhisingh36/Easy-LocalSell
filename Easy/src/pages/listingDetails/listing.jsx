@@ -76,6 +76,8 @@ export default function Listing() {
     const rawId = searchParams.get("id");
     if (!rawId) return;
 
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
     // If this listing is already loaded (same ID), don't overwrite it
     // This prevents context re-renders from replacing API-fetched data with stale local data
     if (loadedIdRef.current === rawId && p !== null) {
@@ -221,11 +223,11 @@ export default function Listing() {
   }
 
   return (
-    <div className="page-enter min-h-screen" style={{background:"var(--bg)"}}>
+    <div className="min-h-screen" style={{background:"var(--bg)"}}>
       <Navbar />
 
       {/* Page body */}
-      <div className="max-w-[1440px] mx-auto px-4 py-5">
+      <div key={p.id} className="page-enter max-w-[1440px] mx-auto px-4 py-5">
 
         {/* Breadcrumb */}
         <div className="flex items-center flex-wrap gap-1.5 text-sm text-gray-500 mb-4 font-medium">
@@ -472,11 +474,17 @@ export default function Listing() {
                     <button id="message-seller-btn" className="btn btn-primary btn-w-full rounded-lg justify-center" onClick={handleMessageSeller}>
                       Message seller
                     </button>
-                    {/* Rate Seller — only for logged-in non-owners */}
-                    {isLoggedIn && p.sellerId && (
+                    {/* Rate Seller — available for all non-owners (prompts login if needed) */}
+                    {p.sellerId && (
                       <button id="rate-seller-btn"
                         className="btn btn-secondary btn-w-full rounded-lg justify-center gap-1.5"
-                        onClick={() => { setShowRateModal(true); setRateSuccess(false); setRateError(""); setRateText(""); setRateStars(5); }}>
+                        onClick={() => { 
+                          if (!isLoggedIn) {
+                            triggerLoginModal("Please log in to leave a review.");
+                            return;
+                          }
+                          setShowRateModal(true); setRateSuccess(false); setRateError(""); setRateText(""); setRateStars(5); 
+                        }}>
                         <svg width="14" height="14" fill="#f59e0b" viewBox="0 0 20 20">
                           <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                         </svg>
@@ -495,17 +503,17 @@ export default function Listing() {
             {/* Related listings — below seller card */}
             {related.length > 0 && (
               <div>
-                <p className="text-sm font-bold text-gray-900 mb-3">More in {p.category}</p>
-                <div className="flex flex-col gap-3">
+                <p className="text-sm lg:text-base font-bold text-gray-900 mb-3 lg:mb-4">More in {p.category}</p>
+                <div className="flex flex-col gap-3 lg:gap-4">
                   {related.map(item => (
                     <div key={item.id} className="related-card" onClick={() => navigate(`/listing?id=${item.id}`)}>
-                      <div className="flex gap-3 p-2.5 items-center">
-                        <div className="w-[72px] h-[72px] bg-gray-100 rounded-lg overflow-hidden shrink-0">
+                      <div className="flex gap-3 lg:gap-4 p-2.5 lg:p-3.5 items-center">
+                        <div className="w-[72px] h-[72px] lg:w-[96px] lg:h-[96px] bg-gray-100 rounded-lg overflow-hidden shrink-0">
                           <img src={item.img} alt="" className="w-full h-full object-cover" loading="lazy"/>
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-bold text-gray-900 mb-0.5">{item.priceLabel}</p>
-                          <p className="text-xs text-gray-500 truncate">{item.title}</p>
+                          <p className="text-sm lg:text-lg font-bold text-gray-900 mb-0.5 lg:mb-1">{item.priceLabel}</p>
+                          <p className="text-xs lg:text-sm text-gray-500 truncate">{item.title}</p>
                         </div>
                       </div>
                     </div>
