@@ -129,14 +129,22 @@ html.dark {
 
 html {
   scroll-behavior: smooth;
+  min-height: 100%;
 }
 
 body {
-  background-color: var(--bg);
+  background: var(--bg);
+  background-color: var(--gray-50);
   color: var(--gray-900);
   font-family: 'Inter', -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+  background: var(--bg);
 }
 
 html.dark body {
@@ -802,7 +810,7 @@ html.dark .navbar-login-btn:hover {
   border-radius: 12px;
   box-shadow: var(--shadow-lg);
   overflow: hidden;
-  z-index: 100;
+  z-index: 400;
   animation: fadeIn .15s ease;
 }
 
@@ -1755,11 +1763,12 @@ html.dark .conv-item {
 }
 
 html.dark .conv-item:not(.active):hover {
-  background: var(--gray-200);
+  background: rgba(255, 255, 255, 0.06);
 }
 
 html.dark .conv-item.active {
-  background: var(--gray-200);
+  background: var(--blue-100);
+  border-left-color: var(--blue-500);
 }
 
 html.dark .chat-main {
@@ -3083,6 +3092,8 @@ html.dark .pwd-error-box {
 
 .leaflet-map-container {
   height: 280px;
+  /* Contain Leaflet's internal z-index (400, 600…) within this element */
+  isolation: isolate;
 }
 
 .loc-modal-map {
@@ -3095,7 +3106,9 @@ html.dark .pwd-error-box {
 @media(max-width: 768px) {
 
   /* Show map overlay tap-to-expand only on mobile */
-  :root { --map-overlay-display: block; }
+  :root {
+    --map-overlay-display: block;
+  }
 
   .loc-modal-map {
     height: 220px !important;
@@ -3843,17 +3856,23 @@ body.keyboard-open {
 }
 
 /* ─── Tighter Card Info Section ─── */
-.listing-card > div:nth-child(2) {
-  padding: 6px 10px 8px !important; /* Reduce padding */
-  gap: 0px !important;              /* Remove gap from flex column */
+.listing-card>div:nth-child(2) {
+  padding: 6px 10px 8px !important;
+  /* Reduce padding */
+  gap: 0px !important;
+  /* Remove gap from flex column */
 }
-.listing-card > div:nth-child(2) p.text-lg {
+
+.listing-card>div:nth-child(2) p.text-lg {
   margin-bottom: 0px !important;
-  line-height: 1.1 !important;      /* Tighter price line height */
+  line-height: 1.1 !important;
+  /* Tighter price line height */
 }
-.listing-card > div:nth-child(2) p.text-sm {
+
+.listing-card>div:nth-child(2) p.text-sm {
   margin-bottom: 4px !important;
-  line-height: 1.2 !important;      /* Tighter title line height */
+  line-height: 1.2 !important;
+  /* Tighter title line height */
 }
 
 /* ─── Fix Map Modal Height ─── */
@@ -3861,3 +3880,33 @@ body.keyboard-open {
   height: 100% !important;
   width: 100% !important;
 }
+
+/* ─── Skeleton Loading ──────────────────────────── */
+@keyframes skeleton-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--gray-200) 25%,
+    var(--gray-100) 50%,
+    var(--gray-200) 75%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+/* Dark mode skeleton */
+.dark .skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--gray-700, #374151) 25%,
+    var(--gray-600, #4B5563) 50%,
+    var(--gray-700, #374151) 75%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}

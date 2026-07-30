@@ -1,10 +1,27 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="background:#f0f7ff">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/favicon.png" />
+    <!-- Theme init: must run BEFORE React to prevent white flash -->
+    <script>
+      (function() {
+        try {
+          var theme = localStorage.getItem('theme');
+          if (!theme) {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.documentElement.style.background = '#090a0f';
+          } else {
+            document.documentElement.style.background = '#f0f7ff';
+          }
+        } catch(e) {}
+      })();
+    </script>
     <!-- GitHub Pages SPA routing fix -->
     <script>
       (function(l) {

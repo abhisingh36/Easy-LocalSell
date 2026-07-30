@@ -32,10 +32,9 @@ function SkeletonCard() {
 
 export default function Home() {
   const navigate = useNavigate();
-  const { listings, wishlist, toggleWishlist, searchQuery, setSearchQuery, filters, setFilters, userLocation, currentUser, triggerLoginModal } = useApp();
+  const { listings, listingsLoading, wishlist, toggleWishlist, searchQuery, setSearchQuery, filters, setFilters, userLocation, currentUser, triggerLoginModal } = useApp();
   const [activeTab, setActiveTab] = useState("nearby");
   const [showMap, setShowMap] = useState(true);
-  const [loading] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [mapModalOpen, setMapModalOpen] = useState(false);
 
@@ -187,14 +186,14 @@ export default function Home() {
                 </button>
               </div>
             </div>
-            <div className="relative">
+            <div className="relative" style={{ pointerEvents: mapModalOpen ? 'auto' : 'none' }}>
               {showMap && (
                 <>
                   <Map />
                   {/* Clickable overlay on mobile to open full screen map */}
                   <div 
                     className="absolute inset-0 z-[1000] cursor-pointer"
-                    style={{ display: 'var(--map-overlay-display, none)' }}
+                    style={{ display: 'var(--map-overlay-display, none)', pointerEvents: 'auto' }}
                     onClick={() => setMapModalOpen(true)}
                   />
                 </>
@@ -294,7 +293,7 @@ export default function Home() {
           </div>
 
           {/* Grid */}
-          {loading ? (
+          {listingsLoading ? (
             <div className="listing-grid">
               {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
             </div>

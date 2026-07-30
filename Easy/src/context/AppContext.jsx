@@ -51,6 +51,7 @@ export function AppProvider({ children }) {
 
   const [currentUser, setCurrentUser] = useState(getInitialUser());
   const [listings, setListings] = useState([]);
+  const [listingsLoading, setListingsLoading] = useState(true);
   const getInitialWishlist = (user) => {
     try {
       const userId = user?._id || user?.id;
@@ -448,6 +449,7 @@ export function AppProvider({ children }) {
 
   // ── Listings: Fetch from API ────────────────────────
   const fetchListings = useCallback(async () => {
+    setListingsLoading(true);
     try {
       const mapped = await fetchAllListings();
 
@@ -478,6 +480,8 @@ export function AppProvider({ children }) {
       setListings(updated);
     } catch (err) {
       console.error("Error loading listings from API:", err);
+    } finally {
+      setListingsLoading(false);
     }
   }, [userLocation]);
 
@@ -659,7 +663,7 @@ export function AppProvider({ children }) {
   // ── Context value ───────────────────────────────────
   const value = {
     currentUser, wishlist, toggleWishlist,
-    listings, searchQuery, setSearchQuery, addListing, updateListing, deleteListing, fetchListings,
+    listings, listingsLoading, searchQuery, setSearchQuery, addListing, updateListing, deleteListing, fetchListings,
     filters, setFilters,
     isLoggedIn, login, logout, refreshCurrentUserStats, updateUser,
     theme, toggleTheme,
