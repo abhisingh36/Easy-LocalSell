@@ -16,14 +16,19 @@ function condColor(cond) {
 
 function SkeletonCard() {
   return (
-    <div className="card overflow-hidden">
-      <div className="skeleton h-44" />
-      <div className="p-3.5">
-        <div className="skeleton h-4 w-3/5 mb-2 rounded" />
-        <div className="skeleton h-3 w-11/12 mb-2.5 rounded" />
-        <div className="flex justify-between">
-          <div className="skeleton h-3 w-1/3 rounded" />
-          <div className="skeleton h-5 w-1/4 rounded" />
+    <div className="listing-card overflow-hidden">
+      {/* Image area — matches actual card's aspect-[16/9] */}
+      <div className="skeleton aspect-[16/9] w-full" style={{ borderRadius: 0 }} />
+      {/* Info area — matches actual card's px-3 py-2 */}
+      <div className="px-3 py-2">
+        {/* Price line — text-lg font-bold */}
+        <div className="skeleton h-5 w-2/5 mb-1 rounded" />
+        {/* Title line — text-sm */}
+        <div className="skeleton h-3.5 w-4/5 mb-2 rounded" />
+        {/* Bottom row: distance + badge */}
+        <div className="flex items-center justify-between">
+          <div className="skeleton h-3 w-1/4 rounded" />
+          <div className="skeleton h-5 w-1/5 rounded-full" />
         </div>
       </div>
     </div>
@@ -293,7 +298,7 @@ export default function Home() {
           </div>
 
           {/* Grid */}
-          {listingsLoading ? (
+          {listingsLoading && listings.length === 0 ? (
             <div className="listing-grid">
               {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
             </div>
