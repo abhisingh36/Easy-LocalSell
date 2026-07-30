@@ -4,6 +4,8 @@ import Navbar from "../../components/navbar/navbar";
 import { useApp } from "../../context/AppContext";
 import { fetchListingById, fetchUserProfile, createReviewAPI } from "../../services/api";
 
+const sellerStatsCache = {};
+
 function condBadge(cond) {
   if (cond === "Like new") return "badge-blue";
   if (cond === "Good")     return "badge-amber";
@@ -124,9 +126,17 @@ export default function Listing() {
     // sellerId must be a valid 24-char MongoDB ObjectId string
     if (!sellerId || typeof sellerId !== "string" || !/^[a-f\d]{24}$/i.test(sellerId)) return;
 
+    if (sellerStatsCache[sellerId]) {
+      setSellerStats(sellerStatsCache[sellerId]);
+      return;
+    }
+
     setSellerStatsLoading(true);
     fetchUserProfile(sellerId)
-      .then(profile => setSellerStats(profile.stats))
+      .then(profile => {
+        sellerStatsCache[sellerId] = profile.stats;
+        setSellerStats(profile.stats);
+      })
       .catch(err => console.warn("Could not load seller stats:", err.message))
       .finally(() => setSellerStatsLoading(false));
   }, [p?.sellerId]);
@@ -204,7 +214,10 @@ export default function Listing() {
       // Refresh seller stats so rating updates in UI
       if (p.sellerId && /^[a-f\d]{24}$/i.test(p.sellerId)) {
         fetchUserProfile(p.sellerId)
-          .then(pr => setSellerStats(pr.stats))
+          .then(pr => {
+            sellerStatsCache[p.sellerId] = pr.stats;
+            setSellerStats(pr.stats);
+          })
           .catch(() => {});
       }
     } catch (err) {
