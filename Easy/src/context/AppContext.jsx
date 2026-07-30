@@ -73,8 +73,22 @@ export function AppProvider({ children }) {
     setLoginReason(reason);
     setShowLoginModal(true);
   }, []);
+  const getInitialUserLocation = () => {
+    try {
+      const saved = localStorage.getItem("userLocation");
+      return saved ? JSON.parse(saved) : { name: "Hazratganj", radius: "5 km", coords: [26.8467, 80.9462] };
+    } catch {
+      return { name: "Hazratganj", radius: "5 km", coords: [26.8467, 80.9462] };
+    }
+  };
+
   const [showLocationModal, setShowLocationModal] = useState(false);
-  const [userLocation, setUserLocation] = useState({ name: "Hazratganj", radius: "5 km", coords: [26.8467, 80.9462] });
+  const [userLocation, setUserLocation] = useState(getInitialUserLocation);
+
+  useEffect(() => {
+    localStorage.setItem("userLocation", JSON.stringify(userLocation));
+  }, [userLocation]);
+
   const [filters, setFilters] = useState({
     category: "All listings", radius: "5 km",
     conditions: ["New", "Like new", "Good", "Fair", "For parts"], priceMax: 250000,
