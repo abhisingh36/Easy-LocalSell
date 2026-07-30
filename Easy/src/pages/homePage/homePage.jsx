@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../components/navbar/navbar";
 import Sidebar from "../../components/sidebar/sidebar";
@@ -38,8 +38,22 @@ function SkeletonCard() {
 export default function Home() {
   const navigate = useNavigate();
   const { listings, listingsLoading, wishlist, toggleWishlist, searchQuery, setSearchQuery, filters, setFilters, userLocation, currentUser, triggerLoginModal } = useApp();
+  const getInitialShowMap = () => {
+    try {
+      const saved = localStorage.getItem("showMap");
+      return saved !== null ? JSON.parse(saved) : true;
+    } catch {
+      return true;
+    }
+  };
+
   const [activeTab, setActiveTab] = useState("nearby");
-  const [showMap, setShowMap] = useState(true);
+  const [showMap, setShowMap] = useState(getInitialShowMap);
+
+  useEffect(() => {
+    localStorage.setItem("showMap", JSON.stringify(showMap));
+  }, [showMap]);
+
   const [showFilters, setShowFilters] = useState(false);
   const [mapModalOpen, setMapModalOpen] = useState(false);
 
