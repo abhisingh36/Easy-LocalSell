@@ -11,8 +11,8 @@ const CATEGORIES = [
   "Sports",
   "Kitchen",
 ];
-const RADIUS_OPTIONS    = ["1 km","2 km","5 km","10 km","20 km"];
-const CONDITION_OPTIONS = ["New","Like new","Good","Fair","For parts"];
+const RADIUS_OPTIONS = ["1 km", "2 km", "5 km", "10 km", "20 km"];
+const CONDITION_OPTIONS = ["New", "Like new", "Good", "Fair", "For parts"];
 
 export default function Sidebar({ mobileOpen = false }) {
   const { filters, setFilters, listings, searchQuery } = useApp();
@@ -27,7 +27,7 @@ export default function Sidebar({ mobileOpen = false }) {
   }
 
   function reset() {
-    setFilters({ category:"All listings", radius:"5 km", conditions:["New","Like new","Good","Fair","For parts"], priceMax:250000 });
+    setFilters({ category: "All listings", radius: "5 km", conditions: ["New", "Like new", "Good", "Fair", "For parts"], priceMax: 250000 });
   }
 
   const pct = (filters.priceMax / 250000) * 100;
@@ -51,16 +51,16 @@ export default function Sidebar({ mobileOpen = false }) {
         <p className="section-title px-6 mb-1.5">Categories</p>
         {CATEGORIES.map(catName => {
           const active = catName === filters.category;
-          const count = catName === "All listings" 
-            ? baseListings.length 
+          const count = catName === "All listings"
+            ? baseListings.length
             : baseListings.filter(l => l.category === catName).length;
 
           return (
             <button
               key={catName}
-              id={`sidebar-cat-${catName.toLowerCase().replace(/\s+/g,"-")}`}
+              id={`sidebar-cat-${catName.toLowerCase().replace(/\s+/g, "-")}`}
               className={`sidebar-cat-btn${active ? " active" : ""}`}
-              onClick={() => setFilters(p => ({ ...p, category:catName }))}
+              onClick={() => setFilters(p => ({ ...p, category: catName }))}
             >
               <span className="flex items-center gap-2.5">
                 <span className={`flex items-center justify-center ${active ? "text-blue-600" : "text-gray-400"}`}>
@@ -82,8 +82,8 @@ export default function Sidebar({ mobileOpen = false }) {
             <span className="text-xs font-bold text-blue-600">₹{filters.priceMax.toLocaleString("en-IN")}</span>
           </div>
           <input id="price-range" type="range" min="0" max="250000" value={filters.priceMax}
-            onChange={e => setFilters(p => ({ ...p, priceMax:Number(e.target.value) }))}
-            style={{ background:`linear-gradient(to right, var(--blue-600) 0%, var(--blue-600) ${pct}%, var(--gray-200) ${pct}%, var(--gray-200) 100%)` }}
+            onChange={e => setFilters(p => ({ ...p, priceMax: Number(e.target.value) }))}
+            style={{ background: `linear-gradient(to right, var(--blue-600) 0%, var(--blue-600) ${pct}%, var(--gray-200) ${pct}%, var(--gray-200) 100%)` }}
           />
           <div className="flex justify-between text-xs text-gray-400 mt-1.5 font-medium">
             <span>₹0</span>
@@ -98,9 +98,9 @@ export default function Sidebar({ mobileOpen = false }) {
           <p className="section-title mb-2">Radius</p>
           <div className="flex flex-wrap gap-2.5">
             {RADIUS_OPTIONS.map(r => (
-              <button key={r} id={`radius-${r.replace(" ","")}`}
-                className={`sidebar-radius-btn${r===filters.radius?" active":""}`}
-                onClick={() => setFilters(p => ({ ...p, radius:r }))}>{r}</button>
+              <button key={r} id={`radius-${r.replace(" ", "")}`}
+                className={`sidebar-radius-btn${r === filters.radius ? " active" : ""}`}
+                onClick={() => setFilters(p => ({ ...p, radius: r }))}>{r}</button>
             ))}
           </div>
         </div>

@@ -9,8 +9,11 @@ import { CATEGORY_ICONS } from "../../utils/categoryIcons";
 const RADIUS_KM = { "1 km": 1, "2 km": 2, "5 km": 5, "10 km": 10, "20 km": 20 };
 
 function condColor(cond) {
+  if (cond === "New") return "badge-green";
   if (cond === "Like new") return "badge-blue";
   if (cond === "Good") return "badge-amber";
+  if (cond === "Fair") return "badge-orange";
+  if (cond === "For parts") return "badge-purple";
   return "badge-gray";
 }
 

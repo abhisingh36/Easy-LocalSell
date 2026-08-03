@@ -23,6 +23,15 @@ function Stars({ count, size = "sm" }) {
   );
 }
 
+function condColor(cond) {
+  if (cond === "New") return "badge-green";
+  if (cond === "Like new") return "badge-blue";
+  if (cond === "Good") return "badge-amber";
+  if (cond === "Fair") return "badge-orange";
+  if (cond === "For parts") return "badge-purple";
+  return "badge-gray";
+}
+
 // ─── Relative time helper ─────────────────────────────────────────
 function timeAgo(dateStr) {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -439,7 +448,7 @@ export default function ProfilePage() {
                   <p className="text-sm text-gray-500 mb-1.5 truncate">{item.title}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-xs text-gray-400">{item.distLabel}</span>
-                    <span className={`badge ${item.condition === "Like new" ? "badge-blue" : "badge-amber"}`}>{item.condition}</span>
+                    <span className={`badge ${condColor(item.condition)}`}>{item.condition}</span>
                   </div>
                 </div>
               </div>
@@ -499,7 +508,7 @@ export default function ProfilePage() {
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-gray-400">{item.distLabel}</span>
                       {item.condition && (
-                        <span className={`badge ${item.condition === "Like new" ? "badge-blue" : "badge-amber"}`}>{item.condition}</span>
+                        <span className={`badge ${condColor(item.condition)}`}>{item.condition}</span>
                       )}
                     </div>
                   </div>

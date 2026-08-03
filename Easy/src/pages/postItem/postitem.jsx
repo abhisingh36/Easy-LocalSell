@@ -9,6 +9,14 @@ const MAX_DESC    = 500;
 const MAX_PHOTOS  = 6;
 const STEPS       = ["Photos & Details","Review","Publish"];
 
+function condColor(cond) {
+  if (cond === "New") return "badge-green";
+  if (cond === "Like new") return "badge-blue";
+  if (cond === "Good") return "badge-amber";
+  if (cond === "Fair") return "badge-orange";
+  if (cond === "For parts") return "badge-purple";
+  return "badge-gray";
+}
 // Helper to render an input field cleanly
 const Field = ({ id, label, placeholder, value, setter }) => (
   <div>
@@ -258,29 +266,37 @@ export default function PostItem() {
     <div className="page-enter min-h-screen" style={{background:"var(--bg)"}}>
       <Navbar />
 
-      {/* Step bar */}
-      <div className="bg-white border-b border-gray-200 py-3">
-        <div className="max-w-[1300px] mx-auto px-4 md:px-8 flex items-center overflow-x-auto whitespace-nowrap scrollbar-hide">
-          {STEPS.map((s, i) => {
-            const num    = i + 1;
-            const done   = step > num;
-            const active = step >= num;
-            return (
-              <div key={s} className="flex items-center">
-                <div className="flex items-center gap-2">
-                  <div className={done ? "step-circle-done" : active ? "step-circle-active" : "step-circle-idle"}>
-                    {done ? "✓" : num}
+      {/* Sticky Header & Step bar */}
+      <div className="sticky top-[58px] lg:top-[70px] z-[290] bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-[1300px] mx-auto px-4 md:px-8 py-3 flex items-center gap-6">
+          {/* Page Heading */}
+          <h1 className="text-lg font-bold text-gray-900 shrink-0">
+            {editListing ? "Edit Listing" : "Post Item"}
+          </h1>
+
+          {/* Steps */}
+          <div className="flex items-center overflow-x-auto whitespace-nowrap scrollbar-hide flex-1 min-w-0 md:pr-0 pr-1">
+            {STEPS.map((s, i) => {
+              const num    = i + 1;
+              const done   = step > num;
+              const active = step >= num;
+              return (
+                <div key={s} className="flex items-center">
+                  <div className="flex items-center gap-2">
+                    <div className={done ? "step-circle-done" : active ? "step-circle-active" : "step-circle-idle"}>
+                      {done ? "✓" : num}
+                    </div>
+                    <span className={`text-sm ${step === num ? "block" : "hidden md:block"} ${done ? "text-green-600 font-semibold" : active ? "text-blue-600 font-semibold" : "text-gray-400"}`}>
+                      {s}
+                    </span>
                   </div>
-                  <span className={`text-sm ${step === num ? "block" : "hidden md:block"} ${done ? "text-green-600 font-semibold" : active ? "text-blue-600 font-semibold" : "text-gray-400"}`}>
-                    {s}
-                  </span>
+                  {i < STEPS.length - 1 && (
+                    <div className={done ? "step-line-done" : "step-line-idle"} />
+                  )}
                 </div>
-                {i < STEPS.length - 1 && (
-                  <div className={done ? "step-line-done" : "step-line-idle"} />
-                )}
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -521,7 +537,7 @@ export default function PostItem() {
                       <label className="input-label">Condition *</label>
                       <div className="flex flex-wrap gap-2">
                         {CONDITIONS.map(cond => (
-                          <button key={cond} type="button" id={`cond-${cond}`} className={`sel-cond-btn${cond===condition?" active":""}`}
+                          <button key={cond} type="button" id={`cond-${cond}`} className={`sel-cond-btn${cond===condition?` active-${condColor(cond).replace("badge-", "")}`:""}`}
                             onClick={() => { setCondition(cond); if (errors.condition) setErrors(p => ({...p,condition:""})); }}>{cond}</button>
                         ))}
                       </div>
@@ -547,13 +563,13 @@ export default function PostItem() {
                 {editListing ? "Review your changes" : "Review your listing"}
               </p>
               
-              <div className="flex flex-col md:flex-row gap-5 md:items-start">
-                <div className="w-[128px] h-[128px] rounded-2xl overflow-hidden bg-gray-50 border border-gray-200 shrink-0 shadow-sm relative group">
+              <div className="flex flex-row gap-4 md:gap-5 items-start">
+                <div className="w-[100px] h-[100px] sm:w-[128px] sm:h-[128px] rounded-2xl overflow-hidden bg-gray-50 border border-gray-200 shrink-0 shadow-sm relative group">
                   {mainPhoto ? (
                     <img src={mainPhoto} alt="" className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <svg width="32" height="32" fill="none" stroke="var(--gray-300)" viewBox="0 0 24 24">
+                      <svg className="w-8 h-8 sm:w-8 sm:h-8" fill="none" stroke="var(--gray-300)" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
@@ -562,11 +578,11 @@ export default function PostItem() {
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <p className="text-3xl font-extrabold text-blue-600 tracking-tight leading-none mb-2">{priceLabel}</p>
-                  <p className="text-xl font-bold text-gray-900 tracking-tight mb-3 truncate" title={title}>{title}</p>
+                  <p className="text-2xl sm:text-3xl font-extrabold text-blue-600 tracking-tight leading-none mb-1.5 sm:mb-2">{priceLabel}</p>
+                  <p className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight mb-2 sm:mb-3 truncate" title={title}>{title}</p>
                   <div className="flex gap-2.5 flex-wrap">
                     {category && <span className="badge badge-blue px-3 py-1.5 text-sm font-semibold">{category}</span>}
-                    {condition && <span className="badge badge-amber px-3 py-1.5 text-sm font-semibold">{condition}</span>}
+                    {condition && <span className={`badge ${condColor(condition)} px-3 py-1.5 text-sm font-semibold`}>{condition}</span>}
                     {location && (
                       <span className="badge badge-gray px-3 py-1.5 text-sm font-semibold flex items-center gap-1.5">
                         <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -815,7 +831,7 @@ export default function PostItem() {
             <p className="text-sm text-gray-500 mb-2.5 truncate">{title || "Your item title"}</p>
             <div className="flex flex-wrap gap-1.5 mb-4">
               {category && <span className="badge badge-blue">{category}</span>}
-              {condition && <span className="badge badge-amber">{condition}</span>}
+              {condition && <span className={`badge ${condColor(condition)}`}>{condition}</span>}
               {location && <span className="badge badge-gray">{location.split(",")[0]}</span>}
             </div>
             <div className="border-t border-gray-200 pt-3">

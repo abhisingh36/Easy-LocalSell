@@ -471,6 +471,18 @@ html.dark .card {
   border: 1px solid var(--red-400);
 }
 
+.badge-orange {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+.badge-purple {
+  background: #faf5ff;
+  color: #7e22ce;
+  border: 1px solid #e9d5ff;
+}
+
 /* ─── Section title ──────────────────────────────── */
 .section-title {
   font-size: 12px;
@@ -512,6 +524,12 @@ html.dark .divider {
   -webkit-backdrop-filter: blur(6px);
   border-bottom: 1px solid var(--gray-200);
   height: 58px;
+}
+
+@media (min-width: 1024px) {
+  .navbar {
+    height: 70px;
+  }
 }
 
 html.dark .navbar {
@@ -1566,10 +1584,34 @@ html.dark .profile-stat-card {
   color: var(--gray-700);
 }
 
-.sel-cond-btn.active {
+.sel-cond-btn.active-green {
+  border-color: var(--green-600);
+  background: var(--green-50);
+  color: var(--green-700);
+}
+
+.sel-cond-btn.active-blue {
+  border-color: var(--blue-600);
+  background: var(--blue-50);
+  color: var(--blue-700);
+}
+
+.sel-cond-btn.active-amber {
   border-color: var(--amber-600);
   background: var(--amber-50);
   color: var(--amber-700);
+}
+
+.sel-cond-btn.active-orange {
+  border-color: #ea580c;
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.sel-cond-btn.active-purple {
+  border-color: #9333ea;
+  background: #faf5ff;
+  color: #7e22ce;
 }
 
 .step-circle-done {
@@ -2513,6 +2555,15 @@ html.dark .chat-empty {
 
 
 /* ─── Keyframes ──────────────────────────────────── */
+@keyframes imgFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-img-anim {
+  animation: imgFadeIn 0.3s ease-out;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

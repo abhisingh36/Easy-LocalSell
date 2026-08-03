@@ -7,8 +7,11 @@ import { fetchListingById, fetchUserProfile, createReviewAPI } from "../../servi
 const sellerStatsCache = {};
 
 function condBadge(cond) {
+  if (cond === "New") return "badge-green";
   if (cond === "Like new") return "badge-blue";
-  if (cond === "Good")     return "badge-amber";
+  if (cond === "Good") return "badge-amber";
+  if (cond === "Fair") return "badge-orange";
+  if (cond === "For parts") return "badge-purple";
   return "badge-gray";
 }
 
@@ -408,7 +411,7 @@ export default function Listing() {
           </div>
 
           {/* ── Right: Seller Card + Related ── */}
-          <div className="w-full lg:w-[400px] shrink-0" style={{position:"sticky", top:"70px", alignSelf:"start"}}>
+          <div className="w-full lg:w-[400px] shrink-0" style={{position:"sticky", top:"90px", alignSelf:"start"}}>
             <div className="card p-5 mb-4">
 
               {/* Seller */}
@@ -573,7 +576,7 @@ export default function Listing() {
           </div>
           
           <div 
-            style={{ flex: 1, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", cursor: isDragging ? "grabbing" : "grab" }}
+            style={{ flex: 1, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", cursor: isDragging ? "grabbing" : "grab", position: "relative" }}
             onWheel={(e) => {
               if (e.deltaY < 0) setZoomScale(s => Math.min(5, s + 0.25));
               else setZoomScale(s => Math.max(0.5, s - 0.25));
@@ -590,7 +593,50 @@ export default function Listing() {
             onMouseUp={() => setIsDragging(false)}
             onMouseLeave={() => setIsDragging(false)}
           >
+            {thumbs.length > 1 && (
+              <>
+                {/* Previous Button */}
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveThumb(prev => (prev - 1 + thumbs.length) % thumbs.length);
+                    setZoomScale(1);
+                    setPan({x:0, y:0});
+                  }}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  style={{
+                    position: "absolute", left: 20, top: "50%", transform: "translateY(-50%)",
+                    width: 48, height: 48, borderRadius: 24, background: "white", border: "none",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.2)", cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10001
+                  }}
+                >
+                  <svg width="24" height="24" fill="none" stroke="#1f2937" strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+
+                {/* Next Button */}
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveThumb(prev => (prev + 1) % thumbs.length);
+                    setZoomScale(1);
+                    setPan({x:0, y:0});
+                  }}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  style={{
+                    position: "absolute", right: 20, top: "50%", transform: "translateY(-50%)",
+                    width: 48, height: 48, borderRadius: 24, background: "white", border: "none",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.2)", cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center", zIndex: 10001
+                  }}
+                >
+                  <svg width="24" height="24" fill="none" stroke="#1f2937" strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+              </>
+            )}
             <img 
+              key={activeImg}
+              className="modal-img-anim"
               src={activeImg} 
               alt={p.title}
               draggable={false}

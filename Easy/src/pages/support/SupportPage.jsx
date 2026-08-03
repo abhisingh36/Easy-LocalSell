@@ -25,6 +25,7 @@ export default function SupportPage() {
   const [ticketSubject, setTicketSubject] = useState("");
   const [ticketDescription, setTicketDescription] = useState("");
   const [ticketSubmitted, setTicketSubmitted] = useState(null);
+  const [ticketErrors, setTicketErrors] = useState({});
 
   // FAQ Accordion State
   const [openFaq, setOpenFaq] = useState(0);
@@ -97,8 +98,12 @@ export default function SupportPage() {
 
   const handleTicketSubmit = (e) => {
     e.preventDefault();
-    if (!ticketSubject.trim() || !ticketDescription.trim()) {
-      showToast("Please complete all required ticket fields.", "danger");
+    const errors = {};
+    if (!ticketSubject.trim()) errors.subject = "Subject is required";
+    if (!ticketDescription.trim()) errors.description = "Description is required";
+
+    if (Object.keys(errors).length > 0) {
+      setTicketErrors(errors);
       return;
     }
 
@@ -113,6 +118,7 @@ export default function SupportPage() {
     showToast("Support ticket raised successfully!", "success");
     setTicketSubject("");
     setTicketDescription("");
+    setTicketErrors({});
   };
 
   return (
@@ -287,10 +293,13 @@ export default function SupportPage() {
                     type="text"
                     placeholder="Brief summary of the issue..."
                     value={ticketSubject}
-                    onChange={(e) => setTicketSubject(e.target.value)}
-                    className="input w-full"
-                    required
+                    onChange={(e) => {
+                      setTicketSubject(e.target.value);
+                      if (ticketErrors.subject) setTicketErrors(p => ({ ...p, subject: "" }));
+                    }}
+                    className={`input w-full ${ticketErrors.subject ? "error" : ""}`}
                   />
+                  {ticketErrors.subject && <p className="input-error">{ticketErrors.subject}</p>}
                 </div>
 
                 <div className="flex-1 flex flex-col">
@@ -299,10 +308,13 @@ export default function SupportPage() {
                     rows={4}
                     placeholder="Provide details about your query or report..."
                     value={ticketDescription}
-                    onChange={(e) => setTicketDescription(e.target.value)}
-                    className="input w-full resize-none flex-1"
-                    required
+                    onChange={(e) => {
+                      setTicketDescription(e.target.value);
+                      if (ticketErrors.description) setTicketErrors(p => ({ ...p, description: "" }));
+                    }}
+                    className={`input w-full resize-none flex-1 ${ticketErrors.description ? "error" : ""}`}
                   />
+                  {ticketErrors.description && <p className="input-error">{ticketErrors.description}</p>}
                 </div>
 
                 <button type="submit" className="btn btn-primary btn-w-full justify-center py-2.5 text-sm font-bold rounded-xl mt-auto shrink-0">
