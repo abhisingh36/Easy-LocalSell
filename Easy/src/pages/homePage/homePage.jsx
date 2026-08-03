@@ -304,7 +304,10 @@ export default function Home() {
 
           {/* Grid header */}
           <div className="flex items-center justify-between mb-3.5">
-            <p className="text-base font-bold text-gray-900">
+            <p className="text-base font-bold text-gray-900 flex items-center gap-2">
+              <span className="flex items-center justify-center [&>svg]:w-[1.2em] [&>svg]:h-[1.2em] [&>svg]:stroke-[2.5]">
+                {CATEGORY_ICONS[filters.category]}
+              </span>
               {filters.category === "All listings" ? "All Listings" : filters.category}
             </p>
             {searchQuery && (
